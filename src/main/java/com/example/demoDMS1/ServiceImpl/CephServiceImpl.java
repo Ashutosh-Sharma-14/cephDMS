@@ -395,7 +395,7 @@ public class CephServiceImpl implements CephService {
     }
 
     @Async
-    public CompletableFuture<String> uploadFileAsync(MultipartFile file, String objectKey,UploadMetadataDTO metadataDTO){
+    public CompletableFuture<String> uploadFileAsync(MultipartFile file,String bucketName,String objectKey,UploadMetadataDTO metadataDTO){
         LocalDateTime startTime = LocalDateTime.now();
         Map<String,String> existingMetadata = addMetadata(metadataDTO,bucketName,objectKey);
         try {
@@ -437,11 +437,11 @@ public class CephServiceImpl implements CephService {
     }
 
     @Override
-    public List<String> uploadMultipleFiles(MultipartFile[] files, String prefix, UploadMetadataDTO metadataDTO) throws ExecutionException, InterruptedException {
+    public ResponseEntity<List<String>> uploadMultipleFiles(MultipartFile[] files,String bucketName, String prefix, UploadMetadataDTO metadataDTO) throws ExecutionException, InterruptedException {
         List<CompletableFuture<String>> fileUploadFutures = new ArrayList<>();
 
         for (MultipartFile file : files) {
-            fileUploadFutures.add(uploadFileAsync(file, prefix,metadataDTO));
+            fileUploadFutures.add(uploadFileAsync(file,bucketName, prefix,metadataDTO));
         }
 
         CompletableFuture<Void> allOfFileUploadFutures = CompletableFuture.allOf(fileUploadFutures.toArray(new CompletableFuture[0]));
@@ -458,7 +458,7 @@ public class CephServiceImpl implements CephService {
                 fileUploadResults.add(e.getMessage());
             }
         }
-        return fileUploadResults;
+        return ResponseEntity.ok().body(fileUploadResults);
     }
 
 //    this method does not work

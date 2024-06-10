@@ -73,9 +73,10 @@ public class CephController {
     }
 
     @PostMapping("/upload-multiple-files-to-ceph")
-    public List<String> uploadMultipleFilesToCeph(MultipartFile[] files,
+    public ResponseEntity<List<String>> uploadMultipleFilesToCeph(MultipartFile[] files,
+                                                  String bucketName,
                                                   String prefix, UploadMetadataDTO metadataDTO) throws ExecutionException, InterruptedException, IOException {
-        return cephService.uploadMultipleFiles(files,prefix,metadataDTO);
+        return cephService.uploadMultipleFiles(files,bucketName,prefix,metadataDTO);
     }
 
 //    @PostMapping("/upload-files-by-account")

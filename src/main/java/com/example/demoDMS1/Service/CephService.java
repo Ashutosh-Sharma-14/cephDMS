@@ -44,8 +44,9 @@ public interface CephService {
                       @RequestParam String bankName,
                       @RequestParam String accountNo) throws IOException;
 
-    List<String> uploadMultipleFiles(@RequestParam MultipartFile[] files,
-                                     @RequestParam String prefix,
+    ResponseEntity<List<String>> uploadMultipleFiles(@RequestParam MultipartFile[] files,
+                                     @RequestParam String bucketName,
+                                     @RequestParam String objectKey,
                                      @RequestParam UploadMetadataDTO metadataDto) throws IOException, ExecutionException, InterruptedException;
 
 //    List<String> uploadFilesToMultiplePrefixes(@RequestPart("accountFilesRequest")AccountFilesRequest accountFilesRequest) throws ExecutionException, InterruptedException, IOException;
