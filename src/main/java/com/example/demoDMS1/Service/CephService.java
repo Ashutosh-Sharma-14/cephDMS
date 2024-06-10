@@ -1,7 +1,6 @@
 package com.example.demoDMS1.Service;
 
-import com.example.demoDMS1.Model.UploadMetadataDTO;
-import org.apache.poi.ss.formula.functions.T;
+import com.example.demoDMS1.Model.UploadRequestDTO;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -29,7 +28,7 @@ public interface CephService {
 
     void listMetadata(@RequestParam String objectKey);
 
-    Map<String, String> addMetadata(UploadMetadataDTO metadataDTO, String bucketName, String objectKey);
+    Map<String, String> addMetadata(Map<String,String> metadata, String bucketName, String objectKey);
 
     void listTags(@RequestParam String objectKey);
 
@@ -44,10 +43,7 @@ public interface CephService {
                       @RequestParam String bankName,
                       @RequestParam String accountNo) throws IOException;
 
-    ResponseEntity<List<String>> uploadMultipleFiles(@RequestParam MultipartFile[] files,
-                                     @RequestParam String bucketName,
-                                     @RequestParam String objectKey,
-                                     @RequestParam UploadMetadataDTO metadataDto) throws IOException, ExecutionException, InterruptedException;
+    ResponseEntity<List<String>> uploadMultipleFiles(@RequestParam UploadRequestDTO uploadRequestDTO) throws IOException, ExecutionException, InterruptedException;
 
 //    List<String> uploadFilesToMultiplePrefixes(@RequestPart("accountFilesRequest")AccountFilesRequest accountFilesRequest) throws ExecutionException, InterruptedException, IOException;
 

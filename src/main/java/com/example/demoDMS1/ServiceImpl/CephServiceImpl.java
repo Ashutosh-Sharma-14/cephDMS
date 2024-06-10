@@ -1,9 +1,7 @@
 package com.example.demoDMS1.ServiceImpl;
-import com.amazonaws.services.s3.transfer.Upload;
-import com.example.demoDMS1.Model.UploadMetadataDTO;
+import com.example.demoDMS1.Model.UploadRequestDTO;
 import com.example.demoDMS1.Service.CephService;
 
-import org.apache.poi.ss.formula.functions.T;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
@@ -13,7 +11,6 @@ import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 
-import software.amazon.awssdk.core.Response;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
@@ -39,7 +36,6 @@ import java.util.stream.Collectors;
 
 import static com.example.demoDMS1.Utility.CephMetadataUtils.createHeadObjectRequest;
 import static com.example.demoDMS1.Utility.CephMetadataUtils.printMetadata;
-import static org.springframework.http.client.observation.ClientHttpObservationDocumentation.LowCardinalityKeyNames.STATUS;
 
 @Component
 @ConfigurationProperties(prefix = "ceph")
@@ -258,7 +254,7 @@ public class CephServiceImpl implements CephService {
     }
 
     @Override
-    public Map<String, String> addMetadata(UploadMetadataDTO metadataDTO, String bucketName, String objectKey) {
+    public Map<String, String> addMetadata(Map<String,String> metadata, String bucketName, String objectKey) {
         Map<String, String> updatedMetadata = null;
         try {
             Map<String, String> existingMetadata = null;
@@ -276,9 +272,10 @@ public class CephServiceImpl implements CephService {
                 updatedMetadata.putAll(existingMetadata);
             }
 
-            updatedMetadata.put("Metadata1", metadataDTO.getMetadata1());
-            updatedMetadata.put("Metadata2", metadataDTO.getMetadata2());
-            updatedMetadata.put("Metadata3", metadataDTO.getMetadata3());
+            Set<String> metadataKeys = metadata.keySet();
+            for(String metadataKey: metadataKeys){
+                updatedMetadata.put(metadataKey,metadata.get(metadataKey));
+            }
 
         } catch (NoSuchKeyException e) {
             System.out.println("No key with name: " + objectKey + " present in the specified bucket: " + bucketName);
@@ -395,9 +392,9 @@ public class CephServiceImpl implements CephService {
     }
 
     @Async
-    public CompletableFuture<String> uploadFileAsync(MultipartFile file,String bucketName,String objectKey,UploadMetadataDTO metadataDTO){
+    public CompletableFuture<String> uploadFileAsync(MultipartFile file,String bucketName,String objectKey,Map<String,String> metadata){
         LocalDateTime startTime = LocalDateTime.now();
-        Map<String,String> existingMetadata = addMetadata(metadataDTO,bucketName,objectKey);
+        Map<String,String> existingMetadata = addMetadata(metadata,bucketName,objectKey);
         try {
             ByteBuffer input = ByteBuffer.wrap(file.getBytes());
             PutObjectRequest putObjectRequest = PutObjectRequest.builder()
@@ -437,11 +434,16 @@ public class CephServiceImpl implements CephService {
     }
 
     @Override
-    public ResponseEntity<List<String>> uploadMultipleFiles(MultipartFile[] files,String bucketName, String prefix, UploadMetadataDTO metadataDTO) throws ExecutionException, InterruptedException {
+    public ResponseEntity<List<String>> uploadMultipleFiles(UploadRequestDTO uploadRequestDTO) throws ExecutionException, InterruptedException {
         List<CompletableFuture<String>> fileUploadFutures = new ArrayList<>();
 
+        MultipartFile[] files = uploadRequestDTO.getMultipartFiles();
+        String bucketName = uploadRequestDTO.getBucketName();
+        String objectKey = uploadRequestDTO.getObjectKey();
+        Map<String, String> metadata = uploadRequestDTO.getMetadata();
+
         for (MultipartFile file : files) {
-            fileUploadFutures.add(uploadFileAsync(file,bucketName, prefix,metadataDTO));
+            fileUploadFutures.add(uploadFileAsync(file,bucketName, objectKey,metadata));
         }
 
         CompletableFuture<Void> allOfFileUploadFutures = CompletableFuture.allOf(fileUploadFutures.toArray(new CompletableFuture[0]));

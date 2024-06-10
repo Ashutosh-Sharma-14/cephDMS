@@ -1,8 +1,7 @@
 package com.example.demoDMS1.Controller;
 
-import com.example.demoDMS1.Model.UploadMetadataDTO;
+import com.example.demoDMS1.Model.UploadRequestDTO;
 import com.example.demoDMS1.Service.CephService;
-import org.apache.poi.ss.formula.functions.T;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -73,10 +72,8 @@ public class CephController {
     }
 
     @PostMapping("/upload-multiple-files-to-ceph")
-    public ResponseEntity<List<String>> uploadMultipleFilesToCeph(MultipartFile[] files,
-                                                  String bucketName,
-                                                  String prefix, UploadMetadataDTO metadataDTO) throws ExecutionException, InterruptedException, IOException {
-        return cephService.uploadMultipleFiles(files,bucketName,prefix,metadataDTO);
+    public ResponseEntity<List<String>> uploadMultipleFilesToCeph(UploadRequestDTO uploadRequestDTO) throws ExecutionException, InterruptedException, IOException {
+        return cephService.uploadMultipleFiles(uploadRequestDTO);
     }
 
 //    @PostMapping("/upload-files-by-account")
