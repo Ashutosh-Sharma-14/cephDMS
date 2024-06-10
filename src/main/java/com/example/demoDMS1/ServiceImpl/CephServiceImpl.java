@@ -1,4 +1,6 @@
 package com.example.demoDMS1.ServiceImpl;
+import com.amazonaws.services.s3.transfer.Upload;
+import com.example.demoDMS1.Model.UploadMetadataDTO;
 import com.example.demoDMS1.Service.CephService;
 
 import org.apache.poi.ss.formula.functions.T;
@@ -256,6 +258,39 @@ public class CephServiceImpl implements CephService {
     }
 
     @Override
+    public Map<String, String> addMetadata(UploadMetadataDTO metadataDTO, String bucketName, String objectKey) {
+        Map<String, String> updatedMetadata = null;
+        try {
+            Map<String, String> existingMetadata = null;
+            HeadObjectRequest headObjectRequest = HeadObjectRequest.builder()
+                    .bucket(bucketName)
+                    .key(objectKey)
+                    .build();
+
+            HeadObjectResponse headObjectResponse = s3Client.headObject(headObjectRequest);
+            existingMetadata = headObjectResponse.metadata();
+
+//            merging existing metadata
+            updatedMetadata = new HashMap<>();
+            if (existingMetadata != null) {
+                updatedMetadata.putAll(existingMetadata);
+            }
+
+            updatedMetadata.put("Metadata1", metadataDTO.getMetadata1());
+            updatedMetadata.put("Metadata2", metadataDTO.getMetadata2());
+            updatedMetadata.put("Metadata3", metadataDTO.getMetadata3());
+
+        } catch (NoSuchKeyException e) {
+            System.out.println("No key with name: " + objectKey + " present in the specified bucket: " + bucketName);
+            Throwable cause = e.getCause();
+            if (cause != null) {
+                System.out.println("Reason for exception: " + cause);
+            }
+        }
+        return updatedMetadata;
+    }
+
+    @Override
     public void listTags(String objectKey){
 
         GetObjectTaggingRequest getObjectTaggingRequest = GetObjectTaggingRequest.builder()
@@ -360,43 +395,15 @@ public class CephServiceImpl implements CephService {
     }
 
     @Async
-    public CompletableFuture<String> uploadFileAsync(MultipartFile file, String prefix){
-        String key = prefix  + file.getOriginalFilename();
+    public CompletableFuture<String> uploadFileAsync(MultipartFile file, String objectKey,UploadMetadataDTO metadataDTO){
         LocalDateTime startTime = LocalDateTime.now();
-
+        Map<String,String> existingMetadata = addMetadata(metadataDTO,bucketName,objectKey);
         try {
             ByteBuffer input = ByteBuffer.wrap(file.getBytes());
-
-            Map<String, String> existingMetadata = null;
-            try {
-                HeadObjectRequest headObjectRequest = HeadObjectRequest.builder()
-                        .bucket(bucketName)
-                        .key(key)
-                        .build();
-                HeadObjectResponse headObjectResponse = s3Client.headObject(headObjectRequest);
-                existingMetadata = headObjectResponse.metadata();
-
-            } catch (NoSuchKeyException e) {
-                System.out.println("No key with name: " + key + " present in the specified bucket: " + bucketName);
-                Throwable cause = e.getCause();
-                if(cause != null){
-                    System.out.println("Reason for exception: " + cause);
-                }
-            }
-
-//             Merge existing metadata with new metadata
-            Map<String, String> updatedMetadata = new HashMap<>();
-            if (existingMetadata != null) {
-                updatedMetadata.putAll(existingMetadata);
-            }
-            updatedMetadata.put("author-name", "ashutosh");
-            updatedMetadata.put("file-type", file.getContentType());
-
             PutObjectRequest putObjectRequest = PutObjectRequest.builder()
                             .bucket(bucketName)
-                            .key(key)
-                            .metadata(Map.of(
-                                    "author-age", "24"))
+                            .key(objectKey)
+                            .metadata(existingMetadata)
                             .build();
 
             s3Client.putObject(
@@ -407,7 +414,7 @@ public class CephServiceImpl implements CephService {
             LocalDateTime endTime = LocalDateTime.now();
             GetObjectRequest getObjectRequest = GetObjectRequest.builder()
                     .bucket(bucketName)
-                    .key(key)
+                    .key(objectKey)
                     .build();
 
             GetObjectPresignRequest presignRequest = GetObjectPresignRequest.builder()
@@ -421,7 +428,7 @@ public class CephServiceImpl implements CephService {
 
             return CompletableFuture.completedFuture("Start time: " + startTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")) +
                     ", End time: " + endTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")) +
-                    ", File uploaded successfully to Ceph bucket: " + bucketName + "/" + key +
+                    ", File uploaded successfully to Ceph bucket: " + bucketName + "/" + objectKey +
                     ", Presigned URL: " + presignedUrl.toString());
         } catch (IOException e) {
             e.getMessage();
@@ -430,11 +437,11 @@ public class CephServiceImpl implements CephService {
     }
 
     @Override
-    public List<String> uploadMultipleFiles(MultipartFile[] files, String prefix) throws ExecutionException, InterruptedException {
+    public List<String> uploadMultipleFiles(MultipartFile[] files, String prefix, UploadMetadataDTO metadataDTO) throws ExecutionException, InterruptedException {
         List<CompletableFuture<String>> fileUploadFutures = new ArrayList<>();
 
         for (MultipartFile file : files) {
-            fileUploadFutures.add(uploadFileAsync(file, prefix));
+            fileUploadFutures.add(uploadFileAsync(file, prefix,metadataDTO));
         }
 
         CompletableFuture<Void> allOfFileUploadFutures = CompletableFuture.allOf(fileUploadFutures.toArray(new CompletableFuture[0]));
