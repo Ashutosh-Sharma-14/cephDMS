@@ -1,5 +1,6 @@
 package com.example.demoDMS1.Controller;
 
+import com.example.demoDMS1.Model.DownloadRequestDTO;
 import com.example.demoDMS1.Model.UploadRequestDTO;
 import com.example.demoDMS1.Service.CephService;
 import org.springframework.http.ResponseEntity;
@@ -82,8 +83,8 @@ public class CephController {
 //    }
 
     @GetMapping("/download-file-from-ceph")
-    public String downloadFileFromCeph(String prefix, String versionId) throws IOException {
-        return cephService.downloadFile(prefix,versionId);
+    public String downloadFileFromCeph(DownloadRequestDTO downloadRequestDTO) throws IOException {
+        return cephService.downloadFile(downloadRequestDTO.getBucketName(), downloadRequestDTO.getObjectKey() ,downloadRequestDTO.getVersionId());
     }
 
     @GetMapping("/download-multiple-files-from-ceph")

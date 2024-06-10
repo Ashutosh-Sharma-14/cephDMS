@@ -391,6 +391,20 @@ public class CephServiceImpl implements CephService {
         return "file uploaded successfully to ceph bucket:" + bucketName + "/" + key + "/n";
     }
 
+    public URL createUrl(String bucketName,String objectKey){
+        GetObjectRequest getObjectRequest = GetObjectRequest.builder()
+                .bucket(bucketName)
+                .key(objectKey)
+                .build();
+
+        GetObjectPresignRequest presignRequest = GetObjectPresignRequest.builder()
+                .signatureDuration(Duration.ofMinutes(10))
+                .getObjectRequest(getObjectRequest)
+                .build();
+
+        return s3Presigner.presignGetObject(presignRequest).url();
+    }
+
     @Async
     public CompletableFuture<String> uploadFileAsync(MultipartFile file,String bucketName,String objectKey,Map<String,String> metadata){
         LocalDateTime startTime = LocalDateTime.now();
@@ -409,19 +423,7 @@ public class CephServiceImpl implements CephService {
             );
 
             LocalDateTime endTime = LocalDateTime.now();
-            GetObjectRequest getObjectRequest = GetObjectRequest.builder()
-                    .bucket(bucketName)
-                    .key(objectKey)
-                    .build();
-
-            GetObjectPresignRequest presignRequest = GetObjectPresignRequest.builder()
-                    .signatureDuration(Duration.ofMinutes(10))
-                    .getObjectRequest(getObjectRequest)
-                    .build();
-
-            PresignedGetObjectRequest presignedRequest = s3Presigner.presignGetObject(presignRequest);
-
-            URL presignedUrl = presignedRequest.url();
+            URL presignedUrl = createUrl(bucketName,objectKey);
 
             return CompletableFuture.completedFuture("Start time: " + startTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")) +
                     ", End time: " + endTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")) +
@@ -499,10 +501,8 @@ public class CephServiceImpl implements CephService {
 //    }
 
     @Override
-    public String downloadFile(String prefix, String versionId) {
-//        String key = fileYear + "/" + bankName + "/" + accountNo + "/" + fileName;
+    public String downloadFile(String bucketName, String objectKey, String versionId) {
         String downloadPath = System.getProperty("user.home") + "/Downloads";
-//        System.out.println(fileName);
 
         File downloadDir = new File(System.getProperty("user.home") + "/Downloads");
         if (!downloadDir.exists()) {
@@ -511,9 +511,10 @@ public class CephServiceImpl implements CephService {
 
         try{
 //            check if buffering option is available for downloading large files
+//            Answer: The buffering is internally managed by S3Client, but if customization is required we need to use get the inputStream and buffer manually
             s3Client.getObject(
 //                    lambda expression. Curly brackets can be removed in case of single statement
-                    req -> req.bucket(bucketName).key(prefix).versionId(versionId),
+                    req -> req.bucket(bucketName).key(objectKey).versionId(versionId),
                     Paths.get(downloadPath)
             );
         }
@@ -526,7 +527,7 @@ public class CephServiceImpl implements CephService {
             return "file not downloaded";
         }
 
-        return "file successfully downloaded at: home/Desktop/" + prefix;
+        return "file successfully downloaded at: home/Downloads/";
     }
 
     @Async

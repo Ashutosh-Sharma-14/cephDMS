@@ -3,16 +3,12 @@ package com.example.demoDMS1.Model;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.util.Map;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class UploadRequestDTO {
-    MultipartFile[] multipartFiles;
+public class DownloadRequestDTO {
     String bucketName;
     String objectKey;
-    Map<String, String> metadata;
+    String versionId;
 }

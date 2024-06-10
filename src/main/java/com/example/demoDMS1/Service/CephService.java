@@ -47,8 +47,8 @@ public interface CephService {
 
 //    List<String> uploadFilesToMultiplePrefixes(@RequestPart("accountFilesRequest")AccountFilesRequest accountFilesRequest) throws ExecutionException, InterruptedException, IOException;
 
-    String downloadFile(@RequestParam String prefix,
-    @RequestParam String versionId) throws IOException;
+    String downloadFile(String bucketName, String objectKey,
+    String versionId) throws IOException;
 
     List<String> downloadMultipleFiles(@RequestParam String prefix) throws IOException, ExecutionException,InterruptedException;
 }
