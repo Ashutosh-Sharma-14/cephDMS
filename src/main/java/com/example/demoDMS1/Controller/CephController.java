@@ -38,42 +38,42 @@ public class CephController {
     }
 
     @GetMapping("/list-objects")
-    public ResponseEntity<List<String>> listObjects(String bucketName, String prefix){
+    public ResponseEntity<List<String>> listObjects(@RequestParam String bucketName,@RequestParam  String prefix){
         return cephService.listObjects(bucketName, prefix);
     }
 
     @GetMapping("/list-objects-paginated")
-    public ResponseEntity<Map<String, Object>> listPaginatedObjects(String bucketName, String prefix, int maxKeys, String continuationToken){
+    public ResponseEntity<Map<String, Object>> listPaginatedObjects(@RequestParam String bucketName, @RequestParam String prefix, @RequestParam int maxKeys, @RequestParam String continuationToken){
         return cephService.listPaginatedObjects(bucketName,prefix,maxKeys,continuationToken);
     }
 
     @GetMapping("/list-metadata")
-    public void listMetadata(String objectKey){
+    public void listMetadata(@RequestParam String objectKey){
         cephService.listMetadata(objectKey);
     }
 
     @GetMapping("/list-tags")
-    public void listTags(String objectKey){
+    public void listTags(@RequestParam String objectKey){
         cephService.listTags(objectKey);
     }
 
     @PostMapping("/add-tag-to-object")
-    public String addTagToObject(String objectKey, String tagKey, String tagValue){
+    public String addTagToObject(@RequestParam String objectKey, @RequestParam String tagKey, @RequestParam String tagValue){
         return cephService.addTagToObject(objectKey, tagKey,tagValue);
     }
 
     @DeleteMapping("/delete-object")
-    public void deleteObject(String bucketName, String objectKey){
+    public void deleteObject(@RequestParam String bucketName,@RequestParam String objectKey){
         cephService.deleteObject(bucketName,objectKey);
     }
 
     @PostMapping("/upload-file-to-ceph")
-    public String uploadFileToCeph(MultipartFile file, String fileYear, String bankName, String accountNo) throws IOException {
+    public String uploadFileToCeph(@RequestParam MultipartFile file, @RequestParam String fileYear, @RequestParam String bankName, @RequestParam String accountNo) throws IOException {
         return cephService.uploadFile(file,fileYear,bankName,accountNo);
     }
 
     @PostMapping("/upload-multiple-files-to-ceph")
-    public ResponseEntity<List<String>> uploadMultipleFilesToCeph(UploadRequestDTO uploadRequestDTO) throws ExecutionException, InterruptedException, IOException {
+    public ResponseEntity<List<String>> uploadMultipleFilesToCeph(@RequestPart UploadRequestDTO uploadRequestDTO) throws ExecutionException, InterruptedException, IOException {
         return cephService.uploadMultipleFiles(uploadRequestDTO);
     }
 
@@ -83,12 +83,12 @@ public class CephController {
 //    }
 
     @GetMapping("/download-file-from-ceph")
-    public String downloadFileFromCeph(DownloadRequestDTO downloadRequestDTO) throws IOException {
+    public String downloadFileFromCeph(@RequestBody DownloadRequestDTO downloadRequestDTO) throws IOException {
         return cephService.downloadFile(downloadRequestDTO.getBucketName(), downloadRequestDTO.getObjectKey() ,downloadRequestDTO.getVersionId());
     }
 
     @GetMapping("/download-multiple-files-from-ceph")
-    public List<String> downloadMultipleFilesFromCeph(String prefix) throws IOException, ExecutionException, InterruptedException {
+    public List<String> downloadMultipleFilesFromCeph(@RequestParam String prefix) throws IOException, ExecutionException, InterruptedException {
         return cephService.downloadMultipleFiles(prefix);
     }
 }

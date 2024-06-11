@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class DownloadRequestDTO {
-    String bucketName;
-    String objectKey;
-    String versionId;
+    private String bucketName;
+    private String objectKey;
+    private String versionId;
 }

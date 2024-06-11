@@ -3,11 +3,7 @@ package com.example.demoDMS1.Service;
 import com.example.demoDMS1.Model.UploadRequestDTO;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
-//import software.amazon.awssdk.services.s3.model.ListObjectVersionsResponse;
-//import software.amazon.awssdk.services.s3.model.S3Object;
-//import software.amazon.awssdk.services.s3.model.Tag;
 
 import java.io.IOException;
 import java.util.List;
@@ -16,39 +12,39 @@ import java.util.concurrent.ExecutionException;
 
 @Service
 public interface CephService {
-    String enableVersioning(@RequestParam String bucketName);
+    String enableVersioning(String bucketName);
 
-    List<String> listVersionOfObject(@RequestParam String bucketName, @RequestParam String objectKey);
+    List<String> listVersionOfObject(String bucketName, String objectKey);
 
     ResponseEntity<?> listBuckets();
 
-    ResponseEntity<List<String>> listObjects(@RequestParam String bucketName, @RequestParam String prefix);
+    ResponseEntity<List<String>> listObjects(String bucketName, String prefix);
 
-    ResponseEntity<Map<String,Object>> listPaginatedObjects(@RequestParam String bucketName, @RequestParam String prefix, @RequestParam int maxKeys, @RequestParam String continuationToken);
+    ResponseEntity<Map<String,Object>> listPaginatedObjects(String bucketName, String prefix,int maxKeys,String continuationToken);
 
-    void listMetadata(@RequestParam String objectKey);
+    void listMetadata(String objectKey);
 
     Map<String, String> addMetadata(Map<String,String> metadata, String bucketName, String objectKey);
 
-    void listTags(@RequestParam String objectKey);
+    void listTags(String objectKey);
 
 //    void searchWithTags(@RequestParam String tagKey, @RequestParam String tagValue);
 
-    String addTagToObject(@RequestParam String objectKey, @RequestParam String tagKey, @RequestParam String tagValue);
+    String addTagToObject(String objectKey,String tagKey,String tagValue);
 
-    void deleteObject(@RequestParam String bucketName,@RequestParam String objectKey);
+    void deleteObject(String bucketName,String objectKey);
 
-    String uploadFile(@RequestParam MultipartFile file,
-                      @RequestParam String fileYear,
-                      @RequestParam String bankName,
-                      @RequestParam String accountNo) throws IOException;
+    String uploadFile(MultipartFile file,
+                      String fileYear,
+                      String bankName,
+                      String accountNo) throws IOException;
 
-    ResponseEntity<List<String>> uploadMultipleFiles(@RequestParam UploadRequestDTO uploadRequestDTO) throws IOException, ExecutionException, InterruptedException;
+    ResponseEntity<List<String>> uploadMultipleFiles(UploadRequestDTO uploadRequestDTO) throws IOException, ExecutionException, InterruptedException;
 
 //    List<String> uploadFilesToMultiplePrefixes(@RequestPart("accountFilesRequest")AccountFilesRequest accountFilesRequest) throws ExecutionException, InterruptedException, IOException;
 
     String downloadFile(String bucketName, String objectKey,
     String versionId) throws IOException;
 
-    List<String> downloadMultipleFiles(@RequestParam String prefix) throws IOException, ExecutionException,InterruptedException;
+    List<String> downloadMultipleFiles(String prefix) throws IOException, ExecutionException,InterruptedException;
 }
