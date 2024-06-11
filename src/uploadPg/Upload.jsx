@@ -2,9 +2,19 @@ import Navbar from "../navbar/Navbar";
 import Sidebar from "../sidebar/Sidebar";
 import UploadCard from "../smallCompontes/uploadCard/UploadCard";
 import '../uploadPg/upload.css'
+import { useState } from "react";
 
 
 const Upload = () =>{
+
+    
+  const [cards, setCards] = useState([<UploadCard key={0} />]);
+
+
+    const handCardButton = () =>{
+        setCards([...cards, <UploadCard key={cards.length} />]);
+    }
+
     return <div className="upload">
     <div className="navbar">
         <Navbar />
@@ -38,6 +48,13 @@ const Upload = () =>{
 
             </div>
 
+            <div className="addCard">
+                <button type="button"
+                    class="px-5 py-2.5 rounded-lg text-sm tracking-wider font-medium border border-current outline-none bg-blue-700 hover:bg-transparent text-white hover:text-blue-700 transition-all duration-300" onClick={handCardButton}>
+                        Add Card
+                </button>
+            </div>
+
             {/* upload button */}
             <button type="button"
                 class="px-5 py-2.5 rounded-lg text-sm tracking-wider font-medium border border-current outline-none bg-green-700 hover:bg-transparent text-white hover:text-green-700 transition-all duration-300">
@@ -45,16 +62,7 @@ const Upload = () =>{
             </button>
             </div>
             <div className="mainUploadPg">
-                <UploadCard />
-                <UploadCard />
-                <UploadCard />
-                <UploadCard />
-                <UploadCard />
-                <UploadCard />
-                <UploadCard />
-                <UploadCard />
-                <UploadCard />
-                <UploadCard />
+                {cards}
             </div>
         </div>
     </div>
