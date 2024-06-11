@@ -6,24 +6,10 @@ import './uploadCard.css'
 const UploadCard = () =>{
 
     const [metadata, setMetadata] = useState(false);
-    return <div className='uploadCard' style={{height:metadata?"58vh" : "40vh"}}>
+    return <div className='uploadCard' style={{height:metadata?"35vh" : "18vh"}}>
         <div className="key">
-                <h4 className="keyName">
-                    Enter Details
-                </h4>
                 {/* input fields */}
-                    <div>
-                        <input type='text' placeholder='Year'
-                        class="px-4 py-1.5 text-sm rounded-md bg-white border border-gray-400 w-full outline-blue-500" />
-                    </div>
-                    <div>
-                        <input type='text' placeholder='Bank Name'
-                        class="px-4 py-1.5 text-sm rounded-md bg-white border border-gray-400 w-full outline-blue-500" />
-                    </div>
-                    <div>
-                        <input type='text' placeholder='Account Number'
-                        class="px-4 py-1.5 text-sm rounded-md bg-white border border-gray-400 w-full outline-blue-500" />
-                    </div>
+                    
 
                     {/* File Input */}
                     <label for="uploadFile1"
