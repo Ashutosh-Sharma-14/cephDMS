@@ -3,8 +3,9 @@ import './uploadCard.css'
 
 
 const UploadCard = () =>{
+    // take bracket name throught sweetAlert
     return <div className='uploadCard'>
-        card
+        j
     </div>
 }
 

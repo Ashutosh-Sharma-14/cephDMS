@@ -5,7 +5,7 @@
 }
 
 .navbar{
-    flex: 0.05;
+    flex: 0.1;
     
 }
     
@@ -13,15 +13,32 @@
     display: flex;
     width: 100%;
     height: 89vh;
+    flex: 0.9;
 }
 
 .sidebar{
-    flex:0.1;
+    flex:0.2;
+}
+
+.cardWrapper{
+
+    height: cal(90vh + 30px);
+    flex: 0.8;
+    border: 2px solid red;
+    /* margin-top: 500px; */
+    
+}
+
+.uploadBtn{
+    height: 8vh;
+    border: 2px solid black;
+    display: flex;
+    justify-content:end;
+    align-items:flex-end;
+    flex-direction: row;
 }
 
 .mainUploadPg{
-    height: 92.5vh;
-    flex: 0.9;
     /* background-color: aqua; */
     display: flex;
     justify-content: center;
