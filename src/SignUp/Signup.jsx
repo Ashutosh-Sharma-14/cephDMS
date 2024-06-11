@@ -6,7 +6,7 @@ const Signup = () =>{
     <div class="flex flex-col justify-center font-[sans-serif] text-[#333] sm:h-screen p-4">
       <div class="max-w-md w-full mx-auto border border-gray-300 rounded-md p-6">
         <div class="text-center mb-12">
-          <a href="javascript:void(0)"><img
+          <a href="/"><img
             src="https://readymadeui.com/readymadeui.svg" alt="logo" class='w-40 inline-block' />
           </a>
         </div>
@@ -27,7 +27,7 @@ const Signup = () =>{
             <div class="flex items-center">
               <input id="remember-me" name="remember-me" type="checkbox" class="h-4 w-4 shrink-0 text-blue-600 focus:ring-blue-500 border-gray-300 rounded" />
               <label for="remember-me" class="ml-3 block text-sm">
-                I accept the <a href="javascript:void(0);" class="text-blue-600 font-semibold hover:underline ml-1">Terms and Conditions</a>
+                I accept the <a href="/" class="text-blue-600 font-semibold hover:underline ml-1">Terms and Conditions</a>
               </label>
             </div>
           </div>
