@@ -12,6 +12,14 @@ const Signup = () =>{
         </div>
         <form>
           <div class="space-y-6">
+          <div>
+              <label class="text-sm mb-2 block">User name</label>
+              <input name="text" type="text" class="bg-white border border-gray-300 w-full text-sm px-4 py-3 rounded-md outline-blue-500" placeholder="Enter username" />
+            </div>
+            <div>
+              <label class="text-sm mb-2 block">User Role</label>
+              <input name="text" type="text" class="bg-white border border-gray-300 w-full text-sm px-4 py-3 rounded-md outline-blue-500" placeholder="Enter user role" />
+            </div>
             <div>
               <label class="text-sm mb-2 block">Email Id</label>
               <input name="email" type="text" class="bg-white border border-gray-300 w-full text-sm px-4 py-3 rounded-md outline-blue-500" placeholder="Enter email" />
