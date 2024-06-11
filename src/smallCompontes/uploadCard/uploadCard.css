@@ -1,7 +1,98 @@
 .uploadCard{
     height: 40vh;
     width: 30%;
-    /* border: 2px solid red; */
+    /* border: 1px solid red; */
     
 }
 
+.uploadCard {
+    background-color: #f9f9f9;
+    border-radius: 10px;
+    padding: 20px;
+    max-width: 400px;
+    margin: 20px auto;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    font-family: 'Arial, sans-serif';
+  }
+  
+  .keyName {
+    font-size: 18px;
+    margin-bottom: 10px;
+    color: #333;
+  }
+  
+  .uploadCard input[type="text"] {
+    display: block;
+    margin-bottom: 15px;
+    padding: 10px;
+    font-size: 14px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    width: 100%;
+  }
+  
+  .uploadCard input[type="text"]:focus {
+    border-color: #007bff;
+    outline: none;
+  }
+  
+  .uploadCard label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #007bff;
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-bottom: 15px;
+    transition: background-color 0.3s ease;
+  }
+  
+  .uploadCard label:hover {
+    background-color: #0056b3;
+  }
+  
+  .uploadCard label svg {
+    margin-right: 10px;
+  }
+  
+  .uploadCard input[type="file"] {
+    display: none;
+  }
+  
+  .uploadCard button {
+    display: inline-block;
+    margin: 15px 0;
+    padding: 10px 20px;
+    background-color: #6f42c1;
+    color: #fff;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .uploadCard button:hover {
+    background-color: #5936a8;
+  }
+  
+  .metadata {
+    margin-top: 20px;
+  }
+  
+  .metadata input[type="text"] {
+    display: block;
+    margin-bottom: 15px;
+    padding: 10px;
+    font-size: 14px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    width: 100%;
+  }
+  
+  .metadata input[type="text"]:focus {
+    border-color: #007bff;
+    outline: none;
+  }
+  

@@ -32,20 +32,21 @@ const Upload = () =>{
                 <span
                     className="absolute start-0 top-2 -translate-y-1/2 text-xs text-gray-700 transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-sm peer-focus:top-2 peer-focus:text-xs"
                 >
-                    Email
+                    Bucket Name
                 </span>
                 </label>
 
+            </div>
 
             {/* upload button */}
             <button type="button"
                 class="px-5 py-2.5 rounded-lg text-sm tracking-wider font-medium border border-current outline-none bg-green-700 hover:bg-transparent text-white hover:text-green-700 transition-all duration-300">
-                    Green
+                    Upload Files
             </button>
-            </div>
             </div>
             <div className="mainUploadPg">
                 <UploadCard />
+                {/* <UploadCard />
                 <UploadCard />
                 <UploadCard />
                 <UploadCard />
@@ -53,8 +54,7 @@ const Upload = () =>{
                 <UploadCard />
                 <UploadCard />
                 <UploadCard />
-                <UploadCard />
-                <UploadCard />
+                <UploadCard /> */}
             </div>
         </div>
     </div>

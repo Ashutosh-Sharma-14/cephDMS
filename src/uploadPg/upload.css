@@ -24,18 +24,20 @@
 
     height: cal(90vh + 30px);
     flex: 0.8;
-    border: 2px solid red;
+    /* border: 2px solid red; */
     /* margin-top: 500px; */
     
 }
 
 .uploadBtn{
     height: 8vh;
-    border: 2px solid black;
+    /* border: 2px solid black; */
     display: flex;
-    justify-content:end;
-    align-items:flex-end;
+    align-items: center;
+    justify-content: space-between;
     flex-direction: row;
+    padding: 0 5%;
+    border-bottom: 1px solid rgba(128, 128, 128, 0.199);
 }
 
 .mainUploadPg{
