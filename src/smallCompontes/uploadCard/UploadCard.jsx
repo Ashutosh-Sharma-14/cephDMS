@@ -6,7 +6,7 @@ import './uploadCard.css'
 const UploadCard = () =>{
 
     const [metadata, setMetadata] = useState(false);
-    return <div className='uploadCard'>
+    return <div className='uploadCard' style={{height:metadata?"58vh" : "40vh"}}>
         <div className="key">
                 <h4 className="keyName">
                     Enter Details

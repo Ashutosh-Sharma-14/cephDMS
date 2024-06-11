@@ -46,7 +46,6 @@ const Upload = () =>{
             </div>
             <div className="mainUploadPg">
                 <UploadCard />
-                {/* <UploadCard />
                 <UploadCard />
                 <UploadCard />
                 <UploadCard />
@@ -54,7 +53,8 @@ const Upload = () =>{
                 <UploadCard />
                 <UploadCard />
                 <UploadCard />
-                <UploadCard /> */}
+                <UploadCard />
+                <UploadCard />
             </div>
         </div>
     </div>
