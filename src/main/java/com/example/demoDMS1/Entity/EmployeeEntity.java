@@ -7,14 +7,12 @@ import lombok.Data;
 
 @Entity
 @Data
-@Table(name="employees")
+@Table(name="user-table")
 public class EmployeeEntity {
 
     @Id
-    private String employeeId;
-
-    private String employeeName;
-    private String employeeRole;
-    private String employeeEmail;
-    private String employeePassword;
+    private String userId;
+    private String userRole;
+    private String userEmail;
+    private String userPassword;
 }

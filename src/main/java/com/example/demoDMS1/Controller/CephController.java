@@ -1,5 +1,6 @@
 package com.example.demoDMS1.Controller;
 
+import com.example.demoDMS1.Model.CommonResponseDTO;
 import com.example.demoDMS1.Model.DownloadRequestDTO;
 import com.example.demoDMS1.Model.UploadRequestDTO;
 import com.example.demoDMS1.Service.CephService;
@@ -73,7 +74,11 @@ public class CephController {
     }
 
     @PostMapping("/upload-multiple-files-to-ceph")
-    public ResponseEntity<List<String>> uploadMultipleFilesToCeph(@RequestPart UploadRequestDTO uploadRequestDTO) throws ExecutionException, InterruptedException, IOException {
+    public ResponseEntity<CommonResponseDTO<?>> uploadMultipleFilesToCeph(@RequestPart MultipartFile[] files,
+                                                                       @RequestPart String bucketName,
+                                                                       @RequestPart String objectKey,
+                                                                       @RequestPart @RequestBody Map<String,String> metadata) throws ExecutionException, InterruptedException, IOException {
+        UploadRequestDTO uploadRequestDTO = new UploadRequestDTO(files,bucketName,objectKey,metadata);
         return cephService.uploadMultipleFiles(uploadRequestDTO);
     }
 
@@ -83,8 +88,8 @@ public class CephController {
 //    }
 
     @GetMapping("/download-file-from-ceph")
-    public String downloadFileFromCeph(@RequestBody DownloadRequestDTO downloadRequestDTO) throws IOException {
-        return cephService.downloadFile(downloadRequestDTO.getBucketName(), downloadRequestDTO.getObjectKey() ,downloadRequestDTO.getVersionId());
+    public ResponseEntity<CommonResponseDTO<?>> downloadFileFromCeph(@RequestBody DownloadRequestDTO downloadRequestDTO) throws IOException {
+        return cephService.downloadFile(downloadRequestDTO);
     }
 
     @GetMapping("/download-multiple-files-from-ceph")

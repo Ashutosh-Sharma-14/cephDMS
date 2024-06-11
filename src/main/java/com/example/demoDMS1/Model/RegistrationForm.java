@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class RegistrationForm {
-    private String employeeId;
+    private String userId;
     private String employeeName;
     private String employeeRole;
     private String employeeEmail;

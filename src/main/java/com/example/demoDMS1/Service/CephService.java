@@ -1,9 +1,12 @@
 package com.example.demoDMS1.Service;
 
+import com.example.demoDMS1.Model.CommonResponseDTO;
+import com.example.demoDMS1.Model.DownloadRequestDTO;
 import com.example.demoDMS1.Model.UploadRequestDTO;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import software.amazon.awssdk.core.Response;
 
 import java.io.IOException;
 import java.util.List;
@@ -22,7 +25,7 @@ public interface CephService {
 
     ResponseEntity<Map<String,Object>> listPaginatedObjects(String bucketName, String prefix,int maxKeys,String continuationToken);
 
-    void listMetadata(String objectKey);
+    ResponseEntity<Map<String,String>> listMetadata(String objectKey);
 
     Map<String, String> addMetadata(Map<String,String> metadata, String bucketName, String objectKey);
 
@@ -39,12 +42,11 @@ public interface CephService {
                       String bankName,
                       String accountNo) throws IOException;
 
-    ResponseEntity<List<String>> uploadMultipleFiles(UploadRequestDTO uploadRequestDTO) throws IOException, ExecutionException, InterruptedException;
+    ResponseEntity<CommonResponseDTO<?>> uploadMultipleFiles(UploadRequestDTO uploadRequestDTO) throws IOException, ExecutionException, InterruptedException;
 
 //    List<String> uploadFilesToMultiplePrefixes(@RequestPart("accountFilesRequest")AccountFilesRequest accountFilesRequest) throws ExecutionException, InterruptedException, IOException;
 
-    String downloadFile(String bucketName, String objectKey,
-    String versionId) throws IOException;
+    ResponseEntity<CommonResponseDTO<?>> downloadFile(DownloadRequestDTO downloadRequestDTO) throws IOException;
 
     List<String> downloadMultipleFiles(String prefix) throws IOException, ExecutionException,InterruptedException;
 }

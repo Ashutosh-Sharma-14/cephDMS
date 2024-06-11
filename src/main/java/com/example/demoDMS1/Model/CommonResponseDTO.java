@@ -12,6 +12,6 @@ import java.time.LocalDateTime;
 public class CommonResponseDTO<T> {
     private int statusCode;
     private String responseMessage;
-    private LocalDateTime timestamp;
+    private String timestamp;
     private T data;
 }

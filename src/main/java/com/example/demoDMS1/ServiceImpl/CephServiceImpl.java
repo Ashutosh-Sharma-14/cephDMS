@@ -1,8 +1,13 @@
 package com.example.demoDMS1.ServiceImpl;
+import com.example.demoDMS1.Model.CommonResponseDTO;
+import com.example.demoDMS1.Model.DownloadRequestDTO;
 import com.example.demoDMS1.Model.UploadRequestDTO;
 import com.example.demoDMS1.Service.CephService;
 
+import com.example.demoDMS1.Utility.ResponseBuilder;
+import org.joda.time.DateTime;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
@@ -18,7 +23,6 @@ import software.amazon.awssdk.services.s3.S3Configuration;
 import software.amazon.awssdk.services.s3.model.*;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest;
-import software.amazon.awssdk.services.s3.presigner.model.PresignedGetObjectRequest;
 
 import java.io.*;
 import java.net.URI;
@@ -227,9 +231,9 @@ public class CephServiceImpl implements CephService {
         return ResponseEntity.ok(result);
     }
 
-
     @Override
-    public void listMetadata(String objectKey) {
+    public ResponseEntity<Map<String,String>> listMetadata(String objectKey) {
+        Map<String,String> metadata = new HashMap<>();
         HeadObjectRequest headObjectRequest = HeadObjectRequest.builder()
                 .bucket(bucketName)
                 .key(objectKey)
@@ -240,17 +244,32 @@ public class CephServiceImpl implements CephService {
         if (headObjectResponse != null) {
             // Retrieve and print object metadata
             System.out.println("Object Metadata:");
-            headObjectResponse.metadata().forEach((key, value) -> System.out.println(key + ": " + value));
-            System.out.println("System-Generated Metadata:");
-            System.out.println("Content-Type: " + headObjectResponse.contentType());
-            System.out.println("Content-Length: " + headObjectResponse.contentLength());
-            System.out.println("Last-Modified: " + headObjectResponse.lastModified());
-            System.out.println("Version id: " + headObjectResponse.versionId());
-            System.out.println("ETag: " + headObjectResponse.eTag());
-//            System.out.println("Delete marker: " + headObjectResponse.deleteMarker());
+            headObjectResponse.metadata().forEach((key, value) -> {
+                System.out.println(key + ": " + value);
+                metadata.put(key,value);
+            });
         } else {
             System.out.println("Failed to retrieve object metadata.");
         }
+        System.out.println("System-Generated Metadata:");
+
+//        make sure to add proper exception handling here.
+        assert headObjectResponse != null;
+        System.out.println("Content-Type: " + headObjectResponse.contentType());
+        metadata.put("content-type",headObjectResponse.contentType());
+
+        System.out.println("Content-Length: " + headObjectResponse.contentLength());
+        metadata.put("content-length", String.valueOf(headObjectResponse.contentLength()));
+
+        System.out.println("Last-Modified: " + headObjectResponse.lastModified());
+        metadata.put("last-modified", String.valueOf(headObjectResponse.lastModified()));
+
+        System.out.println("Version id: " + headObjectResponse.versionId());
+        metadata.put("version-id",headObjectResponse.versionId());
+
+        System.out.println("ETag: " + headObjectResponse.eTag());
+        metadata.put("e-tag",headObjectResponse.eTag());
+        return ResponseEntity.ok().body(metadata);
     }
 
     @Override
@@ -436,7 +455,7 @@ public class CephServiceImpl implements CephService {
     }
 
     @Override
-    public ResponseEntity<List<String>> uploadMultipleFiles(UploadRequestDTO uploadRequestDTO) throws ExecutionException, InterruptedException {
+    public ResponseEntity<CommonResponseDTO<?>> uploadMultipleFiles(UploadRequestDTO uploadRequestDTO) throws ExecutionException, InterruptedException {
         List<CompletableFuture<String>> fileUploadFutures = new ArrayList<>();
 
         MultipartFile[] files = uploadRequestDTO.getMultipartFiles();
@@ -462,7 +481,8 @@ public class CephServiceImpl implements CephService {
                 fileUploadResults.add(e.getMessage());
             }
         }
-        return ResponseEntity.ok().body(fileUploadResults);
+        CommonResponseDTO<?> commonResponseDTO = ResponseBuilder.buildUploadResponse(200,"file uploaded successfully",LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")),fileUploadResults);
+        return ResponseEntity.ok().body(commonResponseDTO);
     }
 
 //    this method does not work
@@ -501,10 +521,10 @@ public class CephServiceImpl implements CephService {
 //    }
 
     @Override
-    public String downloadFile(String bucketName, String objectKey, String versionId) {
+    public ResponseEntity<CommonResponseDTO<?>> downloadFile(DownloadRequestDTO downloadRequestDTO) {
         String downloadPath = System.getProperty("user.home") + "/Downloads";
 
-        File downloadDir = new File(System.getProperty("user.home") + "/Downloads");
+        File downloadDir = new File(downloadPath);
         if (!downloadDir.exists()) {
             downloadDir.mkdirs();
         }
@@ -514,7 +534,7 @@ public class CephServiceImpl implements CephService {
 //            Answer: The buffering is internally managed by S3Client, but if customization is required we need to use get the inputStream and buffer manually
             s3Client.getObject(
 //                    lambda expression. Curly brackets can be removed in case of single statement
-                    req -> req.bucket(bucketName).key(objectKey).versionId(versionId),
+                    req -> req.bucket(downloadRequestDTO.getBucketName()).key(downloadRequestDTO.getObjectKey()).versionId(downloadRequestDTO.getVersionId()),
                     Paths.get(downloadPath)
             );
         }
@@ -523,11 +543,12 @@ public class CephServiceImpl implements CephService {
         }
         File downloadedFile = new File(downloadPath);
         if(downloadedFile.length() == 0){
-            System.out.println("checking condition");
-            return "file not downloaded";
+            System.out.println("Checking if download is successfull");
+            CommonResponseDTO<?> commonResponseDTO = ResponseBuilder.buildDownloadResponse(501,"File not downloaded at "+ downloadPath,LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+            return new ResponseEntity<>(commonResponseDTO, HttpStatus.valueOf(501));
         }
-
-        return "file successfully downloaded at: home/Downloads/";
+        CommonResponseDTO<?> commonResponseDTO = ResponseBuilder.buildDownloadResponse(200,"File downloaded successfully", LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+        return ResponseEntity.ok().body(commonResponseDTO);
     }
 
     @Async
