@@ -5,10 +5,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
-public class RegistrationForm {
-    private String userRole;
-    private String userEmail;
-    private String userPassword;
+@NoArgsConstructor
+public class RegistrationResponseDTO {
+    private boolean isRegistrationSuccessful;
 }

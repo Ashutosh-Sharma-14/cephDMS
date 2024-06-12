@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 
 @Service("employeeService")
 public interface UserService {
-    ResponseEntity<?> registerEmployee(RegistrationForm registrationForm);
-    ResponseEntity<?> authenticateEmployee(LoginForm loginForm);
-    boolean checkIfEmployeeExists(String employeeEmail);
+    ResponseEntity<?> registerUser(RegistrationForm registrationForm);
+    ResponseEntity<?> authenticateUser(LoginForm loginForm);
+    boolean checkIfUserExists(String employeeEmail);
 }

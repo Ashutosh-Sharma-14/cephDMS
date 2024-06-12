@@ -17,11 +17,11 @@ public class UserController {
     @PostMapping("/register")
     public ResponseEntity<?> registerEmployee(@RequestBody RegistrationForm registrationForm){
         System.out.println(registrationForm);
-        return employeeService.registerEmployee(registrationForm);
+        return employeeService.registerUser(registrationForm);
     }
 
     @PostMapping("/login")
     public ResponseEntity<?> loginEmployee(@RequestBody LoginForm loginForm){
-        return employeeService.authenticateEmployee(loginForm);
+        return employeeService.authenticateUser(loginForm);
     }
 }

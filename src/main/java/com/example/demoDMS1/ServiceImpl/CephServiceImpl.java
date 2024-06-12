@@ -458,11 +458,11 @@ public class CephServiceImpl implements CephService {
 
         MultipartFile[] files = uploadRequestDTO.getMultipartFiles();
         String bucketName = uploadRequestDTO.getBucketName();
-        String objectKey = uploadRequestDTO.getObjectKey();
         List<Map<String, String>> metadataList = uploadRequestDTO.getMetadata();
 
         for (int i = 0; i < files.length; i++) {
             Map<String,String> metadata = metadataList.get(i);
+            String objectKey = uploadRequestDTO.getObjectKey() + files[i].getOriginalFilename();
             fileUploadFutures.add(uploadFileAsync(files[i],bucketName, objectKey,metadata));
         }
 

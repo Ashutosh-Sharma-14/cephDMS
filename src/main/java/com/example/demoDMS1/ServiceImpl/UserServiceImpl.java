@@ -4,6 +4,7 @@ import com.example.demoDMS1.Entity.UserEntity;
 import com.example.demoDMS1.Model.LoginForm;
 import com.example.demoDMS1.Model.RegistrationForm;
 import com.example.demoDMS1.Repository.UserRepository;
+import com.example.demoDMS1.Service.UserRoleService;
 import com.example.demoDMS1.Service.UserService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,50 +16,58 @@ import org.springframework.stereotype.Component;
 public class UserServiceImpl implements UserService {
 
 //    injecting bean of class which extends to JpaRepository
-    @Autowired
-UserRepository userRepository;
 
-//    injecting bean of PasswordEncoder class which is defined in SecurityConfig
     @Autowired
-    PasswordEncoder passwordEncoder;
+    private UserRepository userRepository;
+
+    @Autowired
+    private UserRoleService userRoleService;
+
+    // Injecting bean of PasswordEncoder class which is defined in SecurityConfig
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Override
-    public ResponseEntity<?> registerEmployee(RegistrationForm registrationForm) {
-        UserEntity employeeEntity = new UserEntity();
-
-//        encoding the password
-        String encodedPassword = passwordEncoder.encode(registrationForm.getEmployeePassword());
-        registrationForm.setEmployeePassword(encodedPassword);
-
-        if(!checkIfEmployeeExists(registrationForm.getEmployeeEmail())){
-            BeanUtils.copyProperties(registrationForm,employeeEntity);
-            userRepository.save(employeeEntity);
-            return ResponseEntity.ok().body(true);
+    public ResponseEntity<?> registerUser(RegistrationForm registrationForm) {
+        if(checkIfUserExists(registrationForm.getUserEmail())){
+            return ResponseEntity.badRequest().body("Email already exists");
         }
         else{
-            return ResponseEntity.badRequest().body("Email already exists");
+            UserEntity userEntity = new UserEntity();
+
+            // Encoding the password
+            String encodedPassword = passwordEncoder.encode(registrationForm.getUserPassword());
+            registrationForm.setUserPassword(encodedPassword);
+
+//            BeanUtils.copyProperties(registrationForm, userEntity);
+            userEntity.setUserEmail(registrationForm.getUserEmail());
+            userEntity.setUserPassword(registrationForm.getUserPassword());
+            userEntity.setUserRole(registrationForm.getUserRole());
+            userEntity.setUserAuthorityLevel(userRoleService.getUserAuthorityLevel(registrationForm.getUserRole()));
+
+            userRepository.save(userEntity);
+            return ResponseEntity.ok().body(true);
         }
     }
 
     @Override
-    public ResponseEntity<?> authenticateEmployee(LoginForm loginForm) {
-        if(userRepository.existsByEmployeeEmail(loginForm.getEmployeeEmail())){
-            String encodedPassword = userRepository.findEncodedPasswordByEmail(loginForm.getEmployeeEmail());
-            boolean doesEmployeeRoleMatch = loginForm.getEmployeeRole().equals(userRepository.findEmployeeRoleByEmployeeEmail(loginForm.getEmployeeEmail()));
-            boolean doesPasswordMatch = passwordEncoder.matches(loginForm.getEmployeePassword(),encodedPassword);
+    public ResponseEntity<?> authenticateUser(LoginForm loginForm) {
+        if (userRepository.existsByUserEmail(loginForm.getUserEmail())) {
+            String encodedPassword = userRepository.findEncodedPasswordByEmail(loginForm.getUserEmail());
+            boolean doesUserRoleMatch = loginForm.getUserRole().equals(userRepository.findUserRoleByUserEmail(loginForm.getUserEmail()));
+            boolean doesPasswordMatch = passwordEncoder.matches(loginForm.getUserPassword(), encodedPassword);
 
-            if(doesPasswordMatch && doesEmployeeRoleMatch){
+            if (doesPasswordMatch && doesUserRoleMatch) {
                 return ResponseEntity.ok().body("Logged in");
-            }
-            else{
+            } else {
                 return ResponseEntity.badRequest().body("Either role or password doesn't match");
             }
         }
-        return ResponseEntity.badRequest().body("Email do not exist");
+        return ResponseEntity.badRequest().body("Email does not exist");
     }
 
     @Override
-    public boolean checkIfEmployeeExists(String employeeEmail) {
-        return userRepository.existsByEmployeeEmail(employeeEmail);
+    public boolean checkIfUserExists(String userEmail) {
+        return userRepository.existsByUserEmail(userEmail);
     }
 }
