@@ -1,24 +1,22 @@
 package com.example.demoDMS1.ServiceImpl;
 
-import com.example.demoDMS1.Entity.EmployeeEntity;
+import com.example.demoDMS1.Entity.UserEntity;
 import com.example.demoDMS1.Model.LoginForm;
 import com.example.demoDMS1.Model.RegistrationForm;
-import com.example.demoDMS1.Repository.EmployeeRepository;
-import com.example.demoDMS1.Service.EmployeeService;
-import org.apache.coyote.Response;
+import com.example.demoDMS1.Repository.UserRepository;
+import com.example.demoDMS1.Service.UserService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 @Component
-public class EmployeeServiceImpl implements EmployeeService {
+public class UserServiceImpl implements UserService {
 
 //    injecting bean of class which extends to JpaRepository
     @Autowired
-    EmployeeRepository employeeRepository;
+UserRepository userRepository;
 
 //    injecting bean of PasswordEncoder class which is defined in SecurityConfig
     @Autowired
@@ -26,7 +24,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public ResponseEntity<?> registerEmployee(RegistrationForm registrationForm) {
-        EmployeeEntity employeeEntity = new EmployeeEntity();
+        UserEntity employeeEntity = new UserEntity();
 
 //        encoding the password
         String encodedPassword = passwordEncoder.encode(registrationForm.getEmployeePassword());
@@ -34,7 +32,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         if(!checkIfEmployeeExists(registrationForm.getEmployeeEmail())){
             BeanUtils.copyProperties(registrationForm,employeeEntity);
-            employeeRepository.save(employeeEntity);
+            userRepository.save(employeeEntity);
             return ResponseEntity.ok().body(true);
         }
         else{
@@ -44,9 +42,9 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public ResponseEntity<?> authenticateEmployee(LoginForm loginForm) {
-        if(employeeRepository.existsByEmployeeEmail(loginForm.getEmployeeEmail())){
-            String encodedPassword = employeeRepository.findEncodedPasswordByEmail(loginForm.getEmployeeEmail());
-            boolean doesEmployeeRoleMatch = loginForm.getEmployeeRole().equals(employeeRepository.findEmployeeRoleByEmployeeEmail(loginForm.getEmployeeEmail()));
+        if(userRepository.existsByEmployeeEmail(loginForm.getEmployeeEmail())){
+            String encodedPassword = userRepository.findEncodedPasswordByEmail(loginForm.getEmployeeEmail());
+            boolean doesEmployeeRoleMatch = loginForm.getEmployeeRole().equals(userRepository.findEmployeeRoleByEmployeeEmail(loginForm.getEmployeeEmail()));
             boolean doesPasswordMatch = passwordEncoder.matches(loginForm.getEmployeePassword(),encodedPassword);
 
             if(doesPasswordMatch && doesEmployeeRoleMatch){
@@ -61,6 +59,6 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public boolean checkIfEmployeeExists(String employeeEmail) {
-        return employeeRepository.existsByEmployeeEmail(employeeEmail);
+        return userRepository.existsByEmployeeEmail(employeeEmail);
     }
 }
