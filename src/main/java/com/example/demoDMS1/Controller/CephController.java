@@ -7,6 +7,7 @@ import com.example.demoDMS1.Service.CephService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import software.amazon.awssdk.core.Response;
 //import software.amazon.awssdk.services.s3.model.S3Object;
 //import software.amazon.awssdk.services.s3.model.Tag;
 
@@ -49,8 +50,8 @@ public class CephController {
     }
 
     @GetMapping("/list-metadata")
-    public void listMetadata(@RequestParam String objectKey){
-        cephService.listMetadata(objectKey);
+    public ResponseEntity<Map<String,String>> listMetadata(@RequestParam String objectKey){
+        return cephService.listMetadata(objectKey);
     }
 
     @GetMapping("/list-tags")
@@ -77,7 +78,7 @@ public class CephController {
     public ResponseEntity<CommonResponseDTO<?>> uploadMultipleFilesToCeph(@RequestPart MultipartFile[] files,
                                                                        @RequestPart String bucketName,
                                                                        @RequestPart String objectKey,
-                                                                       @RequestPart @RequestBody Map<String,String> metadata) throws ExecutionException, InterruptedException, IOException {
+                                                                       @RequestPart @RequestBody List<Map<String,String>> metadata) throws ExecutionException, InterruptedException, IOException {
         UploadRequestDTO uploadRequestDTO = new UploadRequestDTO(files,bucketName,objectKey,metadata);
         return cephService.uploadMultipleFiles(uploadRequestDTO);
     }

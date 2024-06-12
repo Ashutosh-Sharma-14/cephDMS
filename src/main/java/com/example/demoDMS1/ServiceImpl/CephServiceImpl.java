@@ -5,7 +5,6 @@ import com.example.demoDMS1.Model.UploadRequestDTO;
 import com.example.demoDMS1.Service.CephService;
 
 import com.example.demoDMS1.Utility.ResponseBuilder;
-import org.joda.time.DateTime;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -54,8 +53,6 @@ public class CephServiceImpl implements CephService {
     private final S3Presigner s3Presigner;
 //    root folder, should not be modified
     private final String bucketName = "test";
-
-    static int counter = 0;
 
     public CephServiceImpl(){
 
@@ -269,6 +266,7 @@ public class CephServiceImpl implements CephService {
 
         System.out.println("ETag: " + headObjectResponse.eTag());
         metadata.put("e-tag",headObjectResponse.eTag());
+
         return ResponseEntity.ok().body(metadata);
     }
 
@@ -276,7 +274,7 @@ public class CephServiceImpl implements CephService {
     public Map<String, String> addMetadata(Map<String,String> metadata, String bucketName, String objectKey) {
         Map<String, String> updatedMetadata = null;
         try {
-            Map<String, String> existingMetadata = null;
+            Map<String, String> existingMetadata;
             HeadObjectRequest headObjectRequest = HeadObjectRequest.builder()
                     .bucket(bucketName)
                     .key(objectKey)
@@ -461,10 +459,11 @@ public class CephServiceImpl implements CephService {
         MultipartFile[] files = uploadRequestDTO.getMultipartFiles();
         String bucketName = uploadRequestDTO.getBucketName();
         String objectKey = uploadRequestDTO.getObjectKey();
-        Map<String, String> metadata = uploadRequestDTO.getMetadata();
+        List<Map<String, String>> metadataList = uploadRequestDTO.getMetadata();
 
-        for (MultipartFile file : files) {
-            fileUploadFutures.add(uploadFileAsync(file,bucketName, objectKey,metadata));
+        for (int i = 0; i < files.length; i++) {
+            Map<String,String> metadata = metadataList.get(i);
+            fileUploadFutures.add(uploadFileAsync(files[i],bucketName, objectKey,metadata));
         }
 
         CompletableFuture<Void> allOfFileUploadFutures = CompletableFuture.allOf(fileUploadFutures.toArray(new CompletableFuture[0]));

@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
 import java.util.Map;
 
 @Data
@@ -14,5 +15,5 @@ public class UploadRequestDTO {
     MultipartFile[] multipartFiles;
     String bucketName;
     String objectKey;
-    Map<String, String> metadata;
+    List<Map<String, String>> metadata;
 }

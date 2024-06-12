@@ -6,7 +6,6 @@ import com.example.demoDMS1.Model.UploadRequestDTO;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import software.amazon.awssdk.core.Response;
 
 import java.io.IOException;
 import java.util.List;
@@ -24,6 +23,8 @@ public interface CephService {
     ResponseEntity<List<String>> listObjects(String bucketName, String prefix);
 
     ResponseEntity<Map<String,Object>> listPaginatedObjects(String bucketName, String prefix,int maxKeys,String continuationToken);
+
+//    there can be a method to extract some metadata without uploading file to ceph.
 
     ResponseEntity<Map<String,String>> listMetadata(String objectKey);
 
