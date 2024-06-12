@@ -21,11 +21,10 @@
 }
 
 .cardWrapper{
-
-    height: cal(90vh + 30px);
+    display: flex;
+    flex-direction: column;
     flex: 0.8;
-    /* border: 2px solid red; */
-    /* margin-top: 500px; */
+    height: 90vh;
     
 }
 
@@ -36,8 +35,8 @@
     align-items: center;
     justify-content: space-between;
     flex-direction: row;
-    padding: 0 5%;
     border-bottom: 1px solid rgba(128, 128, 128, 0.199);
+    /* border: 2px solid red; */
 }
 
 .mainUploadPg{
@@ -65,4 +64,22 @@
     align-self: auto;
     order: 0;
     margin-bottom: 10%;
+}
+
+
+
+.mainUploadPg{
+    border: 2px solid red;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+
+}
+
+.mainUploadPg > *{
+    border: 2px solid red;
+
 }

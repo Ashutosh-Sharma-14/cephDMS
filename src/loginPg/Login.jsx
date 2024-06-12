@@ -57,7 +57,7 @@ const Login = () =>{
               </div>
               <p class="my-8 text-sm text-gray-400 text-center">or continue with</p>
               <div class="space-x-8 flex justify-center">
-                <button type="button"
+                {/* <button type="button"
                   class="border-none outline-none">
                   <svg xmlns="http://www.w3.org/2000/svg" width="30px" class="inline" viewBox="0 0 512 512">
                     <path fill="#fbbd00"
@@ -79,7 +79,7 @@ const Login = () =>{
                       d="M256 120V0C187.62 0 123.333 26.629 74.98 74.98a259.849 259.849 0 0 0-22.158 25.235l86.308 86.308C162.883 146.72 206.376 120 256 120z"
                       data-original="#eb4132" />
                   </svg>
-                </button>
+                </button> */}
                 <button type="button"
                   class="border-none outline-none">
                   <svg xmlns="http://www.w3.org/2000/svg" width="30px" fill="#000" viewBox="0 0 22.773 22.773">

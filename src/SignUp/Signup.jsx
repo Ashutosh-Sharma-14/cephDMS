@@ -7,7 +7,7 @@ const Signup = () =>{
       <div class="max-w-md w-full mx-auto border border-gray-300 rounded-md p-6">
         <div class="text-center mb-12">
           <a href="/"><img
-            src="https://readymadeui.com/readymadeui.svg" alt="logo" class='w-40 inline-block' />
+            src="/perfiosLogo.png" alt="logo" class='w-40 inline-block' />
           </a>
         </div>
         <form>
