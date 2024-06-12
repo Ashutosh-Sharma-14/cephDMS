@@ -6,11 +6,13 @@ import com.example.demoDMS1.Model.RegistrationForm;
 import com.example.demoDMS1.Repository.UserRepository;
 import com.example.demoDMS1.Service.UserRoleService;
 import com.example.demoDMS1.Service.UserService;
-import org.springframework.beans.BeanUtils;
+import com.example.demoDMS1.Utility.ResponseBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+
+import java.util.Objects;
 
 @Component
 public class UserServiceImpl implements UserService {
@@ -30,7 +32,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public ResponseEntity<?> registerUser(RegistrationForm registrationForm) {
         if(checkIfUserExists(registrationForm.getUserEmail())){
-            return ResponseEntity.badRequest().body("Email already exists");
+            return ResponseEntity.badRequest().body(ResponseBuilder.failedRegistrationResponse("User already exists"));
         }
         else{
             UserEntity userEntity = new UserEntity();
@@ -46,24 +48,26 @@ public class UserServiceImpl implements UserService {
             userEntity.setUserAuthorityLevel(userRoleService.getUserAuthorityLevel(registrationForm.getUserRole()));
 
             userRepository.save(userEntity);
-            return ResponseEntity.ok().body(true);
+            return ResponseEntity.ok().body(ResponseBuilder.successFullRegistrationResponse(true,"User: "+ registrationForm.getUserEmail() + " registered successfully"));
         }
     }
 
     @Override
     public ResponseEntity<?> authenticateUser(LoginForm loginForm) {
-        if (userRepository.existsByUserEmail(loginForm.getUserEmail())) {
-            String encodedPassword = userRepository.findEncodedPasswordByEmail(loginForm.getUserEmail());
-            boolean doesUserRoleMatch = loginForm.getUserRole().equals(userRepository.findUserRoleByUserEmail(loginForm.getUserEmail()));
-            boolean doesPasswordMatch = passwordEncoder.matches(loginForm.getUserPassword(), encodedPassword);
+        boolean userExists = checkIfUserExists(loginForm.getUserEmail());
 
-            if (doesPasswordMatch && doesUserRoleMatch) {
-                return ResponseEntity.ok().body("Logged in");
+        if (userExists) {
+            String encodedPassword = userRepository.findEncodedPasswordByEmail(loginForm.getUserEmail());
+            boolean doesPasswordMatch = passwordEncoder.matches(loginForm.getUserPassword(), encodedPassword);
+            boolean doesUserAuthorityLevelMatch = Objects.equals(userRepository.findUserAuthorityLevelByUserEmail(loginForm.getUserEmail()), userRoleService.getUserAuthorityLevel(loginForm.getUserRole()));
+
+            if (doesPasswordMatch && doesUserAuthorityLevelMatch) {
+                return ResponseEntity.ok().body(ResponseBuilder.successfulLoginResponse(true, loginForm.getUserEmail(), loginForm.getUserRole(),"User successfully logged in"));
             } else {
-                return ResponseEntity.badRequest().body("Either role or password doesn't match");
+                return ResponseEntity.badRequest().body(ResponseBuilder.failedLoginResponse(false,"Either password or Role doesn't match"));
             }
         }
-        return ResponseEntity.badRequest().body("Email does not exist");
+        return ResponseEntity.badRequest().body(ResponseBuilder.failedLoginResponse(false,"Email does not exist"));
     }
 
     @Override

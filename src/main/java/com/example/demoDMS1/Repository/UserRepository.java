@@ -16,4 +16,7 @@ public interface UserRepository extends JpaRepository<UserEntity,String> {
     @Query("SELECT u.userRole FROM UserEntity u WHERE u.userEmail = :userEmail")
     String findUserRoleByUserEmail(@Param("userEmail") String userEmail);
 
+    @Query("SELECT u.userAuthorityLevel FROM UserEntity u WHERE u.userEmail = :userEmail")
+    Integer findUserAuthorityLevelByUserEmail(@Param("userEmail") String userEmail);
+
 }

@@ -8,5 +8,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class RegistrationResponseDTO {
-    private boolean isRegistrationSuccessful;
+    private boolean isRegistered;
+    private String message;
+
+    public RegistrationResponseDTO(String message) {
+        this.message = message;
+    }
 }
