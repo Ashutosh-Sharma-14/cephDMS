@@ -3,7 +3,7 @@ import './uploadCard.css';
 import Metadata from '../../Jsons/dropDownJson.json';
 
 const UploadCard = ({ handleObject, object }) => {
-    const [fileName, setFileName] = useState('Please Upload file');
+    const [fileName, setFileName] = useState('Plese Add File');
     const [dropdownOpen, setDropDownOpen] = useState(false);
     const [domain, setDomain] = useState('Domain');
     const [domains, setDomains] = useState([]);
@@ -47,7 +47,7 @@ const UploadCard = ({ handleObject, object }) => {
             setFileName(selectedFile.name);
             setTable((prevTable) => ({
                 ...prevTable,
-                "fileName": selectedFile.name,
+                fileName: selectedFile.name,
                 fileArray: [...prevTable.fileArray, selectedFile]
             }));
         }
@@ -60,9 +60,10 @@ const UploadCard = ({ handleObject, object }) => {
             return;
         }
         handleObject(table);
-        
+        console.log(object);
+
         // Clear all the fields and reset values
-        setFileName('Please Upload file');
+        setFileName('Plese Add File');
         setDomain('Domain');
         setDomains([]);
         setMeta({});
@@ -126,7 +127,7 @@ const UploadCard = ({ handleObject, object }) => {
                     type="button"
                     className="uploadBtnForTable px-5 py-2.5 rounded-lg text-sm tracking-wider font-medium border border-current outline-none bg-green-700 hover:bg-transparent text-white hover:text-green-700 transition-all duration-300"
                     onClick={handleUploadButton}
-                    disabled={fileName === 'Please Upload file'}
+                    disabled={fileName === 'Plese Add File'}
                 >
                     Upload File
                 </button>

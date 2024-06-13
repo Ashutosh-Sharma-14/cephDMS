@@ -14,9 +14,10 @@ const Upload = () =>{
     }
 
     const handleDelete = (fileNameOfThatRow) =>{
-        console.log(fileNameOfThatRow);
+        // console.log(fileNameOfThatRow);
         const modifiedObject = object.filter(obj => obj.fileName !== fileNameOfThatRow);
         setObject(modifiedObject);
+
     }
 
     return <div className="upload">

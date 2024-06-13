@@ -1,7 +1,7 @@
 .uploadtable{
     height:70vh;
     flex: 0.7;
-    width: 100%;
+    width: 60%;
     border: 2px solid  rgba(0, 0, 0, 0.034);
     overflow-y: auto;
     border-radius: 1em;
