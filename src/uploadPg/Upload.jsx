@@ -13,6 +13,12 @@ const Upload = () =>{
         setObject([...object,e]);
     }
 
+    const handleDelete = (fileNameOfThatRow) =>{
+        console.log(fileNameOfThatRow);
+        const modifiedObject = object.filter(obj => obj.fileName !== fileNameOfThatRow);
+        setObject(modifiedObject);
+    }
+
     return <div className="upload">
     <div className="navbar">
         <Navbar />
@@ -78,7 +84,7 @@ const Upload = () =>{
             </div>
             <div className="mainUploadPg">
                 <UploadCard handleObject={handleObject} object={object}/>
-                <UploadTable object={object}/>
+                <UploadTable object={object} handleDelete={handleDelete}/>
             </div>
         </div>
     </div>

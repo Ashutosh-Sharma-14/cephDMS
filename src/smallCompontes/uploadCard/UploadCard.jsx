@@ -120,7 +120,7 @@ const UploadCard = ({ handleObject, object }) => {
                         type="text"
                         placeholder={item}
                         name={item}
-                        className="px-4 py-1.5 text-sm rounded-md bg-white border border-gray-400 w-full outline-blue-500 my-2"
+                        className="inputField px-4 py-1.5 text-sm rounded-md bg-white border border-gray-400 w-full outline-blue-500 my-2"
                         onChange={handFields}
                     />
                 ))}
@@ -129,7 +129,7 @@ const UploadCard = ({ handleObject, object }) => {
                     type="button"
                     className="uploadBtnForTable px-5 py-2.5 rounded-lg text-sm tracking-wider font-medium border border-current outline-none bg-green-700 hover:bg-transparent text-white hover:text-green-700 transition-all duration-300"
                     onClick={handleUploadButton}
-                    disabled = {fileName === 'Please Upload file' }
+                    disabled = {fileName === 'Please Upload file'}
                 >
                     Upload File
                 </button>

@@ -2,7 +2,7 @@
 import Row from '../smallCompontes/uploadCard/Row';
 import './uploadtable.css'
 
-const UploadTable = ({object}) =>{
+const UploadTable = ({object, handleDelete}) =>{
 
     // console.log(object);
 
@@ -30,8 +30,8 @@ const UploadTable = ({object}) =>{
 
           {
               object.map((item, idx) => (
-                  <Row key={idx} item={item} />
-                  ))
+                  <Row key={idx} item={item} handleDelete={handleDelete} />
+                ))
                   
           }  
 

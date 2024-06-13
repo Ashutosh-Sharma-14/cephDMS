@@ -4,6 +4,7 @@
     flex-direction: column;
 }
 
+
 .navbar{
     flex: 0.1;
     
@@ -14,6 +15,9 @@
     width: 100%;
     height: 89vh;
     flex: 0.9;
+    padding-top: 15px;
+    overflow-y:hidden;
+
 }
 
 .sidebar{
