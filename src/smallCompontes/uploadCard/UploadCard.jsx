@@ -3,13 +3,6 @@ import './uploadCard.css';
 import Metadata from '../../Jsons/dropDownJson.json';
 
 const UploadCard = ({ handleObject, object }) => {
-
-    // todo
-    // reset the value after update on table 
-    //make domain Complusory
-    // delete funcx
-
-
     const [fileName, setFileName] = useState('Please Upload file');
     const [dropdownOpen, setDropDownOpen] = useState(false);
     const [domain, setDomain] = useState('Domain');
@@ -17,64 +10,69 @@ const UploadCard = ({ handleObject, object }) => {
     const [meta, setMeta] = useState({});
     const [table, setTable] = useState({
         fileName: '',
-        metadataJson: {}
+        metadataJson: {},
+        fileArray: []
     });
 
     const handFields = (e) => {
         const { name, value } = e.target;
 
-        setMeta(prevMeta => ({
+        setMeta((prevMeta) => ({
             ...prevMeta,
             [name]: value
         }));
 
-        setTable(prevTable => ({
+        setTable((prevTable) => ({
             ...prevTable,
             metadataJson: {
                 ...prevTable.metadataJson,
                 [name]: value
             }
         }));
-
     };
 
     const handleSelection = (value) => {
         setDomain(value);
         setDomains(Metadata[value] || []);
         setDropDownOpen(false);
-        setTable(prevTable => ({
+        setTable((prevTable) => ({
             ...prevTable,
-            'Domain': value
-        }))
+            Domain: value
+        }));
     };
 
     const handleFileChange = (event) => {
         if (event.target.files.length > 0) {
-            setFileName(event.target.files[0].name);
+            const selectedFile = event.target.files[0];
+            setFileName(selectedFile.name);
+            setTable((prevTable) => ({
+                ...prevTable,
+                "fileName": selectedFile.name,
+                fileArray: [...prevTable.fileArray, selectedFile]
+            }));
         }
-        setTable(prevTable => ({
-            ...prevTable,
-            fileName: event.target.files[0].name
-        }))
     };
 
     const handleUploadButton = (e) => {
         e.preventDefault();
+        if (domain === 'Domain') {
+            alert('Please select a domain before uploading.');
+            return;
+        }
         handleObject(table);
         console.log(object);
 
-        // clear all the field and upload field button values
+        // Clear all the fields and reset values
         setFileName('Please Upload file');
         setDomain('Domain');
         setDomains([]);
         setMeta({});
         setTable({
             fileName: '',
-            metadataJson: {}
+            metadataJson: {},
+            fileArray: []
         });
-        
-
-    }
+    };
 
     return (
         <div className="uploadCard">
@@ -129,7 +127,7 @@ const UploadCard = ({ handleObject, object }) => {
                     type="button"
                     className="uploadBtnForTable px-5 py-2.5 rounded-lg text-sm tracking-wider font-medium border border-current outline-none bg-green-700 hover:bg-transparent text-white hover:text-green-700 transition-all duration-300"
                     onClick={handleUploadButton}
-                    disabled = {fileName === 'Please Upload file'}
+                    disabled={fileName === 'Please Upload file'}
                 >
                     Upload File
                 </button>
