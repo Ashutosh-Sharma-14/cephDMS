@@ -5,6 +5,12 @@ import UploadTable from "../table/UploadTable";
 import '../uploadPg/upload.css'
 import { useState } from "react";
 
+// files: []
+// bucketName:test
+// objectKey:2021/
+// userRole:branch-manager
+// metadataJson:[  {   "key1": "value1",    "key2": "value2"  },  {    "keyA": "valueA",    "keyB": "valueB"  }]
+
 
 const Upload = () =>{
 
