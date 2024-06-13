@@ -4,6 +4,7 @@ import UploadCard from "../smallCompontes/uploadCard/UploadCard";
 import UploadTable from "../table/UploadTable";
 import '../uploadPg/upload.css'
 import { useState } from "react";
+import axios from "axios";
 
 // files: []
 // bucketName:test
@@ -15,6 +16,19 @@ import { useState } from "react";
 const Upload = () =>{
 
     const [object, setObject] = useState([]);
+
+     const handleAllFileUpload = async (e) =>{
+        e.preventDefault(); 
+        const response = await axios.get('localhost:3000/list-object-versions', {
+            params: {
+            bucketName: "test",
+            objectKey: "/"
+          }
+        }
+        );
+
+        console.log(response);
+    }
     const handleObject = (e) =>{
         setObject([...object,e]);
     }
@@ -85,7 +99,9 @@ const Upload = () =>{
             </div> */}
             {/* upload button */}
             <button type="button"
-                className="px-5 py-2.5 rounded-lg text-sm tracking-wider font-medium border border-current outline-none bg-green-700 hover:bg-transparent text-white hover:text-green-700 transition-all duration-300">
+                className="px-5 py-2.5 rounded-lg text-sm tracking-wider font-medium border border-current outline-none bg-green-700 hover:bg-transparent text-white hover:text-green-700 transition-all duration-300"
+                onClick={handleAllFileUpload}
+                >
                     Upload Files
             </button>
             </div>
