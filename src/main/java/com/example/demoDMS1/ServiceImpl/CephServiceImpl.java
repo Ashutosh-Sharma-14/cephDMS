@@ -466,6 +466,11 @@ public class CephServiceImpl implements CephService {
                     .metadata(metadata)
                     .tagging(Tagging.builder().tagSet(Arrays.asList(tag)).build())
                     .build();
+
+            s3Client.putObject(
+                    putObjectRequest,
+                    RequestBody.fromByteBuffer(input)
+            );
         }
         catch (IOException e){
             System.out.println("Error uploading file" + Arrays.toString(e.getStackTrace()));
@@ -489,15 +494,17 @@ public class CephServiceImpl implements CephService {
     }
 
     @Async
-    public CompletableFuture<String> uploadFileAsync(MultipartFile file,String bucketName,String objectKey, Map<String,String> metadata){
+    public CompletableFuture<String> uploadFileAsync(MultipartFile file,String bucketName,String objectKey, Map<String,String> metadata,String userRole){
         LocalDateTime startTime = LocalDateTime.now();
-        Map<String,String> fileMetadata = addMetadata(metadata,bucketName,objectKey);
+        Map<String,String> fileMetadata = addToExistingMetadata(metadata,bucketName,objectKey);
+        Tag tag = Tag.builder().key("authorityLevel").value(userRoleService.getUserAuthorityLevel(userRole)).build();
         try {
             ByteBuffer input = ByteBuffer.wrap(file.getBytes());
             PutObjectRequest putObjectRequest = PutObjectRequest.builder()
                             .bucket(bucketName)
                             .key(objectKey)
                             .metadata(fileMetadata)
+                            .tagging(Tagging.builder().tagSet(Arrays.asList(tag)).build())
                             .build();
 
             s3Client.putObject(
@@ -529,9 +536,8 @@ public class CephServiceImpl implements CephService {
 
         for (int i = 0; i < files.length; i++) {
             Map<String,String> metadata = metadataList.get(i);
-            metadata.put("useAuthorityLevel",userRoleService.getUserAuthorityLevel(userRole).toString());
             String objectKey = uploadRequestDTO.getObjectKey() + files[i].getOriginalFilename();
-            fileUploadFutures.add(uploadFileAsync(files[i],bucketName, objectKey,metadata));
+            fileUploadFutures.add(uploadFileAsync(files[i],bucketName, objectKey,metadata,userRole));
         }
 
         CompletableFuture<Void> allOfFileUploadFutures = CompletableFuture.allOf(fileUploadFutures.toArray(new CompletableFuture[0]));

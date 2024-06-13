@@ -111,10 +111,6 @@ public class CephController {
         return cephService.uploadMultipleFiles(uploadRequestDTO);
     }
 
-//    @PostMapping("/upload-files-by-account")
-//    public List<String> uploadFilesByAccount(@RequestPart("accountFilesRequest") AccountFilesRequest accountFilesRequest) throws ExecutionException, InterruptedException, IOException {
-//        return cephService.uploadFilesToMultiplePrefixes(accountFilesRequest);
-//    }
 
     @GetMapping("/download-file-from-ceph")
     public ResponseEntity<CommonResponseDTO<?>> downloadFileFromCeph(@RequestBody DownloadRequestDTO downloadRequestDTO) throws IOException {
