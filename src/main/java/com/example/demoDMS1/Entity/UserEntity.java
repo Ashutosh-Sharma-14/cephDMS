@@ -13,6 +13,6 @@ public class UserEntity {
     @Id
     private String userEmail;
     private String userRole;
-    private Integer userAuthorityLevel;
+    private String userAuthorityLevel;
     private String userPassword;
 }

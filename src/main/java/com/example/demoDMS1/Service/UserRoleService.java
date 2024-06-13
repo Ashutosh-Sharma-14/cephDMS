@@ -8,7 +8,7 @@ import java.util.Map;
 
 @Service
 public class UserRoleService {
-    private Map<String,Integer> userRoleMappings;
+    private Map<String,String> userRoleMappings;
 
 //  For bean/component creation, the constructor should do the object creation and property assignment.
 //  Any other thing should be done separately. The @PostConstruct annotation helps to do this.
@@ -16,18 +16,18 @@ public class UserRoleService {
     @PostConstruct
     public void init() {
         userRoleMappings = new HashMap<>();
-        userRoleMappings.put("admin",0);
-        userRoleMappings.put("zonal-admin", 1);
-        userRoleMappings.put("branch-manager", 2);
-        userRoleMappings.put("risk-officer", 3);
-        userRoleMappings.put("branch-employee",4);
+        userRoleMappings.put("admin","0");
+        userRoleMappings.put("zonal-admin", "1");
+        userRoleMappings.put("branch-manager", "2");
+        userRoleMappings.put("risk-officer", "3");
+        userRoleMappings.put("branch-employee","4");
     }
 
-    public Integer getUserAuthorityLevel(String role) {
+    public String getUserAuthorityLevel(String role) {
         return userRoleMappings.get(role);
     }
 
-    public Map<String, Integer> getAllMappings() {
+    public Map<String, String> getAllMappings() {
         return userRoleMappings;
     }
 }

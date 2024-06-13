@@ -15,5 +15,6 @@ public class UploadRequestDTO {
     MultipartFile[] multipartFiles;
     String bucketName;
     String objectKey;
+    String userRole;
     List<Map<String, String>> metadata;
 }

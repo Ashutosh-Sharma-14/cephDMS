@@ -20,6 +20,8 @@ public interface CephService {
 
     ResponseEntity<?> listBuckets();
 
+    ResponseEntity<List<String>> listObjectsByAuthority(String bucketName, String userRole);
+
     ResponseEntity<List<String>> listObjects(String bucketName, String prefix);
 
     ResponseEntity<Map<String,Object>> listPaginatedObjects(String bucketName, String prefix,int maxKeys,String continuationToken);
@@ -28,7 +30,11 @@ public interface CephService {
 
     ResponseEntity<Map<String,String>> listMetadata(String objectKey);
 
+    ResponseEntity<Map<String,String>> listSystemGeneratedMetadata(String objectKey);
+
     Map<String, String> addMetadata(Map<String,String> metadata, String bucketName, String objectKey);
+
+    Map<String, String> addToExistingMetadata(Map<String, String> metadata, String bucketName, String objectKey);
 
     void listTags(String objectKey);
 
@@ -39,9 +45,10 @@ public interface CephService {
     void deleteObject(String bucketName,String objectKey);
 
     String uploadFile(MultipartFile file,
-                      String fileYear,
-                      String bankName,
-                      String accountNo) throws IOException;
+                      String bucketName,
+                      String objectKey,
+                      String userRole,
+                      Map<String,String> metadataJson) throws IOException;
 
     ResponseEntity<CommonResponseDTO<?>> uploadMultipleFiles(UploadRequestDTO uploadRequestDTO) throws IOException, ExecutionException, InterruptedException;
 

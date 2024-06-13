@@ -4,7 +4,9 @@ import com.example.demoDMS1.Model.DownloadRequestDTO;
 import com.example.demoDMS1.Model.UploadRequestDTO;
 import com.example.demoDMS1.Service.CephService;
 
+import com.example.demoDMS1.Service.UserRoleService;
 import com.example.demoDMS1.Utility.ResponseBuilder;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -37,9 +39,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
-import static com.example.demoDMS1.Utility.CephMetadataUtils.createHeadObjectRequest;
-import static com.example.demoDMS1.Utility.CephMetadataUtils.printMetadata;
-
 @Component
 @ConfigurationProperties(prefix = "ceph")
 @EnableAsync
@@ -47,6 +46,9 @@ public class CephServiceImpl implements CephService {
 
 //    @Autowired
 //    private CephConfig cephConfig;
+
+    @Autowired
+    UserRoleService userRoleService;
 
 //    this is private final to make it immutable and thread safe
     private final S3Client s3Client;
@@ -163,6 +165,32 @@ public class CephServiceImpl implements CephService {
     }
 
     @Override
+    public ResponseEntity<List<String>> listObjectsByAuthority(String bucketName, String userRole){
+        String userAuthority = userRoleService.getUserAuthorityLevel(userRole);
+        List<String> objectKeys = new ArrayList<>();
+        ListObjectsV2Request listRequest = ListObjectsV2Request.builder()
+                .bucket(bucketName)
+                .build();
+
+        ListObjectsV2Response listResponse = s3Client.listObjectsV2(listRequest);
+
+        for(S3Object summary: listResponse.contents()){
+            String objectKey = summary.key();
+            HeadObjectRequest headObjectRequest = HeadObjectRequest.builder()
+                    .bucket(bucketName)
+                    .key(objectKey)
+                    .build();
+
+            HeadObjectResponse headObjectResponse = s3Client.headObject(headObjectRequest);
+            String authority =  headObjectResponse.metadata().get("userauthoritylevel");
+            if (Integer.parseInt(userAuthority) <= Integer.parseInt(authority)) {
+                objectKeys.add(objectKey);
+            }
+        }
+        return ResponseEntity.ok().body(objectKeys);
+    }
+
+    @Override
     public ResponseEntity<List<String>> listObjects(String bucketName, String prefix) {
         List<String> objectKeys = new ArrayList<>();
 
@@ -248,8 +276,19 @@ public class CephServiceImpl implements CephService {
         } else {
             System.out.println("Failed to retrieve object metadata.");
         }
-        System.out.println("System-Generated Metadata:");
+        return ResponseEntity.ok().body(metadata);
+    }
 
+    @Override
+    public ResponseEntity<Map<String, String>> listSystemGeneratedMetadata(String objectKey) {
+        System.out.println("System-Generated Metadata:");
+        Map<String,String> metadata = new HashMap<>();
+        HeadObjectRequest headObjectRequest = HeadObjectRequest.builder()
+                .bucket(bucketName)
+                .key(objectKey)
+                .build();
+
+        HeadObjectResponse headObjectResponse = s3Client.headObject(headObjectRequest);
 //        make sure to add proper exception handling here.
         assert headObjectResponse != null;
         System.out.println("Content-Type: " + headObjectResponse.contentType());
@@ -271,7 +310,12 @@ public class CephServiceImpl implements CephService {
     }
 
     @Override
-    public Map<String, String> addMetadata(Map<String,String> metadata, String bucketName, String objectKey) {
+    public Map<String, String> addMetadata(Map<String, String> metadata, String bucketName, String objectKey) {
+        return null;
+    }
+
+    @Override
+    public Map<String, String> addToExistingMetadata(Map<String, String> metadata, String bucketName, String objectKey) {
         Map<String, String> updatedMetadata = null;
         try {
             Map<String, String> existingMetadata;
@@ -286,6 +330,7 @@ public class CephServiceImpl implements CephService {
 //            merging existing metadata
             updatedMetadata = new HashMap<>();
             if (existingMetadata != null) {
+                System.out.println("originally metadata exists");
                 updatedMetadata.putAll(existingMetadata);
             }
 
@@ -368,31 +413,16 @@ public class CephServiceImpl implements CephService {
 
     @Override
     public String uploadFile(MultipartFile file,
-                             String fileYear,
-                             String bankName,
-                             String accountNo) {
-        String key = fileYear + "/" + bankName + "/" + accountNo + "/" + file.getOriginalFilename();
-
-        HeadObjectRequest headObjectRequest = createHeadObjectRequest(bucketName,key);
-        HeadObjectResponse headObjectResponse = null;
-        try{
-//            storing the result of headObjectRequest as response (which is metadata)
-            headObjectResponse = s3Client.headObject(headObjectRequest);
-            System.out.println("Existing metadata: ");
-            printMetadata(headObjectResponse);
-        }//        This exception class is provided by S3
-        catch (Exception e){
-            System.out.println("Checking exception " + e);
-        }
-
-        Map<String, String> newMetadata = headObjectResponse != null ? new HashMap<>(headObjectResponse.metadata()) : new HashMap<>();
-        newMetadata.put("author-age", "23");
-        newMetadata.put("author-name","aman");
-
+                             String bucketName,
+                             String objectKey,
+                             String userRole,
+                             Map<String,String> metadata) {
+//        Map<String,String> fileMetadata = addMetadata(metadata,bucketName,objectKey);
+        addTagToObject(objectKey,"authorityLevel",userRoleService.getUserAuthorityLevel(userRole));
         try{
             ByteBuffer input = ByteBuffer.wrap(file.getBytes());
             s3Client.putObject(
-                    req -> req.bucket(bucketName).key(key).metadata(newMetadata),
+                    req -> req.bucket(bucketName).key(objectKey).metadata(metadata),
                     RequestBody.fromByteBuffer(input)
             );
         }
@@ -400,12 +430,7 @@ public class CephServiceImpl implements CephService {
             System.out.println("Error uploading file" + Arrays.toString(e.getStackTrace()));
         }
 
-        // Retrieve and log updated metadata
-        headObjectResponse = s3Client.headObject(headObjectRequest);
-        System.out.println("Updated metadata:");
-        printMetadata(headObjectResponse);
-
-        return "file uploaded successfully to ceph bucket:" + bucketName + "/" + key + "/n";
+        return "file uploaded successfully to ceph bucket:" + bucketName + "/" + objectKey + "/n";
     }
 
     public URL createUrl(String bucketName,String objectKey){
@@ -423,15 +448,15 @@ public class CephServiceImpl implements CephService {
     }
 
     @Async
-    public CompletableFuture<String> uploadFileAsync(MultipartFile file,String bucketName,String objectKey,Map<String,String> metadata){
+    public CompletableFuture<String> uploadFileAsync(MultipartFile file,String bucketName,String objectKey, Map<String,String> metadata){
         LocalDateTime startTime = LocalDateTime.now();
-        Map<String,String> existingMetadata = addMetadata(metadata,bucketName,objectKey);
+        Map<String,String> fileMetadata = addMetadata(metadata,bucketName,objectKey);
         try {
             ByteBuffer input = ByteBuffer.wrap(file.getBytes());
             PutObjectRequest putObjectRequest = PutObjectRequest.builder()
                             .bucket(bucketName)
                             .key(objectKey)
-                            .metadata(existingMetadata)
+                            .metadata(fileMetadata)
                             .build();
 
             s3Client.putObject(
@@ -458,10 +483,12 @@ public class CephServiceImpl implements CephService {
 
         MultipartFile[] files = uploadRequestDTO.getMultipartFiles();
         String bucketName = uploadRequestDTO.getBucketName();
+        String userRole = uploadRequestDTO.getUserRole();
         List<Map<String, String>> metadataList = uploadRequestDTO.getMetadata();
 
         for (int i = 0; i < files.length; i++) {
             Map<String,String> metadata = metadataList.get(i);
+            metadata.put("useAuthorityLevel",userRoleService.getUserAuthorityLevel(userRole).toString());
             String objectKey = uploadRequestDTO.getObjectKey() + files[i].getOriginalFilename();
             fileUploadFutures.add(uploadFileAsync(files[i],bucketName, objectKey,metadata));
         }
@@ -483,41 +510,6 @@ public class CephServiceImpl implements CephService {
         CommonResponseDTO<?> commonResponseDTO = ResponseBuilder.buildUploadResponse(200,"file uploaded successfully",LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")),fileUploadResults);
         return ResponseEntity.ok().body(commonResponseDTO);
     }
-
-//    this method does not work
-//    @Override
-//    public List<String> uploadFilesToMultiplePrefixes(AccountFilesRequest accountFilesRequest) throws ExecutionException, InterruptedException, IOException {
-//        List<CompletableFuture<String>> fileUploadFutures = new ArrayList<>();
-////        String bucketName = accountFilesRequest.getBucketName();
-//        String fileYear = accountFilesRequest.getFileYear();
-//        String bankName = accountFilesRequest.getBankName();
-//
-////        Here .getAccountFiles() provide a list of list of files. Each fileList is associated with an accountNo
-//        for(AccountFiles accountFiles: accountFilesRequest.getAccountFiles()){
-//            String accountNo = accountFiles.getAccountNo();
-////            .getFiles() method is used to access each file from the list of files associated with one account
-//            for(MultipartFile file: accountFiles.getFiles()){
-//                fileUploadFutures.add(uploadFileAsync(file, fileYear, bankName, accountNo));
-//            }
-//        }
-//
-//        CompletableFuture<Void> allOfFileUploadFutures = CompletableFuture.allOf(fileUploadFutures.toArray(new CompletableFuture[0]));
-//        // waiting for the execution of all fileUploads
-//        allOfFileUploadFutures.get(); // .get() method throws CheckedException - InterruptedException and ExecutionException
-//
-//        List<String> fileUploadResults = new ArrayList<>();
-//
-//        for (CompletableFuture<String> uploadFuture : fileUploadFutures) {
-//            try {
-//                String result = uploadFuture.get();
-//                fileUploadResults.add(result);
-//            } catch (Exception e) {
-//                fileUploadResults.add(e.getMessage());
-//            }
-//        }
-//
-//        return fileUploadResults;
-//    }
 
     @Override
     public ResponseEntity<CommonResponseDTO<?>> downloadFile(DownloadRequestDTO downloadRequestDTO) {

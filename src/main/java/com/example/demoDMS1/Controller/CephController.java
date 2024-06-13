@@ -4,6 +4,8 @@ import com.example.demoDMS1.Model.CommonResponseDTO;
 import com.example.demoDMS1.Model.DownloadRequestDTO;
 import com.example.demoDMS1.Model.UploadRequestDTO;
 import com.example.demoDMS1.Service.CephService;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -44,6 +46,11 @@ public class CephController {
         return cephService.listObjects(bucketName, prefix);
     }
 
+    @GetMapping("/list-objects-by-authority")
+    public ResponseEntity<List<String>> listObjectByAuthority(@RequestParam String bucketName, @RequestParam String userRole){
+        return cephService.listObjectsByAuthority(bucketName,userRole);
+    }
+
     @GetMapping("/list-objects-paginated")
     public ResponseEntity<Map<String, Object>> listPaginatedObjects(@RequestParam String bucketName, @RequestParam String prefix, @RequestParam int maxKeys, @RequestParam String continuationToken){
         return cephService.listPaginatedObjects(bucketName,prefix,maxKeys,continuationToken);
@@ -70,16 +77,26 @@ public class CephController {
     }
 
     @PostMapping("/upload-file-to-ceph")
-    public String uploadFileToCeph(@RequestParam MultipartFile file, @RequestParam String fileYear, @RequestParam String bankName, @RequestParam String accountNo) throws IOException {
-        return cephService.uploadFile(file,fileYear,bankName,accountNo);
+    public String uploadFileToCeph(@RequestParam MultipartFile file,
+                                   @RequestParam String bucketName,
+                                   @RequestParam String objectKey,
+                                   @RequestParam String userRole,
+                                   @RequestParam String metadataJson) throws IOException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        Map<String, String> metadata = objectMapper.readValue(metadataJson, new TypeReference<Map<String, String>>() {});
+        System.out.println("trying to print metadata" + metadata);
+        return cephService.uploadFile(file,bucketName,objectKey,userRole,metadata);
     }
 
     @PostMapping("/upload-multiple-files-to-ceph")
     public ResponseEntity<CommonResponseDTO<?>> uploadMultipleFilesToCeph(@RequestPart MultipartFile[] files,
                                                                        @RequestPart String bucketName,
                                                                        @RequestPart String objectKey,
-                                                                       @RequestPart @RequestBody List<Map<String,String>> metadata) throws ExecutionException, InterruptedException, IOException {
-        UploadRequestDTO uploadRequestDTO = new UploadRequestDTO(files,bucketName,objectKey,metadata);
+                                                                       @RequestPart String userRole,
+                                                                       @RequestPart String metadataJson) throws ExecutionException, InterruptedException, IOException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        List<Map<String, String>> metadata = objectMapper.readValue(metadataJson, List.class);
+        UploadRequestDTO uploadRequestDTO = new UploadRequestDTO(files,bucketName,objectKey,userRole,metadata);
         return cephService.uploadMultipleFiles(uploadRequestDTO);
     }
 
