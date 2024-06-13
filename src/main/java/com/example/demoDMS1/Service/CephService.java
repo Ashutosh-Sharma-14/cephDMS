@@ -38,9 +38,13 @@ public interface CephService {
 
     void listTags(String objectKey);
 
+    ResponseEntity<List<String>> listObjectByAuthorityTags(String bucketName, String userRole);
+
 //    void searchWithTags(@RequestParam String tagKey, @RequestParam String tagValue);
 
-    String addTagToObject(String objectKey,String tagKey,String tagValue);
+    String modifyObjectTag(String objectKey,String tagKey,String tagValue);
+
+    ResponseEntity<String> addTagToObject(String bucketName, String objectKey, String tagKey, String tagValue);
 
     void deleteObject(String bucketName,String objectKey);
 

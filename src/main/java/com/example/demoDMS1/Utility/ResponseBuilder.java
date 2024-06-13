@@ -12,8 +12,12 @@ public class ResponseBuilder {
         return new CommonResponseDTO<>(statusCode,message,timestamp,data);
     }
 
-    public static <T> CommonResponseDTO<T> buildDownloadResponse(int statusCode, String message, String timeStamp){
-        return new CommonResponseDTO<>(statusCode,message,timeStamp,null);
+    public static <T> CommonResponseDTO<T> successfulDownloadResponse(int statusCode, String message, String timeStamp){
+        return new CommonResponseDTO<>(statusCode,message,timeStamp);
+    }
+
+    public static <T> CommonResponseDTO<T> unsuccessfulDownloadResponse(int statusCode, String message){
+        return new CommonResponseDTO<>(statusCode,message);
     }
 
     public static RegistrationResponseDTO successFullRegistrationResponse(boolean isRegistered, String message){

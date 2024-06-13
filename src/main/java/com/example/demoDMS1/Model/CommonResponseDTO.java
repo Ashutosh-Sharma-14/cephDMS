@@ -14,4 +14,17 @@ public class CommonResponseDTO<T> {
     private String responseMessage;
     private String timestamp;
     private T data;
+
+
+    public CommonResponseDTO(int statusCode,String responseMessage) {
+        this.statusCode = statusCode;
+        this.responseMessage = responseMessage;
+    }
+
+    public CommonResponseDTO(int statusCode,String responseMessage,String timestamp) {
+        this.statusCode = statusCode;
+        this.responseMessage = responseMessage;
+        this.timestamp = timestamp;
+    }
+
 }

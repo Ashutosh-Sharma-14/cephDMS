@@ -1,4 +1,5 @@
 package com.example.demoDMS1.ServiceImpl;
+import com.amazonaws.services.s3.model.ObjectTagging;
 import com.example.demoDMS1.Model.CommonResponseDTO;
 import com.example.demoDMS1.Model.DownloadRequestDTO;
 import com.example.demoDMS1.Model.UploadRequestDTO;
@@ -371,7 +372,38 @@ public class CephServiceImpl implements CephService {
     }
 
     @Override
-    public String addTagToObject(String objectKey, String tagKey, String tagValue) {
+    public ResponseEntity<List<String>> listObjectByAuthorityTags(String bucketName, String userRole) {
+        String userAuthority = userRoleService.getUserAuthorityLevel(userRole);
+        List<String> objectKeys = new ArrayList<>();
+
+        ListObjectsV2Request listRequest = ListObjectsV2Request.builder()
+                .bucket(bucketName)
+                .build();
+
+        ListObjectsV2Response listResponse = s3Client.listObjectsV2(listRequest);
+
+        for (S3Object summary : listResponse.contents()) {
+            String objectKey = summary.key();
+            GetObjectTaggingRequest getObjectTaggingRequest = GetObjectTaggingRequest.builder()
+                    .bucket(bucketName)
+                    .key(objectKey)
+                    .build();
+
+            GetObjectTaggingResponse getObjectTaggingResponse = s3Client.getObjectTagging(getObjectTaggingRequest);
+            Map<String, String> tags = getObjectTaggingResponse.tagSet().stream()
+                    .collect(Collectors.toMap(Tag::key, Tag::value));
+
+            String authority = tags.get("authorityLevel");
+            if (authority != null && Integer.parseInt(userAuthority) <= Integer.parseInt(authority)) {
+                objectKeys.add(objectKey);
+            }
+        }
+
+        return ResponseEntity.ok().body(objectKeys);
+    }
+
+    @Override
+    public String modifyObjectTag(String objectKey, String tagKey, String tagValue) {
 
         GetObjectTaggingRequest getObjectTaggingRequest = GetObjectTaggingRequest.builder()
                 .bucket(bucketName)
@@ -397,6 +429,12 @@ public class CephServiceImpl implements CephService {
     }
 
     @Override
+    public ResponseEntity<String> addTagToObject(String bucketName,String objectKey,String tagKey, String tagValue){
+        return ResponseEntity.ok().body("Tag- " + tagKey + ": " + tagValue + "added to tagset of " + objectKey);
+    }
+
+
+    @Override
     public void deleteObject(String bucketName, String objectKey) {
         try {
             DeleteObjectRequest deleteRequest = DeleteObjectRequest.builder()
@@ -418,13 +456,16 @@ public class CephServiceImpl implements CephService {
                              String userRole,
                              Map<String,String> metadata) {
 //        Map<String,String> fileMetadata = addMetadata(metadata,bucketName,objectKey);
-        addTagToObject(objectKey,"authorityLevel",userRoleService.getUserAuthorityLevel(userRole));
+//        addTagToObject(bucketName,objectKey,"authorityLevel",userRoleService.getUserAuthorityLevel(userRole));
+        Tag tag = Tag.builder().key("authorityLevel").value(userRoleService.getUserAuthorityLevel(userRole)).build();
         try{
             ByteBuffer input = ByteBuffer.wrap(file.getBytes());
-            s3Client.putObject(
-                    req -> req.bucket(bucketName).key(objectKey).metadata(metadata),
-                    RequestBody.fromByteBuffer(input)
-            );
+            PutObjectRequest putObjectRequest = PutObjectRequest.builder()
+                    .bucket(bucketName)
+                    .key(objectKey)
+                    .metadata(metadata)
+                    .tagging(Tagging.builder().tagSet(Arrays.asList(tag)).build())
+                    .build();
         }
         catch (IOException e){
             System.out.println("Error uploading file" + Arrays.toString(e.getStackTrace()));
@@ -534,11 +575,11 @@ public class CephServiceImpl implements CephService {
         }
         File downloadedFile = new File(downloadPath);
         if(downloadedFile.length() == 0){
-            System.out.println("Checking if download is successfull");
-            CommonResponseDTO<?> commonResponseDTO = ResponseBuilder.buildDownloadResponse(501,"File not downloaded at "+ downloadPath,LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+            System.out.println("Checking if download is successful");
+            CommonResponseDTO<?> commonResponseDTO = ResponseBuilder.unsuccessfulDownloadResponse(501,"Size of file is zero");
             return new ResponseEntity<>(commonResponseDTO, HttpStatus.valueOf(501));
         }
-        CommonResponseDTO<?> commonResponseDTO = ResponseBuilder.buildDownloadResponse(200,"File downloaded successfully", LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+        CommonResponseDTO<?> commonResponseDTO = ResponseBuilder.successfulDownloadResponse(200,"File downloaded successfully", LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
         return ResponseEntity.ok().body(commonResponseDTO);
     }
 

@@ -51,6 +51,7 @@ public class CephController {
         return cephService.listObjectsByAuthority(bucketName,userRole);
     }
 
+
     @GetMapping("/list-objects-paginated")
     public ResponseEntity<Map<String, Object>> listPaginatedObjects(@RequestParam String bucketName, @RequestParam String prefix, @RequestParam int maxKeys, @RequestParam String continuationToken){
         return cephService.listPaginatedObjects(bucketName,prefix,maxKeys,continuationToken);
@@ -66,9 +67,19 @@ public class CephController {
         cephService.listTags(objectKey);
     }
 
+    @GetMapping("/list-objects-by-authority-tag")
+    public ResponseEntity<List<String>> listObjectsByAuthorityTag(@RequestParam String bucketName, @RequestParam String userRole){
+        return cephService.listObjectByAuthorityTags(bucketName,userRole);
+    }
+
+    @PostMapping("/modify-object-tag")
+    public String modifyObjectTag(@RequestParam String objectKey, @RequestParam String tagKey, @RequestParam String tagValue){
+        return cephService.modifyObjectTag(objectKey, tagKey,tagValue);
+    }
+
     @PostMapping("/add-tag-to-object")
-    public String addTagToObject(@RequestParam String objectKey, @RequestParam String tagKey, @RequestParam String tagValue){
-        return cephService.addTagToObject(objectKey, tagKey,tagValue);
+    public ResponseEntity<String> addTagToObject(@RequestParam String bucketName, @RequestParam String objectKey,@RequestParam String tagKey, @RequestParam String tagValue){
+        return cephService.addTagToObject(bucketName,objectKey,tagKey,tagValue);
     }
 
     @DeleteMapping("/delete-object")
