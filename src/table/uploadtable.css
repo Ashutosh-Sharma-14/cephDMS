@@ -1,6 +1,40 @@
 .uploadtable{
-    height:auto;
+    height:70vh;
     flex: 0.7;
     width: 100%;
+    border: 2px solid  rgba(0, 0, 0, 0.034);
+    overflow-y: auto;
+    border-radius: 1em;
 
+}
+.uploadtable::-webkit-scrollbar {
+    display: none;
+  }
+
+.tdMetadata{
+    width: 40%;
+}
+
+.metadatList{
+    /* border: 2px solid red; */
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    height: 4vh;
+    align-items: center;
+
+}
+
+.metakey{
+    flex: 0.2;
+}
+
+.metaValue{
+    flex: 0.8;
+}
+
+.tbodyClass{
+    /* border: 2px solid red; */
+    /* overflow-y:scroll; */
+    /* height: 70vh; */
 }

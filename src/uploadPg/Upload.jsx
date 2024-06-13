@@ -7,13 +7,11 @@ import { useState } from "react";
 
 
 const Upload = () =>{
-    
-//   const [cards, setCards] = useState([<UploadCard key={0} />]);
 
-
-    // const handCardButton = () =>{
-    //     setCards([...cards, <UploadCard key={cards.length} />]);
-    // }
+    const [object, setObject] = useState([]);
+    const handleObject = (e) =>{
+        setObject([...object,e]);
+    }
 
     return <div className="upload">
     <div className="navbar">
@@ -25,7 +23,7 @@ const Upload = () =>{
         </div>
         <div className="cardWrapper">
             <div className="uploadBtn">
-            <div class="font-[sans-serif] space-x-4 space-y-4 text-center">
+            <div className="font-[sans-serif] space-x-4 space-y-4 text-center">
             
             {/* input btn */}
                 <label
@@ -52,15 +50,15 @@ const Upload = () =>{
                 {/* add key fields */}
                 <div>
                     <input type='text' placeholder='Year'
-                    class="px-4 py-1.5 text-sm rounded-md bg-white border border-gray-400 w-full outline-blue-500" />
+                    className="px-4 py-1.5 text-sm rounded-md bg-white border border-gray-400 w-full outline-blue-500" />
                 </div>
                 <div>
                     <input type='text' placeholder='Bank Name'
-                    class="px-4 py-1.5 text-sm rounded-md bg-white border border-gray-400 w-full outline-blue-500" />
+                    className="px-4 py-1.5 text-sm rounded-md bg-white border border-gray-400 w-full outline-blue-500" />
                 </div>
                 <div>
                     <input type='text' placeholder='Account Number'
-                    class="px-4 py-1.5 text-sm rounded-md bg-white border border-gray-400 w-full outline-blue-500" />
+                    className="px-4 py-1.5 text-sm rounded-md bg-white border border-gray-400 w-full outline-blue-500" />
                 </div>
 
                
@@ -68,19 +66,19 @@ const Upload = () =>{
             {/* add card button */}
             {/* <div className="addCard">
                 <button type="button"
-                    class="px-5 py-2.5 rounded-lg text-sm tracking-wider font-medium border border-current outline-none bg-blue-700 hover:bg-transparent text-white hover:text-blue-700 transition-all duration-300" onClick={handCardButton}>
+                    className="px-5 py-2.5 rounded-lg text-sm tracking-wider font-medium border border-current outline-none bg-blue-700 hover:bg-transparent text-white hover:text-blue-700 transition-all duration-300" onClick={handCardButton}>
                         Add Card
                 </button>
             </div> */}
             {/* upload button */}
             <button type="button"
-                class="px-5 py-2.5 rounded-lg text-sm tracking-wider font-medium border border-current outline-none bg-green-700 hover:bg-transparent text-white hover:text-green-700 transition-all duration-300">
-                    Upload File
+                className="px-5 py-2.5 rounded-lg text-sm tracking-wider font-medium border border-current outline-none bg-green-700 hover:bg-transparent text-white hover:text-green-700 transition-all duration-300">
+                    Upload Files
             </button>
             </div>
             <div className="mainUploadPg">
-                <UploadCard />
-                <UploadTable />
+                <UploadCard handleObject={handleObject} object={object}/>
+                <UploadTable object={object}/>
             </div>
         </div>
     </div>

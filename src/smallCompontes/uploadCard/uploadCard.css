@@ -1,7 +1,7 @@
 .uploadCard{
     flex: 0.3;
     height: max-content;
-    width: 30%;
+    width:40%;
     /* border: 1px solid red; */
     
     
@@ -15,6 +15,7 @@
     max-width: 400px;
     margin: 20px auto;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border: 0 solid rgba(0, 0, 0, 0.1);
     font-family: 'Arial, sans-serif';
   }
   
@@ -105,7 +106,7 @@
   }
 
   .metadataBtn{
-    border: 2px solid red;
+    /* border: 2px solid red; */
   }
 
   .uploadCard {
@@ -187,4 +188,29 @@
     border: 1px solid #ddd;
     border-radius: 4px;
     box-sizing: border-box;
+}
+
+.filename{
+    color: gray;
+    width: max-content;
+    margin-bottom: 20px;
+    
+}
+
+.uploadBtnForTable{
+    background-color: green !important;
+    color: white !important;
+    font-weight: 700 !important;
+}
+
+.uploadBtnForTable:hover{
+    background-color: rgba(0, 128, 0, 0.678) !important;
+}
+
+.uploadBtnForTable:disabled{
+    opacity: 0.5; 
+    cursor: not-allowed; 
+    background-color: #ccc; 
+    color: #999;
+    border-color: #999; 
 }
