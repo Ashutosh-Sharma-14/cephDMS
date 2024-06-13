@@ -4,7 +4,7 @@ import './uploadtable.css'
 
 const UploadTable = ({object, handleDelete}) =>{
 
-    // console.log(object);
+    console.log(object);
 
     return <div className='uploadtable'>
         <div className="font-sans overflow-y">

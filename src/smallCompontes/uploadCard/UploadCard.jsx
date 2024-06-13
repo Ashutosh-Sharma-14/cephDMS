@@ -60,8 +60,7 @@ const UploadCard = ({ handleObject, object }) => {
             return;
         }
         handleObject(table);
-        console.log(object);
-
+        
         // Clear all the fields and reset values
         setFileName('Please Upload file');
         setDomain('Domain');
