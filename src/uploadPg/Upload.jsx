@@ -33,42 +33,71 @@ const Upload = () =>{
         // console.log(listOfMapOfStrings);
         
 
-        let tempKey = `${keyObject.year}/${keyObject.bankName}/${keyObject.accountNo}`;
+        let tempKey = `${keyObject.bucketName}/${keyObject.year}/${keyObject.bankName}/${keyObject.accountNo}`;
 
-        const formData = new FormData();
+            const formData = new FormData();
             formData.append('bucketName', keyObject.bucketName);
             formData.append('objectKey', tempKey);
             formData.append('userRole', 'branch-manager');
             formData.append('metadata', JSON.stringify(listOfMapOfStrings));
+            // console.log()
+
+            // const formDataObject = {};
+            // for (const [key, value] of formData.entries()) {
+            //     formDataObject[key] = value;
+            // }
+
+
+            // console.log(formDataObject);
 
             // formData.append(`multipartFiles`, object.fileArray);
-            object.fileArray.forEach((file, index) => {
-                formData.append(`multipartFiles[${index}]`, file);
-              });
+            //     object.fileArray.forEach((file, index) => {
+            //         object[0].fileArray[0].name
+            //   });
 
-            console.log(formData)
+            const finalArray = [];
+            for(let i = 0; i<object[0].fileArray.length; i++)
+                finalArray.push(object[0].fileArray[i]);
+            formData.append(`files`, finalArray);
+            
+
+
+            // console.log(formData)
 
             
-            try {
-                // Make POST request
-                // const response = await axios.post('http://localhost:8080/upload-multiple-files-to-ceph', formData, {
-                //     headers: {
-                //         'Content-Type': 'multipart/form-data'
-                //     }
-                // });
+            // try {
+            //     // Make POST request
+            //     const response = await axios.post('http://localhost:8080/upload-multiple-files-to-ceph', formData, {
+            //         headers: {
+            //             'Content-Type': 'multipart/form-data'
+            //         }
+            //     });
         
-                // console.log('Upload successful:', response);
-                // Handle success response here
+            //     console.log('Upload successful:', response);
+            // } catch (error) {
+            //     console.error('Error uploading files:', error);
+            // }
+
+            try {
+                const response = await fetch('http://localhost:8080/upload-multiple-files-to-ceph', {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
+                    }
+                });
+            
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+            
+                const responseData = await response.json();
+                console.log('Upload successful:', responseData);
             } catch (error) {
                 console.error('Error uploading files:', error);
-                // Handle error here
             }
+            
 
-
-
-
-
-        
         }
     const handleObject = (e) =>{
         setObject([...object,e]);
@@ -85,7 +114,7 @@ const Upload = () =>{
     const handleInputValue = (e) => {
         const { name, value } = e.target;
         setKeyObject(prevState => ({ ...prevState, [name]: value }));
-        console.log(keyObject);
+        // console.log(keyObject);
     }
     
 

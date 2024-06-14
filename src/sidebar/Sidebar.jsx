@@ -25,11 +25,11 @@ const Sidebar = () => {
         <h6 className="text-blue-600 text-sm font-bold px-4">Bucket Operation</h6>
         <ul className="mt-3">
           <li>
-            <a href="/list-buckets"
+            <Link to="/list-buckets"
               className="text-black hover:text-blue-600 text-sm flex items-center hover:bg-blue-50 rounded px-4 py-3 transition-all">
               
               <span>List Buckets</span>
-            </a>
+            </Link>
           </li>
           <li>
             <a href="/"

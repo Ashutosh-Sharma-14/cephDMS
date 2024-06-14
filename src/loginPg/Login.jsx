@@ -44,11 +44,11 @@ const Login = () =>{
                     Remember me
                   </label>
                 </div> */}
-                <div>
+                {/* <div>
                   <a href="jajvascript:void(0);" class="text-blue-600 font-semibold text-sm hover:underline">
                     Forgot Password?
                   </a>
-                </div>
+                </div> */}
               </div>
               <div class="mt-12">
                 <button type="button" class="w-full shadow-xl py-2.5 px-4 text-sm font-semibold rounded-full text-white bg-blue-600 hover:bg-blue-700 focus:outline-none">
