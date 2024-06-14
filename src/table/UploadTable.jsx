@@ -4,7 +4,7 @@ import './uploadtable.css'
 
 const UploadTable = ({object, handleDelete}) =>{
 
-    console.log(object);
+
 
     return <div className='uploadtable'>
         <div className="font-sans overflow-y">
@@ -30,7 +30,7 @@ const UploadTable = ({object, handleDelete}) =>{
 
           {
               object.map((item, idx) => (
-                  <Row key={idx} item={item} handleDelete={handleDelete} />
+                  <Row key={idx} item={item} handleDelete={handleDelete}  />
                 ))
                   
           }  

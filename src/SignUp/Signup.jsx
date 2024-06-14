@@ -28,12 +28,12 @@ const Signup = () =>{
               <label class="text-sm mb-2 block">Confirm Password</label>
               <input name="cpassword" type="password" class="bg-white border border-gray-300 w-full text-sm px-4 py-3 rounded-md outline-blue-500" placeholder="Enter confirm password" />
             </div>
-            <div class="flex items-center">
+            {/* <div class="flex items-center">
               <input id="remember-me" name="remember-me" type="checkbox" class="h-4 w-4 shrink-0 text-blue-600 focus:ring-blue-500 border-gray-300 rounded" />
               <label for="remember-me" class="ml-3 block text-sm">
                 I accept the <a href="/" class="text-blue-600 font-semibold hover:underline ml-1">Terms and Conditions</a>
               </label>
-            </div>
+            </div> */}
           </div>
           <div class="!mt-10">
             <button type="button" class="w-full py-3 px-4 text-sm font-semibold rounded text-white bg-blue-500 hover:bg-blue-600 focus:outline-none">

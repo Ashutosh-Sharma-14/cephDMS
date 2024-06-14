@@ -6,29 +6,72 @@ import '../uploadPg/upload.css'
 import { useState } from "react";
 import axios from "axios";
 
-// files: []
-// bucketName:test
-// objectKey:2021/
-// userRole:branch-manager
-// metadataJson:[  {   "key1": "value1",    "key2": "value2"  },  {    "keyA": "valueA",    "keyB": "valueB"  }]
 
 
 const Upload = () =>{
 
+    // send handle upload funct to child and keyObject too and then try to send formdata from there
+
     const [object, setObject] = useState([]);
+    const [keyObject, setKeyObject] = useState({
+        bucketName:'',
+        year:'',
+        bankName:'',
+        accountNo:''
+    });
+
 
      const handleAllFileUpload = async (e) =>{
         e.preventDefault(); 
-        const response = await axios.get('localhost:3000/list-object-versions', {
-            params: {
-            bucketName: "test",
-            objectKey: "/"
-          }
-        }
-        );
+        // console.log(JSON.stringify(object[0].metadataJson));
 
-        console.log(response);
-    }
+        const listOfMapOfStrings = [];
+
+        for(let i=0; i<object.length; i++)
+            listOfMapOfStrings.push(object[i].metadataJson)
+
+
+
+        // console.log(listOfMapOfStrings);
+        
+
+        let tempKey = `${keyObject.year}/${keyObject.bankName}/${keyObject.accountNo}`;
+
+        const formData = new FormData();
+            formData.append('bucketName', keyObject.bucketName);
+            formData.append('objectKey', tempKey);
+            formData.append('userRole', 'branch-manager');
+            formData.append('metadata', JSON.stringify(listOfMapOfStrings));
+
+            // formData.append(`multipartFiles`, object.fileArray);
+            object.fileArray.forEach((file, index) => {
+                formData.append(`multipartFiles[${index}]`, file);
+              });
+
+            console.log(formData)
+
+            
+            try {
+                // Make POST request
+                // const response = await axios.post('http://localhost:8080/upload-multiple-files-to-ceph', formData, {
+                //     headers: {
+                //         'Content-Type': 'multipart/form-data'
+                //     }
+                // });
+        
+                // console.log('Upload successful:', response);
+                // Handle success response here
+            } catch (error) {
+                console.error('Error uploading files:', error);
+                // Handle error here
+            }
+
+
+
+
+
+        
+        }
     const handleObject = (e) =>{
         setObject([...object,e]);
     }
@@ -39,6 +82,14 @@ const Upload = () =>{
         setObject(modifiedObject);
 
     }
+
+
+    const handleInputValue = (e) => {
+        const { name, value } = e.target;
+        setKeyObject(prevState => ({ ...prevState, [name]: value }));
+        console.log(keyObject);
+    }
+    
 
     return <div className="upload">
     <div className="navbar">
@@ -61,7 +112,9 @@ const Upload = () =>{
                     type="email"
                     id="UserEmail"
                     placeholder="Email"
+                    name="bucketName"
                     className="peer h-8 w-full border-none bg-transparent p-0 placeholder-transparent focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
+                    onChange={handleInputValue}
                 />
 
                 <span
@@ -77,15 +130,24 @@ const Upload = () =>{
                 {/* add key fields */}
                 <div>
                     <input type='text' placeholder='Year'
-                    className="px-4 py-1.5 text-sm rounded-md bg-white border border-gray-400 w-full outline-blue-500" />
+                    className="px-4 py-1.5 text-sm rounded-md bg-white border border-gray-400 w-full outline-blue-500" 
+                    onChange={handleInputValue}
+                    name="year"
+                    />
                 </div>
                 <div>
                     <input type='text' placeholder='Bank Name'
-                    className="px-4 py-1.5 text-sm rounded-md bg-white border border-gray-400 w-full outline-blue-500" />
+                    className="px-4 py-1.5 text-sm rounded-md bg-white border border-gray-400 w-full outline-blue-500" 
+                    onChange={handleInputValue}
+                    name="bankName"
+                    />
                 </div>
                 <div>
                     <input type='text' placeholder='Account Number'
-                    className="px-4 py-1.5 text-sm rounded-md bg-white border border-gray-400 w-full outline-blue-500" />
+                    className="px-4 py-1.5 text-sm rounded-md bg-white border border-gray-400 w-full outline-blue-500" 
+                    onChange={handleInputValue}
+                    name="accountNo"
+                    />
                 </div>
 
                
@@ -107,7 +169,7 @@ const Upload = () =>{
             </div>
             <div className="mainUploadPg">
                 <UploadCard handleObject={handleObject} object={object}/>
-                <UploadTable object={object} handleDelete={handleDelete}/>
+                <UploadTable object={object} handleObject={handleObject} handleDelete={handleDelete}/>
             </div>
         </div>
     </div>

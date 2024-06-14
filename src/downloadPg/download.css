@@ -1,23 +1,21 @@
  .mainUploadPg{
+    
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    justify-content: space-around !important;
+    align-content: stretch !important;
+    align-items: center !important;
 
-
-  display: flex;
-  flex-direction: row;
-  flex-wrap: nowrap;
-  justify-content: space-around;
-  align-items: center;
-  align-content: stretch;
 }
 
 
 .downloadFolder{
     height: 24vh;
     width: 40%;
-    border-radius: 2em;
+    border-radius: 1em;
     padding: 1em;
     box-shadow: 2px 5px 20px 3px rgba(0,0,0,0.1);
-    -webkit-box-shadow: 2px 5px 20px 3px rgba(0,0,0,0.1);
-    -moz-box-shadow: 2px 5px 20px 3px rgba(0,0,0,0.1);
     display: flex;
     align-items: center;
     flex-direction: column;
@@ -28,7 +26,7 @@
 .downloadObject{
     height: 24vh;
     width: 40%;
-    border-radius: 2em;
+    border-radius: 1em;
     padding: 1em;
     box-shadow: 2px 5px 20px 3px rgba(0,0,0,0.1);
     -webkit-box-shadow: 2px 5px 20px 3px rgba(0,0,0,0.1);

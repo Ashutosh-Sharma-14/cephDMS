@@ -7,8 +7,29 @@ import './download.css'
 
 const Download = () =>{
 
+    const [keyObject, setKeyObject] = useState({
+        bucketName:'',
+        year:'',
+        bankName:'',
+        accountNo:''
+    });
+
+    const [Input,setInput] = useState('');
+
+    const handleInputValue = (e) => {
+        const { name, value } = e.target;
+        setKeyObject(prevState => ({ ...prevState, [name]: value }));
+        // console.log(keyObject);
+    }
+
+    const handleFileBtn = () =>{
+
+    }
 
 
+    const handleFolderBtn = () =>{
+
+    }
 
     return <div className="upload">
     <div className="navbar">
@@ -31,7 +52,9 @@ const Download = () =>{
                     type="email"
                     id="UserEmail"
                     placeholder="Email"
+                    name="bucketName"
                     className="peer h-8 w-full border-none bg-transparent p-0 placeholder-transparent focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
+                    onChange={handleInputValue}
                 />
 
                 <span
@@ -47,15 +70,24 @@ const Download = () =>{
                 {/* add key fields */}
                 <div>
                     <input type='text' placeholder='Year'
-                    className="px-4 py-1.5 text-sm rounded-md bg-white border border-gray-400 w-full outline-blue-500" />
+                    className="px-4 py-1.5 text-sm rounded-md bg-white border border-gray-400 w-full outline-blue-500" 
+                    onChange={handleInputValue}
+                    name="year"
+                    />
                 </div>
                 <div>
                     <input type='text' placeholder='Bank Name'
-                    className="px-4 py-1.5 text-sm rounded-md bg-white border border-gray-400 w-full outline-blue-500" />
+                    className="px-4 py-1.5 text-sm rounded-md bg-white border border-gray-400 w-full outline-blue-500" 
+                    onChange={handleInputValue}
+                    name="bankName"
+                    />
                 </div>
                 <div>
                     <input type='text' placeholder='Account Number'
-                    className="px-4 py-1.5 text-sm rounded-md bg-white border border-gray-400 w-full outline-blue-500" />
+                    className="px-4 py-1.5 text-sm rounded-md bg-white border border-gray-400 w-full outline-blue-500" 
+                    onChange={handleInputValue}
+                    name="accountNo"
+                    />
                 </div>
 
                
@@ -69,7 +101,9 @@ const Download = () =>{
                 <div className="downloadFolder">
                     <div className=""> Folder</div>
                     <button type="button"
-                        className="px-5 py-2.5 rounded-lg text-sm tracking-wider font-medium border border-current outline-none bg-green-700 hover:bg-transparent text-white hover:text-green-700 transition-all duration-300">
+                        className="px-5 py-2.5 rounded-lg text-sm tracking-wider font-medium border border-current outline-none bg-green-700 hover:bg-transparent text-white hover:text-green-700 transition-all duration-300"
+                        onClick={handleFolderBtn}
+                        >
                             Download
                     </button>
                 </div>
@@ -84,16 +118,18 @@ const Download = () =>{
                             type="text"
                             id="fileName"
                             placeholder=""
+                            onChange={(e)=>setInput(e.target.value)}
                             className="peer h-8 w-full border-none bg-transparent p-0 placeholder-transparent focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
                         />
 
                         <span
                             className="absolute start-0 top-2 -translate-y-1/2 text-xs text-gray-700 transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-sm peer-focus:top-2 peer-focus:text-xs"
                         >
-                            Enter File Name
+                            Enter File Version ID
                     </span>
                     </label>
                     <button type="button"
+                        onClick={handleFileBtn}
                         className="px-5 py-2.5 rounded-lg text-sm tracking-wider font-medium border border-current outline-none bg-green-700 hover:bg-transparent text-white hover:text-green-700 transition-all duration-300">
                             Download 
                     </button>
