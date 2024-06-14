@@ -12,16 +12,16 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
 
     @Autowired
-    private UserService employeeService;
+    private UserService userService;
 
     @PostMapping("/register")
-    public ResponseEntity<?> registerEmployee(@RequestBody RegistrationForm registrationForm){
+    public ResponseEntity<?> registerUser(@RequestBody RegistrationForm registrationForm){
         System.out.println(registrationForm);
-        return employeeService.registerUser(registrationForm);
+        return userService.registerUser(registrationForm);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> loginEmployee(@RequestBody LoginForm loginForm){
-        return employeeService.authenticateUser(loginForm);
+    public ResponseEntity<?> loginUser(@RequestBody LoginForm loginForm){
+        return userService.authenticateUser(loginForm);
     }
 }

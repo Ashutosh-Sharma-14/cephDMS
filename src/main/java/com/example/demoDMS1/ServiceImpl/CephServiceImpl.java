@@ -1,10 +1,13 @@
 package com.example.demoDMS1.ServiceImpl;
 import com.amazonaws.services.s3.model.ObjectTagging;
+import com.example.demoDMS1.Entity.MetadataEntity;
 import com.example.demoDMS1.Model.CommonResponseDTO;
 import com.example.demoDMS1.Model.DownloadRequestDTO;
 import com.example.demoDMS1.Model.UploadRequestDTO;
+import com.example.demoDMS1.Repository.MetadataRepository;
 import com.example.demoDMS1.Service.CephService;
 
+import com.example.demoDMS1.Service.MetadataService;
 import com.example.demoDMS1.Service.UserRoleService;
 import com.example.demoDMS1.Utility.ResponseBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,6 +51,10 @@ public class CephServiceImpl implements CephService {
 //    @Autowired
 //    private CephConfig cephConfig;
 
+    @Autowired
+    MetadataService metadataService;
+    @Autowired
+    MetadataRepository metadataRepository;
     @Autowired
     UserRoleService userRoleService;
 
@@ -537,6 +544,13 @@ public class CephServiceImpl implements CephService {
         for (int i = 0; i < files.length; i++) {
             Map<String,String> metadata = metadataList.get(i);
             String objectKey = uploadRequestDTO.getObjectKey() + files[i].getOriginalFilename();
+
+//            saving the required data in mongodb collection to implement search
+            MetadataEntity metadataEntity = new MetadataEntity();
+            metadataEntity.setObjectKey(objectKey);
+            metadataEntity.setMetadata(metadata);
+            metadataRepository.save(metadataEntity);
+
             fileUploadFutures.add(uploadFileAsync(files[i],bucketName, objectKey,metadata,userRole));
         }
 

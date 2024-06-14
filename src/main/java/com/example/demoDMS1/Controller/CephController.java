@@ -1,9 +1,11 @@
 package com.example.demoDMS1.Controller;
 
+import com.example.demoDMS1.Entity.MetadataEntity;
 import com.example.demoDMS1.Model.CommonResponseDTO;
 import com.example.demoDMS1.Model.DownloadRequestDTO;
 import com.example.demoDMS1.Model.UploadRequestDTO;
 import com.example.demoDMS1.Service.CephService;
+import com.example.demoDMS1.Service.MetadataService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.ResponseEntity;
@@ -21,9 +23,16 @@ import java.util.concurrent.ExecutionException;
 @RestController
 public class CephController {
     private final CephService cephService;
+    private final MetadataService metadataService;
 
-    CephController(CephService cephService){
+    CephController(CephService cephService, MetadataService metadataService){
         this.cephService = cephService;
+        this.metadataService = metadataService;
+    }
+
+    @GetMapping("/search-objectKey-by-metadata")
+    public List<String> findObjectKeysByMetadataExists(@RequestParam String key){
+        return metadataService.findObjectKeysByMetadataExists(key);
     }
 
     @PostMapping("/enable-versioning")
