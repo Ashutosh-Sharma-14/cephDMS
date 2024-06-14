@@ -7,6 +7,7 @@ import Login from "./loginPg/Login";
 import Signup from "./SignUp/Signup";
 import Download from "./downloadPg/Download";
 import ListBuckets from "./smallCompontes/ListBuckets/ListBuckets";
+import ListObject from "./smallCompontes/ListObject/ListObject";
 
 const App = () =>{
   return <>
@@ -19,6 +20,8 @@ const App = () =>{
           <Route path="/signup" element={<Signup />} />
           <Route path="/download" element={<Download />} />
           <Route path="/list-buckets" element={<ListBuckets />} />
+          <Route path="/list-object" element={<ListObject />} />
+
 
 
 

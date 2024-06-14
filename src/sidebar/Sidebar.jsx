@@ -66,10 +66,16 @@ const Sidebar = () => {
           </Link>
           </li>
           <li>
-            <a href="/download"
+            <Link to="/download"
               className="text-black hover:text-blue-600 text-sm flex items-center hover:bg-blue-50 rounded px-4 py-3 transition-all">
               <span>Download File / Folder</span>
-            </a>
+            </Link>
+            <li>
+            <Link to="/list-object"
+              className="text-black hover:text-blue-600 text-sm flex items-center hover:bg-blue-50 rounded px-4 py-3 transition-all">
+              <span>List Objects</span>
+            </Link>
+          </li>
           </li>
         </ul>
       </div>

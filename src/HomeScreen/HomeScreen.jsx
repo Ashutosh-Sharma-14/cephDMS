@@ -1,9 +1,11 @@
+import './homeScreen.css'
+
 const HomeScreen = () => {
     
     return (<>
     <section class="bg-gray-50">
-  <div class="mx-auto max-w-screen-xl px-4 py-32 lg:flex lg:h-screen lg:items-center">
-    <div class="mx-auto max-w-xl text-center">
+  <div class="mx-auto max-w-screen-xl px-4 py-3 lg:flex lg:h-screen lg:items-center">
+    <div class="mainContent mx-auto max-w-xl text-center">
       <h1 class="text-3xl font-extrabold sm:text-5xl">
         Document Management 
         <strong class="font-extrabold text-red-700 sm:block">System Using Ceph. </strong>

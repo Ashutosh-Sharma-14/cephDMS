@@ -30,8 +30,6 @@ const Upload = () =>{
         for(let i=0; i<object.length; i++)
             listOfMapOfStrings.push(object[i].metadataJson)
 
-
-
         // console.log(listOfMapOfStrings);
         
 

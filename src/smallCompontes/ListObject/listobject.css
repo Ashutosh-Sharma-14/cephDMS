@@ -1,4 +1,5 @@
 .mainUploadPg{
+
   display: flex !important;
   flex-direction: row !important;
   flex-wrap: wrap !important;
@@ -6,12 +7,13 @@
   align-items: center !important;
   align-content: space-between !important;
   height: 70vh !important;
-  overflow-y: auto !important;
-  width: 100% !important;
+  overflow-y: auto;
+  width: 100%;
 border-radius: 1em;
 margin-top: 2em;
-}
 
-.mainUploadPg::-webkit-scrollbar{
-  display: none;
+
 }
+.mainUploadPg::-webkit-scrollbar{
+    display: none;
+  }

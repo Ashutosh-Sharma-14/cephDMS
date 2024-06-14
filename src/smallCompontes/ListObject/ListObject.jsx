@@ -1,11 +1,11 @@
 import Navbar from "../../navbar/Navbar";
 import Sidebar from "../../sidebar/Sidebar";
 import '../../uploadPg/upload.css'
-import BucketCard from "../BucketCard";
-import './listBuckets.css'
+import ObjectCard from "../ObjectCard";
+import './listobject.css'
 
 
-const ListBuckets = () =>{
+const ListObject = () =>{
 
     
     return <div className="upload">
@@ -43,31 +43,43 @@ const ListBuckets = () =>{
 
             <button type="button"
                 className="px-5 py-2.5 rounded-lg text-sm tracking-wider font-medium border border-current outline-none bg-green-700 hover:bg-transparent text-white hover:text-green-700 transition-all duration-300">
-                    Fetch Buckets
+                    Fetch Objects
             </button>
             </div>
             <div className="mainUploadPg">
-                <BucketCard />
-                <BucketCard />
-                <BucketCard />
-                <BucketCard />
-                <BucketCard />
-                <BucketCard />
+                <ObjectCard />
+                <ObjectCard />
+                <ObjectCard />
+                <ObjectCard />
+                <ObjectCard />
+                <ObjectCard />
+                <ObjectCard />
+                <ObjectCard />
+                <ObjectCard />
+                <ObjectCard />
+                <ObjectCard />
+                <ObjectCard />
+                <ObjectCard />
+                <ObjectCard />
+                <ObjectCard />
+                <ObjectCard />
+                <ObjectCard />
+                <ObjectCard />
+                <ObjectCard />
+                <ObjectCard />
+                <ObjectCard />
+                <ObjectCard />
+                <ObjectCard />
 
-                <BucketCard />
-                <BucketCard />
-                <BucketCard />
-                <BucketCard />
-                <BucketCard />
-                <BucketCard />
-                <BucketCard />
-                <BucketCard />
-                <BucketCard />
-                <BucketCard />
-                <BucketCard />
-                <BucketCard />
-                <BucketCard />
-                <BucketCard />
+                <ObjectCard />
+                <ObjectCard />
+                <ObjectCard />
+                <ObjectCard />
+                <ObjectCard />
+                <ObjectCard />
+                <ObjectCard />
+
+
 
 
             </div>
@@ -76,4 +88,4 @@ const ListBuckets = () =>{
     </div>
 }
 
-export default ListBuckets;
+export default ListObject;
