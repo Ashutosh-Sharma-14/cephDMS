@@ -123,7 +123,8 @@ public class CephController {
 
 
     @GetMapping("/download-file-from-ceph")
-    public ResponseEntity<CommonResponseDTO<?>> downloadFileFromCeph(@RequestBody DownloadRequestDTO downloadRequestDTO) throws IOException {
+    public ResponseEntity<CommonResponseDTO<?>> downloadFileFromCeph(@RequestParam String bucketName,@RequestParam String objectKey, @RequestParam String versionId) throws IOException {
+        DownloadRequestDTO downloadRequestDTO = new DownloadRequestDTO(bucketName,objectKey,versionId);
         return cephService.downloadFile(downloadRequestDTO);
     }
 
