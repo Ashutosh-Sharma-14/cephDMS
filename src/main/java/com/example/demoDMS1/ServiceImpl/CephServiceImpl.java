@@ -543,7 +543,8 @@ public class CephServiceImpl implements CephService {
 
         for (int i = 0; i < files.length; i++) {
             Map<String,String> metadata = metadataList.get(i);
-            String objectKey = uploadRequestDTO.getObjectKey() + files[i].getOriginalFilename();
+            UUID uuid = UUID.randomUUID();
+            String objectKey = uploadRequestDTO.getObjectKey() + uuid;
 
 //            saving the required data in mongodb collection to implement search
             MetadataEntity metadataEntity = new MetadataEntity();
@@ -604,7 +605,7 @@ public class CephServiceImpl implements CephService {
     }
 
     @Async
-    public CompletableFuture<String> downloadFileAsync(String key, String downloadDir){
+    public CompletableFuture<String> downloadFileAsync(String bucketName,String key, String downloadDir){
         LocalDateTime startTime = LocalDateTime.now();
         try{
             File directory = new File(downloadDir);
@@ -644,7 +645,7 @@ public class CephServiceImpl implements CephService {
     }
 
     @Override
-    public List<String> downloadMultipleFiles(String prefix) throws ExecutionException, InterruptedException {
+    public List<String> downloadMultipleFiles(String bucketName,String prefix) throws ExecutionException, InterruptedException {
         String downloadDir = System.getProperty("user.home") + "/Downloads" + "/" + prefix;
 
 //        list of array to store download results received using CompletableFuture
@@ -664,11 +665,11 @@ public class CephServiceImpl implements CephService {
 //            size of key is > 1 and size of prefix is 0
             if(object.size() > 0){
                 System.out.println(key);
-                fileDownloadFutures.add(downloadFileAsync(key, downloadDir));
+                fileDownloadFutures.add(downloadFileAsync(bucketName,key, downloadDir));
             }
             else{
                 System.out.println(key);
-                downloadMultipleFiles(key);
+                downloadMultipleFiles(bucketName,key);
             }
         }
 

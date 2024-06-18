@@ -60,5 +60,5 @@ public interface CephService {
 
     ResponseEntity<CommonResponseDTO<?>> downloadFile(DownloadRequestDTO downloadRequestDTO) throws IOException;
 
-    List<String> downloadMultipleFiles(String prefix) throws IOException, ExecutionException,InterruptedException;
+    List<String> downloadMultipleFiles(String bucketName, String prefix) throws IOException, ExecutionException,InterruptedException;
 }

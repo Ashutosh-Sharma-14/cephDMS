@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 @RestController
+@RequestMapping("/user")
 public class CephController {
     private final CephService cephService;
     private final MetadataService metadataService;
@@ -127,7 +128,7 @@ public class CephController {
     }
 
     @GetMapping("/download-multiple-files-from-ceph")
-    public List<String> downloadMultipleFilesFromCeph(@RequestParam String prefix) throws IOException, ExecutionException, InterruptedException {
-        return cephService.downloadMultipleFiles(prefix);
+    public List<String> downloadMultipleFilesFromCeph(@RequestParam String bucketName,@RequestParam String prefix) throws IOException, ExecutionException, InterruptedException {
+        return cephService.downloadMultipleFiles(bucketName,prefix);
     }
 }
