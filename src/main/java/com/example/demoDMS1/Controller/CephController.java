@@ -110,7 +110,7 @@ public class CephController {
     }
 
     @PostMapping("/upload-multiple-files-to-ceph")
-    public ResponseEntity<CommonResponseDTO<?>> uploadMultipleFilesToCeph(@RequestPart MultipartFile[] files,
+    public ResponseEntity<CommonResponseDTO<?>> uploadMultipleFilesToCeph(@RequestPart("multipartFiles") MultipartFile[] files,
                                                                        @RequestPart String bucketName,
                                                                        @RequestPart String objectKey,
                                                                        @RequestPart String userRole,

@@ -18,3 +18,7 @@ public class UploadRequestDTO {
     String userRole;
     List<Map<String, String>> metadata;
 }
+
+
+
+

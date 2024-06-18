@@ -540,6 +540,11 @@ public class CephServiceImpl implements CephService {
         String bucketName = uploadRequestDTO.getBucketName();
         String userRole = uploadRequestDTO.getUserRole();
         List<Map<String, String>> metadataList = uploadRequestDTO.getMetadata();
+        System.out.println(files.length);
+        System.out.println(bucketName);
+        System.out.println(userRole);
+        System.out.println(metadataList.get(0));
+
 
         for (int i = 0; i < files.length; i++) {
             Map<String,String> metadata = metadataList.get(i);
