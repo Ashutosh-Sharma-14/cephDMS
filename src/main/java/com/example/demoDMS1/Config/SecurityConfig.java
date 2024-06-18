@@ -28,11 +28,11 @@ public class SecurityConfig {
                         .permitAll()
                         .anyRequest().authenticated()
                 )
-                .formLogin(
-                        login -> login
-                                .loginPage("/login")
-                                .permitAll()
-                )
+//                .formLogin(
+//                        login -> login
+//                                .loginPage("/login")
+//                                .permitAll()
+//                )
                 .logout(
                         LogoutConfigurer::permitAll
                 );
