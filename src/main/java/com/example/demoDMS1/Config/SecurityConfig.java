@@ -8,7 +8,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 //import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.config.annotation.web.configurers.LogoutConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -24,20 +23,11 @@ public class SecurityConfig {
 //                the 403 Forbidden error gets resolved when csrf (Cross site request forgery is disabled)
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/register","/login")
+                        .anyRequest()
                         .permitAll()
-                        .anyRequest().authenticated()
-                )
-//                .formLogin(
-//                        login -> login
-//                                .loginPage("/login")
-//                                .permitAll()
-//                )
-                .logout(
-                        LogoutConfigurer::permitAll
                 );
-
 //                .httpBasic(Customizer.withDefaults());
+//                .formLogin(Customizer.withDefaults());
         return http.build();
     }
 

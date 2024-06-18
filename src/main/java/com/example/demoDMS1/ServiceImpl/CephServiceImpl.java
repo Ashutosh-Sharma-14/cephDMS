@@ -159,16 +159,19 @@ public class CephServiceImpl implements CephService {
     public ResponseEntity<?> listBuckets() {
         ListBucketsResponse response = s3Client.listBuckets(ListBucketsRequest.builder().build());
         List<Bucket> buckets = response.buckets();
+        List<String> bucketNames = new ArrayList<>();
 
         System.out.println("Listing buckets:");
-        for(Bucket bucket: buckets){
+        for( Bucket bucket: buckets){
+            bucketNames.add(bucket.name());
             System.out.println(bucket);
         }
+
         if(buckets.isEmpty()){
             return ResponseEntity.ok().body("No buckets present");
         }
         else{
-            return ResponseEntity.ok().body(buckets);
+            return ResponseEntity.ok().body(bucketNames);
         }
     }
 
