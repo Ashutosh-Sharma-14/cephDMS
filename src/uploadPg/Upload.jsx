@@ -4,7 +4,7 @@ import UploadCard from "../smallCompontes/uploadCard/UploadCard";
 import UploadTable from "../table/UploadTable";
 import '../uploadPg/upload.css'
 import { useState } from "react";
-
+import axios from "axios";
 
 
 const Upload = () =>{
@@ -41,11 +41,33 @@ const Upload = () =>{
 
         let tempKey = `${keyObject.bucketName}/${keyObject.year}/${keyObject.bankName}/${keyObject.accountNo}`;
 
-            const formData = new FormData();
-            formData.append('bucketName', keyObject.bucketName);
-            formData.append('objectKey', tempKey);
-            formData.append('userRole', 'branch-manager');
-            formData.append('metadata', JSON.stringify(listOfMapOfStrings));
+
+            const finalArray = [];
+            for(let j=0; j<object.length; j++){
+                // for(let i = 0; i<object[j].fileArray.length; i++)object[j].fileArray[0].name{
+                finalArray.push(object[j].fileArray[0])
+                // formData.append('files',object[j].fileArray[0]);
+                // console.log(object[j].fileArray[0].name);
+                // }
+                }
+
+            const formDataExample = {
+                'bucketName': keyObject.bucketName,
+                'objectKey' : tempKey,
+                'userRole' : 'branch-manager',
+                'metadataJson' : JSON.stringify(listOfMapOfStrings)
+            };
+
+            finalArray.forEach(file => {
+                formDataExample["multipartFiles"] = file;
+                // formDataExample.append('multipartFiles', file);  // Use 'multipartFiles' to match backend
+            });
+
+
+            // formData.append('bucketName', keyObject.bucketName);
+            // formData.append('objectKey', tempKey);
+            // formData.append('userRole', 'branch-manager');
+            // formData.append('metadata', JSON.stringify(listOfMapOfStrings));
             // console.log()
             
 
@@ -66,14 +88,14 @@ const Upload = () =>{
             //         object[0].fileArray[0].name
             //   });
 
-            const finalArray = [];
-            for(let j=0; j<object.length; j++){
-                // for(let i = 0; i<object[j].fileArray.length; i++)object[j].fileArray[0].name{
-                finalArray.push(object[j].fileArray[0])
-                // formData.append('files',object[j].fileArray[0]);
-                // console.log(object[j].fileArray[0].name);
-                // }
-                }
+            // const finalArray = [];
+            // for(let j=0; j<object.length; j++){
+            //     // for(let i = 0; i<object[j].fileArray.length; i++)object[j].fileArray[0].name{
+            //     finalArray.push(object[j].fileArray[0])
+            //     // formData.append('files',object[j].fileArray[0]);
+            //     // console.log(object[j].fileArray[0].name);
+            //     // }
+            //     }
                 // Clear formData.append('files', finalArray); and replace with a loop
             // finalArray.forEach(file => {
             //     formData.append('multipartFiles', file);  // Use 'multipartFiles' to match backend
@@ -81,13 +103,13 @@ const Upload = () =>{
             // formData.append('multipartFiles', finalArray);  // Use 'multipartFiles' to match backend
 
 
-            finalArray.forEach((file, index) => {
-                formData.append(`multipartFiles`, file);
-            });
+            // finalArray.forEach((file, index) => {
+            //     formData.append(`multipartFiles`, file);
+            // });
 
 
 
-            console.log([...formData.entries()]);
+            // console.log([...formDataExample.entries()]);
 
 
             // formData.append(`files`, finalArray);
@@ -99,22 +121,37 @@ const Upload = () =>{
             // console.log(formData)
 
             console.log(object.length)
+            // try {
+            //     const response = await fetch('http://localhost:8080/user/upload-multiple-files-to-ceph', {
+            //         method: 'POST',
+            //         body: formData,
+            //         headers: headers
+            //     });
+            
+            //     if (!response.ok) {
+            //         throw new Error('Network response was not ok');
+            //     }
+            
+            //     const responseData = await response.json();
+            //     console.log('Upload successful:', responseData);
+            // } catch (error) {
+            //     console.error('Error uploading files:', error);
+            // }
+
             try {
-                const response = await fetch('http://localhost:8080/user/upload-multiple-files-to-ceph', {
-                    method: 'POST',
-                    body: formData,
-                    headers: headers
+                const response = await axios.post('http://localhost:8080/user/upload-multiple-files-to-ceph', formDataExample, {
+                  headers:{'Content-Type' : `multipart/form-data; boundary=${boundary}`}
                 });
+                // Handle response
+                console.log('Response:', response);
+              } catch (error) {
+                // Handle error
+                console.error('Error:', error);
+              }
+              
+
+
             
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-            
-                const responseData = await response.json();
-                console.log('Upload successful:', responseData);
-            } catch (error) {
-                console.error('Error uploading files:', error);
-            }
             
 
         }
