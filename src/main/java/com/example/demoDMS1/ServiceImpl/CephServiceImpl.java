@@ -408,7 +408,6 @@ public class CephServiceImpl implements CephService {
                 objectKeys.add(objectKey);
             }
         }
-
         return ResponseEntity.ok().body(objectKeys);
     }
 
@@ -543,11 +542,10 @@ public class CephServiceImpl implements CephService {
         String bucketName = uploadRequestDTO.getBucketName();
         String userRole = uploadRequestDTO.getUserRole();
         List<Map<String, String>> metadataList = uploadRequestDTO.getMetadata();
-        System.out.println(files.length);
-        System.out.println(bucketName);
-        System.out.println(userRole);
-        System.out.println(metadataList.get(0));
-
+//        System.out.println(files.length);
+//        System.out.println(bucketName);
+//        System.out.println(userRole);
+//        System.out.println(metadataList.get(0));
 
         for (int i = 0; i < files.length; i++) {
             Map<String,String> metadata = metadataList.get(i);
@@ -556,6 +554,7 @@ public class CephServiceImpl implements CephService {
 
 //            saving the required data in mongodb collection to implement search
             MetadataEntity metadataEntity = new MetadataEntity();
+            metadataEntity.setUuid(uuid.toString());
             metadataEntity.setObjectKey(objectKey);
             metadataEntity.setMetadata(metadata);
             metadataRepository.save(metadataEntity);
@@ -583,9 +582,9 @@ public class CephServiceImpl implements CephService {
 
     @Override
     public ResponseEntity<CommonResponseDTO<?>> downloadFile(DownloadRequestDTO downloadRequestDTO) {
-        String downloadPath = System.getProperty("user.home") + "/Downloads";
+        String downloadDestination = System.getProperty("user.home") + "/Downloads";
 
-        File downloadDir = new File(downloadPath);
+        File downloadDir = new File(downloadDestination);
         if (!downloadDir.exists()) {
             downloadDir.mkdirs();
         }
@@ -595,17 +594,20 @@ public class CephServiceImpl implements CephService {
 //            Answer: The buffering is internally managed by S3Client, but if customization is required we need to use get the inputStream and buffer manually
             s3Client.getObject(
 //                    lambda expression. Curly brackets can be removed in case of single statement
-                    req -> req.bucket(downloadRequestDTO.getBucketName()).key(downloadRequestDTO.getObjectKey()).versionId(downloadRequestDTO.getVersionId()),
-                    Paths.get(downloadPath)
+                    req -> req.bucket(downloadRequestDTO.getBucketName())
+                            .key(downloadRequestDTO.getObjectKey())
+                            .versionId(downloadRequestDTO.getVersionId()),
+                    Paths.get(downloadDestination)
             );
         }
         catch (Exception e){
             e.getStackTrace();
         }
-        File downloadedFile = new File(downloadPath);
+        File downloadedFile = new File(downloadDestination+downloadRequestDTO.getObjectKey());
         if(downloadedFile.length() == 0){
             System.out.println("Checking if download is successful");
-            CommonResponseDTO<?> commonResponseDTO = ResponseBuilder.unsuccessfulDownloadResponse(501,"Size of file is zero");
+            System.out.println(downloadRequestDTO.getObjectKey());
+            CommonResponseDTO<?> commonResponseDTO = ResponseBuilder.unsuccessfulDownloadResponse(501,"No file with ObjectKey: " + downloadRequestDTO.getObjectKey() + " exists");
             return new ResponseEntity<>(commonResponseDTO, HttpStatus.valueOf(501));
         }
         CommonResponseDTO<?> commonResponseDTO = ResponseBuilder.successfulDownloadResponse(200,"File downloaded successfully", LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
