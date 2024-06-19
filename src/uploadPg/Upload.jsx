@@ -39,7 +39,7 @@ const Upload = () =>{
 
         
 
-        let tempKey = `${keyObject.bucketName}/${keyObject.year}/${keyObject.bankName}/${keyObject.accountNo}`;
+        let tempKey = `${keyObject.year}/${keyObject.bankName}/${keyObject.accountNo}/`;
 
 
             const finalArray = [];
