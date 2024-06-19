@@ -582,7 +582,7 @@ public class CephServiceImpl implements CephService {
 
     @Override
     public ResponseEntity<CommonResponseDTO<?>> downloadFile(DownloadRequestDTO downloadRequestDTO) {
-        String downloadDestination = System.getProperty("user.home") + "/Downloads";
+        String downloadDestination = System.getProperty("user.home") + "/Downloads/";
 
         File downloadDir = new File(downloadDestination);
         if (!downloadDir.exists()) {
@@ -597,7 +597,7 @@ public class CephServiceImpl implements CephService {
                     req -> req.bucket(downloadRequestDTO.getBucketName())
                             .key(downloadRequestDTO.getObjectKey())
                             .versionId(downloadRequestDTO.getVersionId()),
-                    Paths.get(downloadDestination)
+                    Paths.get(downloadDestination+downloadRequestDTO.getObjectKey())
             );
         }
         catch (Exception e){
