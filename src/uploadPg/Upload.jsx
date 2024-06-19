@@ -39,7 +39,7 @@ const Upload = () =>{
 
         
 
-        let tempKey = `${keyObject.bucketName}/${keyObject.year}/${keyObject.bankName}/${keyObject.accountNo}`;
+        let tempKey = `${keyObject.year}/${keyObject.bankName}/${keyObject.accountNo}/`;
 
 
             const finalArray = [];
@@ -49,28 +49,34 @@ const Upload = () =>{
                 // formData.append('files',object[j].fileArray[0]);
                 // console.log(object[j].fileArray[0].name);
                 // }
-                }
+            }
 
-            const formDataExample = {
-                'bucketName': keyObject.bucketName,
-                'objectKey' : tempKey,
-                'userRole' : 'branch-manager',
-                'metadataJson' : JSON.stringify(listOfMapOfStrings)
-            };
-
+            const formData = new FormData()
             finalArray.forEach(file => {
-                formDataExample["multipartFiles"] = file;
-                // formDataExample.append('multipartFiles', file);  // Use 'multipartFiles' to match backend
+                formData.append('multipartFiles', file);
             });
+            formData.append('bucketName', keyObject.bucketName);
+            formData.append('objectKey', tempKey);
+            formData.append('userRole', 'branch-manager');
+            formData.append('metadataJson', JSON.stringify(listOfMapOfStrings));
+            // formData.append('multipartFiles',finalArray)
 
+            // const formDataExample = {
+            //     'bucketName': keyObject.bucketName,
+            //     'objectKey' : tempKey,
+            //     'userRole' : 'branch-manager',
+            //     'metadataJson' : JSON.stringify(listOfMapOfStrings),
+            //     "multipartFiles" : finalArray
 
-            // formData.append('bucketName', keyObject.bucketName);
-            // formData.append('objectKey', tempKey);
-            // formData.append('userRole', 'branch-manager');
-            // formData.append('metadata', JSON.stringify(listOfMapOfStrings));
+            // };
+            // finalArray.forEach((file,idx) => {
+            //     // formDataExample[`multipartFiles${idx}`] = file;
+            //     formDataExample.append('multiparfile')
+            //     // formDataExample.append('multipartFiles', file);  // Use 'multipartFiles' to match backend
+            //     console.log(formDataExample.bucketName);
+            // });
             // console.log()
-            
-
+    
             const headers = new Headers();
 
             headers.append('Content-Type', `multipart/form-data; boundary=${boundary}`);
@@ -109,7 +115,7 @@ const Upload = () =>{
 
 
 
-            // console.log([...formDataExample.entries()]);
+            console.log([...formData.entries()]);
 
 
             // formData.append(`files`, finalArray);
@@ -139,7 +145,7 @@ const Upload = () =>{
             // }
 
             try {
-                const response = await axios.post('http://localhost:8080/user/upload-multiple-files-to-ceph', formDataExample, {
+                const response = await axios.post('http://localhost:8080/user/upload-multiple-files-to-ceph', formData, {
                   headers:{'Content-Type' : `multipart/form-data; boundary=${boundary}`}
                 });
                 // Handle response
