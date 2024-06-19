@@ -3,17 +3,18 @@ import './uploadCard.css';
 import Metadata from '../../Jsons/dropDownJson.json';
 
 const UploadCard = ({ handleObject, object }) => {
-    const [fileName, setFileName] = useState('Plese Add File');
+    const [fileName, setFileName] = useState('Please Add File');
     const [dropdownOpen, setDropDownOpen] = useState(false);
     const [domain, setDomain] = useState('Domain');
     const [domains, setDomains] = useState([]);
     const [meta, setMeta] = useState({});
+
     const [table, setTable] = useState({
         fileName: '',
         metadataJson: {},
         fileArray: []
     });
-
+    
     const handFields = (e) => {
         const { name, value } = e.target;
 
@@ -63,8 +64,9 @@ const UploadCard = ({ handleObject, object }) => {
         // console.log(object);
 
 
+
         // Clear all the fields and reset values
-        setFileName('Plese Add File');
+        setFileName('Please Add File');
         setDomain('Domain');
         setDomains([]);
         setMeta({});
@@ -78,7 +80,7 @@ const UploadCard = ({ handleObject, object }) => {
     return (
         <div className="uploadCard">
             <div className="key">
-                <p className='filename'>FileName : {fileName}</p>
+                <p className='filename'>File Name : {fileName}</p>
                 <label htmlFor="uploadFile1" className="flex bg-gray-800 hover:bg-gray-700 text-white text-base px-5 py-3 outline-none rounded w-max cursor-pointer mx-auto font-[sans-serif]">
                     <svg xmlns="http://www.w3.org/2000/svg" className="w-6 mr-2 fill-white inline" viewBox="0 0 32 32">
                         <path d="M23.75 11.044a7.99 7.99 0 0 0-15.5-.009A8 8 0 0 0 9 27h3a1 1 0 0 0 0-2H9a6 6 0 0 1-.035-12 1.038 1.038 0 0 0 1.1-.854 5.991 5.991 0 0 1 11.862 0A1.08 1.08 0 0 0 23 13a6 6 0 0 1 0 12h-3a1 1 0 0 0 0 2h3a8 8 0 0 0 .75-15.956z" />

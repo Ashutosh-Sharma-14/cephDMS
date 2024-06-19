@@ -3,9 +3,10 @@
     display: flex !important;
     flex-direction: row !important;
     flex-wrap: nowrap !important;
-    justify-content: space-around !important;
+    justify-content: space-evenly !important;
     align-content: stretch !important;
     align-items: center !important;
+    width: 100%;
 
 }
 
@@ -118,4 +119,34 @@ button {
 .downloadObject button:hover {
     background-color: transparent;
     color: #2ecc71;
+}
+
+.btn:disabled{
+    opacity: 0.5; 
+    cursor: not-allowed; 
+    background-color: #ccc; 
+    color: #999;
+    border-color: #999; 
+}
+
+.labelClassName{
+    /* border: 2px solid red !important; */
+    padding-bottom: 12px !important;
+    height: 15vh !important;
+
+}
+
+#fileName, #VersionID{
+    margin-bottom: 4% !important;
+    width: 100% !important;
+    font-size: 0.9rem;
+    font-weight: 400 !important;
+}
+
+.labelSpan {
+    /* border: 2px solid red; */
+    margin: 2% !important;
+    /* padding: 5% 0; */
+    margin-bottom: 5% !important;
+    font-size: small;
 }

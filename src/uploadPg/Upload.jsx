@@ -4,7 +4,6 @@ import UploadCard from "../smallCompontes/uploadCard/UploadCard";
 import UploadTable from "../table/UploadTable";
 import '../uploadPg/upload.css'
 import { useState } from "react";
-import axios from "axios";
 
 
 
@@ -31,6 +30,13 @@ const Upload = () =>{
             listOfMapOfStrings.push(object[i].metadataJson)
 
         // console.log(listOfMapOfStrings);
+        function generateBoundary() {
+            return '--------------------------' + Math.random().toString(36).substr(2, 16);
+        }
+        
+        const boundary = generateBoundary();
+        // console.log(object[3].fileArray[0]);
+
         
 
         let tempKey = `${keyObject.bucketName}/${keyObject.year}/${keyObject.bankName}/${keyObject.accountNo}`;
@@ -41,6 +47,11 @@ const Upload = () =>{
             formData.append('userRole', 'branch-manager');
             formData.append('metadata', JSON.stringify(listOfMapOfStrings));
             // console.log()
+            
+
+            const headers = new Headers();
+
+            headers.append('Content-Type', `multipart/form-data; boundary=${boundary}`);
 
             // const formDataObject = {};
             // for (const [key, value] of formData.entries()) {
@@ -56,35 +67,43 @@ const Upload = () =>{
             //   });
 
             const finalArray = [];
-            for(let i = 0; i<object[0].fileArray.length; i++)
-                finalArray.push(object[0].fileArray[i]);
-            formData.append(`files`, finalArray);
-            
+            for(let j=0; j<object.length; j++){
+                // for(let i = 0; i<object[j].fileArray.length; i++)object[j].fileArray[0].name{
+                finalArray.push(object[j].fileArray[0])
+                // formData.append('files',object[j].fileArray[0]);
+                // console.log(object[j].fileArray[0].name);
+                // }
+                }
+                // Clear formData.append('files', finalArray); and replace with a loop
+            // finalArray.forEach(file => {
+            //     formData.append('multipartFiles', file);  // Use 'multipartFiles' to match backend
+            // });
+            // formData.append('multipartFiles', finalArray);  // Use 'multipartFiles' to match backend
 
+
+            finalArray.forEach((file, index) => {
+                formData.append(`multipartFiles`, file);
+            });
+
+
+
+            console.log([...formData.entries()]);
+
+
+            // formData.append(`files`, finalArray);
+                    // finalArray.push(object[j].fileArray[i]);
+                    // console.log(object[j].fileArray[i]);
+
+            
 
             // console.log(formData)
 
-            
-            // try {
-            //     // Make POST request
-            //     const response = await axios.post('http://localhost:8080/upload-multiple-files-to-ceph', formData, {
-            //         headers: {
-            //             'Content-Type': 'multipart/form-data'
-            //         }
-            //     });
-        
-            //     console.log('Upload successful:', response);
-            // } catch (error) {
-            //     console.error('Error uploading files:', error);
-            // }
-
+            console.log(object.length)
             try {
-                const response = await fetch('http://localhost:8080/upload-multiple-files-to-ceph', {
+                const response = await fetch('http://localhost:8080/user/upload-multiple-files-to-ceph', {
                     method: 'POST',
                     body: formData,
-                    headers: {
-                        'Content-Type': 'multipart/form-data'
-                    }
+                    headers: headers
                 });
             
                 if (!response.ok) {

@@ -3,7 +3,7 @@ import Row from '../smallCompontes/uploadCard/Row';
 import './uploadtable.css'
 
 const UploadTable = ({object, handleDelete}) =>{
-
+  
 
 
     return <div className='uploadtable'>

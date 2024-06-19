@@ -11,10 +11,28 @@ const Download = () =>{
         bucketName:'',
         year:'',
         bankName:'',
-        accountNo:''
+        accountNo:'',
+        fileName:'',
+        versionID:''
     });
 
-    const [Input,setInput] = useState('');
+    function buildPrefix(fileYear, bankName, accountNo) {
+        let prefixBuilder = '';
+            if (fileYear && fileYear !== '') {
+                prefixBuilder += fileYear;
+                if (bankName && bankName !== '') {
+                    prefixBuilder += `/${bankName}`;
+                    if (accountNo && accountNo !== '') {
+                        prefixBuilder += `/${accountNo}/`;
+                    }
+                }
+            }
+        
+    
+        return prefixBuilder;
+    }
+
+    const [btn,setBtn] = useState(false);
 
     const handleInputValue = (e) => {
         const { name, value } = e.target;
@@ -22,12 +40,91 @@ const Download = () =>{
         // console.log(keyObject);
     }
 
-    const handleFileBtn = () =>{
+    const handleFileBtn = async () =>{
+        let tempKey = buildPrefix(keyObject.year,keyObject.bankName,keyObject.accountNo);
+        // console.log('file', tempKey);
+
+
+        // Assuming you have an instance of DownloadRequestDTO or its equivalent in JavaScript
+            const downloadRequest = {
+                bucketName: keyObject.bucketName,
+                objectKey: tempKey === '' ? `/${keyObject.fileName}` : tempKey,
+                versionId: keyObject.versionID
+            };
+
+            // console.log(tempKey)
+
+            // Function to construct FormData object
+            function createFormData(downloadRequest) {
+                const formData = new FormData();
+
+                // Append properties to FormData object
+                formData.append('bucketName', downloadRequest.bucketName);
+                formData.append('objectKey', downloadRequest.objectKey);
+                formData.append('versionId', downloadRequest.versionId);
+
+                return formData;
+            }
+
+            // Example usage:
+            const formData = createFormData(downloadRequest);
+
+            // Constructing the URL with query parameters
+            const url = new URL('http://localhost:8080/user/download-file-from-ceph'); // Replace with your actual endpoint URL
+            url.search = new URLSearchParams(formData).toString();
+
+            // Making the GET request using fetch
+            setBtn(true)
+            try {
+                setBtn(true)
+                const response = await fetch(url.toString(), {
+                    method: 'GET',
+                });
+                setBtn(false)
+    
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+    
+                const responseData = await response.json(); // Assuming response is JSON
+                console.log('Download successful:', responseData);
+            } catch (error) {
+                console.error('Error downloading files:', error);
+            }
 
     }
 
 
-    const handleFolderBtn = () =>{
+    const handleFolderBtn = async () =>{
+        // Assuming keyObject contains the necessary parameters like year, bankName, and accountNo
+        // let tempKey = `${keyObject.year}/${keyObject.bankName}/${keyObject.accountNo}`;
+        
+        let tempKey = buildPrefix(keyObject.year,keyObject.bankName,keyObject.accountNo);
+        // console.log('folder', tempKey);
+
+        // Constructing the URL with query parameters
+        const url = new URL('http://localhost:8080/user/download-multiple-files-from-ceph');
+        url.searchParams.append('prefix', tempKey);
+        url.searchParams.append('bucketName',keyObject.bucketName);
+
+        try {
+            setBtn(true)
+            const response = await fetch(url.toString(), {
+                method: 'GET',
+            });
+            setBtn(false)
+
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+
+            const responseData = await response.json(); // Assuming response is JSON
+            console.log('Download successful:', responseData);
+        } catch (error) {
+            console.error('Error downloading files:', error);
+        }
+
+
 
     }
 
@@ -101,31 +198,53 @@ const Download = () =>{
                 <div className="downloadFolder">
                     <div className=""> Folder</div>
                     <button type="button"
-                        className="px-5 py-2.5 rounded-lg text-sm tracking-wider font-medium border border-current outline-none bg-green-700 hover:bg-transparent text-white hover:text-green-700 transition-all duration-300"
+                        className="btn px-5 py-2.5 rounded-lg text-sm tracking-wider font-medium border border-current outline-none bg-green-700 hover:bg-transparent text-white hover:text-green-700 transition-all duration-300"
                         onClick={handleFolderBtn}
+                        disabled={btn}
                         >
-                            Download
+                            Download 
                     </button>
                 </div>
                 <div className="downloadObject">
                     <div className=""> File</div>
                     <label
                         htmlFor="fileName"
-                        className="relative block overflow-hidden border-b border-gray-200 bg-transparent pt-3 focus-within:border-blue-600"
+                        className="labelClassName relative block overflow-hidden border-b border-gray-200 bg-transparent pt-3 focus-within:border-blue-600"
 
                         >
                         <input
                             type="text"
                             id="fileName"
-                            placeholder=""
-                            onChange={(e)=>setInput(e.target.value)}
+                            name="fileName"
+                            placeholder="File Name"
+                            onChange={handleInputValue}
                             className="peer h-8 w-full border-none bg-transparent p-0 placeholder-transparent focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
                         />
 
                         <span
-                            className="absolute start-0 top-2 -translate-y-1/2 text-xs text-gray-700 transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-sm peer-focus:top-2 peer-focus:text-xs"
+                            className="labelSpan absolute start-0 top-2 -translate-y-1/2 text-xs text-gray-700 transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-sm peer-focus:top-2 peer-focus:text-xs"
                         >
-                            Enter File Version ID
+                            {/* File Name */}
+                    </span>
+                    </label>
+                    <label
+                        htmlFor="VersionID"
+                        className="labelClassName relative block overflow-hidden border-b border-gray-200 bg-transparent pt-3 focus-within:border-blue-600"
+
+                        >
+                        <input
+                            type="text"
+                            id="VersionID"
+                            name="versionID"
+                            placeholder="Version ID"
+                            onChange={handleInputValue}
+                            className="peer h-8 w-full border-none bg-transparent p-0 placeholder-transparent focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
+                        />
+
+                        <span
+                            className="labelSpan absolute start-0 top-2 -translate-y-1/2 text-xs text-gray-700 transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-sm peer-focus:top-2 peer-focus:text-xs"
+                        >
+                            {/* Version ID */}
                     </span>
                     </label>
                     <button type="button"
