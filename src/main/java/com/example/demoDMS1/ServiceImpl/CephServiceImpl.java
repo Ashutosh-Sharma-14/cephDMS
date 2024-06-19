@@ -1,5 +1,4 @@
 package com.example.demoDMS1.ServiceImpl;
-import com.amazonaws.services.s3.model.ObjectTagging;
 import com.example.demoDMS1.Entity.MetadataEntity;
 import com.example.demoDMS1.Model.CommonResponseDTO;
 import com.example.demoDMS1.Model.DownloadRequestDTO;
@@ -117,13 +116,12 @@ public class CephServiceImpl implements CephService {
     }
 
     @Override
-    public List<String> listVersionOfObject(String bucketName, String objectKey) {
+    public ResponseEntity<List<String>> listVersionOfObject(String bucketName, String objectKey) {
         ListObjectVersionsRequest request = ListObjectVersionsRequest.builder()
                 .bucket(bucketName)
                 .prefix(objectKey)
                 .delimiter("/")
                 .build();
-
 
         ListObjectVersionsResponse response = s3Client.listObjectVersions(request);
         List<ObjectVersion> res = response.versions();
@@ -152,7 +150,7 @@ public class CephServiceImpl implements CephService {
                 System.out.println();
             }
         }
-        return List.of();
+        return ResponseEntity.ok().body(List.of());
     }
 
     @Override
@@ -213,7 +211,10 @@ public class CephServiceImpl implements CephService {
         ListObjectsV2Response listResponse = s3Client.listObjectsV2(listRequest);
 
         for (S3Object summary : listResponse.contents()) {
-            objectKeys.add(summary.key());
+            String extractedUuid = summary.key().substring(summary.key().lastIndexOf("/")+1);
+            System.out.println("Extracted uuid from original object key: " + extractedUuid);
+            String key = metadataRepository.findObjectKeyByUUID(extractedUuid);
+            objectKeys.add(key);
         }
 //        System.out.println(objectKeys);
 
@@ -503,15 +504,16 @@ public class CephServiceImpl implements CephService {
     }
 
     @Async
-    public CompletableFuture<String> uploadFileAsync(MultipartFile file,String bucketName,String objectKey, Map<String,String> metadata,String userRole){
+    public CompletableFuture<String> uploadFileAsync(MultipartFile file,String bucketName,String key, Map<String,String> metadata,String userRole){
         LocalDateTime startTime = LocalDateTime.now();
-        Map<String,String> fileMetadata = addToExistingMetadata(metadata,bucketName,objectKey);
+
+        Map<String,String> fileMetadata = addToExistingMetadata(metadata,bucketName,key);
         Tag tag = Tag.builder().key("authorityLevel").value(userRoleService.getUserAuthorityLevel(userRole)).build();
         try {
             ByteBuffer input = ByteBuffer.wrap(file.getBytes());
             PutObjectRequest putObjectRequest = PutObjectRequest.builder()
                             .bucket(bucketName)
-                            .key(objectKey)
+                            .key(key)
                             .metadata(fileMetadata)
                             .tagging(Tagging.builder().tagSet(Arrays.asList(tag)).build())
                             .build();
@@ -522,11 +524,11 @@ public class CephServiceImpl implements CephService {
             );
 
             LocalDateTime endTime = LocalDateTime.now();
-            URL presignedUrl = createUrl(bucketName,objectKey);
+            URL presignedUrl = createUrl(bucketName,key);
 
             return CompletableFuture.completedFuture("Start time: " + startTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")) +
                     ", End time: " + endTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")) +
-                    ", File uploaded successfully to Ceph bucket: " + bucketName + "/" + objectKey +
+                    ", File uploaded successfully to Ceph bucket: " + bucketName + "/" + key +
                     ", Presigned URL: " + presignedUrl.toString());
         } catch (IOException e) {
             e.getMessage();
@@ -549,8 +551,10 @@ public class CephServiceImpl implements CephService {
 
         for (int i = 0; i < files.length; i++) {
             Map<String,String> metadata = metadataList.get(i);
+            String objectKey = uploadRequestDTO.getObjectKey() + files[i].getOriginalFilename();
             UUID uuid = UUID.randomUUID();
-            String objectKey = uploadRequestDTO.getObjectKey() + uuid;
+            String key = uploadRequestDTO.getObjectKey() + uuid;
+
 
 //            saving the required data in mongodb collection to implement search
             MetadataEntity metadataEntity = new MetadataEntity();
@@ -559,7 +563,7 @@ public class CephServiceImpl implements CephService {
             metadataEntity.setMetadata(metadata);
             metadataRepository.save(metadataEntity);
 
-            fileUploadFutures.add(uploadFileAsync(files[i],bucketName, objectKey,metadata,userRole));
+            fileUploadFutures.add(uploadFileAsync(files[i],bucketName, key,metadata,userRole));
         }
 
         CompletableFuture<Void> allOfFileUploadFutures = CompletableFuture.allOf(fileUploadFutures.toArray(new CompletableFuture[0]));
@@ -583,6 +587,8 @@ public class CephServiceImpl implements CephService {
     @Override
     public ResponseEntity<CommonResponseDTO<?>> downloadFile(DownloadRequestDTO downloadRequestDTO) {
         String downloadDestination = System.getProperty("user.home") + "/Downloads/";
+        System.out.println(downloadRequestDTO.getVersionId());
+        System.out.println(downloadRequestDTO.getObjectKey());
 
         File downloadDir = new File(downloadDestination);
         if (!downloadDir.exists()) {
@@ -606,7 +612,6 @@ public class CephServiceImpl implements CephService {
         File downloadedFile = new File(downloadDestination+downloadRequestDTO.getObjectKey());
         if(downloadedFile.length() == 0){
             System.out.println("Checking if download is successful");
-            System.out.println(downloadRequestDTO.getObjectKey());
             CommonResponseDTO<?> commonResponseDTO = ResponseBuilder.unsuccessfulDownloadResponse(501,"No file with ObjectKey: " + downloadRequestDTO.getObjectKey() + " exists");
             return new ResponseEntity<>(commonResponseDTO, HttpStatus.valueOf(501));
         }

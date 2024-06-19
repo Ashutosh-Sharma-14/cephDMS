@@ -21,4 +21,8 @@ public class MetadataService {
     public List<String> findObjectKeysByMetadataExists(String key) {
         return metadataRepository.findObjectKeysByMetadataExists(key);
     }
+
+    public String findObjectKeyByUUID(String uuid){
+        return metadataRepository.findObjectKeyByUUID(uuid);
+    }
 }

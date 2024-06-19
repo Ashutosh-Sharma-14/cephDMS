@@ -8,7 +8,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import java.util.Map;
 
 @Data
-@Document(collection = "metadata-index")
+@Document(collection = "metadata_index")
 public class MetadataEntity {
     private String uuid;
     private String objectKey;

@@ -31,4 +31,14 @@ public class MetadataRepositoryCustomImpl implements MetadataRepositoryCustom {
                 .map(MetadataEntity::getObjectKey)
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public String findObjectKeyByUUID(String uuid){
+        Query query = new Query();
+        query.addCriteria(Criteria.where("uuid").is(uuid));
+        query.fields().include("objectKey");
+
+        List<MetadataEntity> result = mongoTemplate.find(query,MetadataEntity.class);
+        return result.get(0).getObjectKey();
+    }
 }

@@ -42,7 +42,7 @@ public class CephController {
     }
 
     @GetMapping("/list-object-versions")
-    public List<String> listObjectVersionInfo(@RequestParam String bucketName, @RequestParam String objectKey) {
+    public ResponseEntity<List<String>> listObjectVersionInfo(@RequestParam String bucketName, @RequestParam String objectKey) {
         return cephService.listVersionOfObject(bucketName,objectKey);
     }
 

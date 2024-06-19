@@ -16,7 +16,7 @@ import java.util.concurrent.ExecutionException;
 public interface CephService {
     String enableVersioning(String bucketName);
 
-    List<String> listVersionOfObject(String bucketName, String objectKey);
+    ResponseEntity<List<String>> listVersionOfObject(String bucketName, String objectKey);
 
     ResponseEntity<?> listBuckets();
 
