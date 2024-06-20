@@ -3,9 +3,11 @@ package com.example.demoDMS1.Utility;
 import com.example.demoDMS1.Model.CommonResponseDTO;
 import com.example.demoDMS1.Model.LoginResponseDTO;
 import com.example.demoDMS1.Model.RegistrationResponseDTO;
+import org.springframework.http.ResponseEntity;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 public class ResponseBuilder {
     public static <T> CommonResponseDTO<T> buildUploadResponse(int statusCode, String message, String  timestamp, T data){
@@ -35,4 +37,6 @@ public class ResponseBuilder {
     public static LoginResponseDTO failedLoginResponse(boolean isLoggedIn, String message){
         return new LoginResponseDTO(isLoggedIn,message);
     }
+
+//    public static ResponseEntity<Object> listBucketResponse(String objectName, Map<String,String>, )
 }

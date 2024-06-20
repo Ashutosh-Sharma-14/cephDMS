@@ -2,6 +2,7 @@ package com.example.demoDMS1.ServiceImpl;
 import com.example.demoDMS1.Entity.MetadataEntity;
 import com.example.demoDMS1.Model.CommonResponseDTO;
 import com.example.demoDMS1.Model.DownloadRequestDTO;
+import com.example.demoDMS1.Model.ListPaginatedObjectsResponse;
 import com.example.demoDMS1.Model.UploadRequestDTO;
 import com.example.demoDMS1.Repository.MetadataRepository;
 import com.example.demoDMS1.Service.CephService;
@@ -91,6 +92,23 @@ public class CephServiceImpl implements CephService {
         catch (URISyntaxException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public ResponseEntity<?> createBucket(String bucketName){
+        try{
+            CreateBucketRequest createBucketRequest = CreateBucketRequest
+                    .builder()
+                    .bucket(bucketName)
+                    .build();
+
+            CreateBucketResponse createBucketResponse = s3Client.createBucket(createBucketRequest);
+        }
+        catch (S3Exception e){
+            System.out.println(e.getMessage());
+            return new ResponseEntity<>("Unable to create Bucket",HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return new ResponseEntity<>("Successfully created bucket " + bucketName, HttpStatus.OK);
     }
 
     @Override
@@ -206,17 +224,20 @@ public class CephServiceImpl implements CephService {
         ListObjectsV2Request listRequest = ListObjectsV2Request.builder()
                 .bucket(bucketName)
                 .prefix(prefix)
+//                .delimiter("/")
                 .build();
 
         ListObjectsV2Response listResponse = s3Client.listObjectsV2(listRequest);
+        System.out.println(listResponse);
 
         for (S3Object summary : listResponse.contents()) {
+//            System.out.println(summary.size());
             String extractedUuid = summary.key().substring(summary.key().lastIndexOf("/")+1);
-            System.out.println("Extracted uuid from original object key: " + extractedUuid);
+//            System.out.println("Extracted uuid from original object key: " + extractedUuid);
             String key = metadataRepository.findObjectKeyByUUID(extractedUuid);
+            Map<String,String> metadata = metadataRepository.findMetadataByUUID(extractedUuid);
             objectKeys.add(key);
         }
-//        System.out.println(objectKeys);
 
         // Recursively list objects in subdirectories
         for (S3Object summary : listResponse.contents()) {
@@ -237,35 +258,54 @@ public class CephServiceImpl implements CephService {
     }
 
     @Override
-    public ResponseEntity<Map<String, Object>> listPaginatedObjects(String bucketName, String prefix, int maxKeys, String continuationToken) {
+    public ResponseEntity<ListPaginatedObjectsResponse> listPaginatedObjects(String bucketName, String prefix, int maxKeys, String continuationToken) {
+        ListPaginatedObjectsResponse result = new ListPaginatedObjectsResponse();
         if(continuationToken == null){
-            Map<String, Object> result = new HashMap<>();
-            result.put("Bad Request","No more content to fetch");
-            return ResponseEntity.ok().body(result);
+            return new ResponseEntity<>(null,HttpStatus.NO_CONTENT);
         }
+
         ListObjectsV2Request.Builder requestBuilder = ListObjectsV2Request.builder()
                 .bucket(bucketName)
                 .prefix(prefix)
                 .maxKeys(maxKeys);
 
+//        if the continuation token is empty
         if(!continuationToken.isEmpty()){
             requestBuilder.continuationToken(continuationToken);
         }
 
         ListObjectsV2Request request = requestBuilder.build();
         ListObjectsV2Response response = s3Client.listObjectsV2(request);
+
         List<String> objectKeys = response.contents().stream()
                 .map(S3Object::key)
 //        S3Object-> S3Object.key() == S3Object::key
-                .collect(Collectors.toList());
+                .toList();
 
-        Map<String, Object> result = new HashMap<>();
+        List<String> lastModifiedTime = response.contents().stream()
+                .map(S3Object -> S3Object.lastModified().toString())
+                .toList();
+
+        List<Long> fileSizes = response.contents().stream()
+                .map(S3Object::size)
+                .toList();
+
+        List<Map<String,String>> metadata = new ArrayList<>();
+        List<String> keys = new ArrayList<>();
+        for(String key: objectKeys){
+            String extractedUuid = key.substring(key.lastIndexOf("/")+1);
+            keys.add(metadataRepository.findObjectKeyByUUID(extractedUuid));
+            metadata.add(metadataRepository.findMetadataByUUID(extractedUuid));
+        }
+
         String nextContinuationToken = response.nextContinuationToken();
-        result.put("objectKeys", objectKeys);
-        result.put("nextContinuationToken", nextContinuationToken);
+        result.setObjectKeys(keys);
+        result.setMetadata(metadata);
+        result.setFileSizes(fileSizes);
+        result.setLastModifiedTime(lastModifiedTime);
+        result.setContinuationToken(nextContinuationToken);
 
-        System.out.println(nextContinuationToken);
-        return ResponseEntity.ok(result);
+        return ResponseEntity.ok().body(result);
     }
 
     @Override

@@ -9,6 +9,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Repository
@@ -32,6 +33,12 @@ public class MetadataRepositoryCustomImpl implements MetadataRepositoryCustom {
                 .collect(Collectors.toList());
     }
 
+//    @Override
+//    public List<String> findObjectKeysByMetadataValueExists(String value){
+//        Query query = new Query();
+//        query.addCriteria(Criteria.where("metadata." + key))
+//    }
+
     @Override
     public String findObjectKeyByUUID(String uuid){
         Query query = new Query();
@@ -39,6 +46,22 @@ public class MetadataRepositoryCustomImpl implements MetadataRepositoryCustom {
         query.fields().include("objectKey");
 
         List<MetadataEntity> result = mongoTemplate.find(query,MetadataEntity.class);
+        if(result.isEmpty()){
+            return String.format("Unable to find uuid: %s in the database",uuid);
+        }
         return result.get(0).getObjectKey();
+    }
+
+    @Override
+    public Map<String,String> findMetadataByUUID(String uuid){
+        Query query = new Query();
+        query.addCriteria(Criteria.where("uuid").is(uuid));
+        query.fields().include("metadata");
+
+        List<MetadataEntity> result = mongoTemplate.find(query,MetadataEntity.class);
+        if(result.isEmpty()){
+            return null;
+        }
+        return result.get(0).getMetadata();
     }
 }

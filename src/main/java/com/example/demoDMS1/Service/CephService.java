@@ -2,6 +2,7 @@ package com.example.demoDMS1.Service;
 
 import com.example.demoDMS1.Model.CommonResponseDTO;
 import com.example.demoDMS1.Model.DownloadRequestDTO;
+import com.example.demoDMS1.Model.ListPaginatedObjectsResponse;
 import com.example.demoDMS1.Model.UploadRequestDTO;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -14,6 +15,8 @@ import java.util.concurrent.ExecutionException;
 
 @Service
 public interface CephService {
+    ResponseEntity<?> createBucket(String bucketName);
+
     String enableVersioning(String bucketName);
 
     ResponseEntity<List<String>> listVersionOfObject(String bucketName, String objectKey);
@@ -22,9 +25,9 @@ public interface CephService {
 
     ResponseEntity<List<String>> listObjectsByAuthority(String bucketName, String userRole);
 
-    ResponseEntity<List<String>> listObjects(String bucketName, String prefix);
+    ResponseEntity<?> listObjects(String bucketName, String prefix);
 
-    ResponseEntity<Map<String,Object>> listPaginatedObjects(String bucketName, String prefix,int maxKeys,String continuationToken);
+    ResponseEntity<ListPaginatedObjectsResponse> listPaginatedObjects(String bucketName, String prefix, int maxKeys, String continuationToken);
 
 //    there can be a method to extract some metadata without uploading file to ceph.
 

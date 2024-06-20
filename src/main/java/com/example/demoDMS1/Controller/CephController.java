@@ -3,6 +3,7 @@ package com.example.demoDMS1.Controller;
 import com.example.demoDMS1.Entity.MetadataEntity;
 import com.example.demoDMS1.Model.CommonResponseDTO;
 import com.example.demoDMS1.Model.DownloadRequestDTO;
+import com.example.demoDMS1.Model.ListPaginatedObjectsResponse;
 import com.example.demoDMS1.Model.UploadRequestDTO;
 import com.example.demoDMS1.Service.CephService;
 import com.example.demoDMS1.Service.MetadataService;
@@ -31,6 +32,11 @@ public class CephController {
         this.metadataService = metadataService;
     }
 
+    @PutMapping("/create-bucket")
+    public ResponseEntity<?> createBucket(@RequestParam String bucketName){
+        return cephService.createBucket(bucketName);
+    }
+
     @GetMapping("/search-objectKey-by-metadata")
     public List<String> findObjectKeysByMetadataExists(@RequestParam String key){
         return metadataService.findObjectKeysByMetadataExists(key);
@@ -52,7 +58,7 @@ public class CephController {
     }
 
     @GetMapping("/list-objects")
-    public ResponseEntity<List<String>> listObjects(@RequestParam String bucketName,@RequestParam  String prefix){
+    public ResponseEntity<?> listObjects(@RequestParam String bucketName,@RequestParam  String prefix){
         return cephService.listObjects(bucketName, prefix);
     }
 
@@ -63,7 +69,7 @@ public class CephController {
 
 
     @GetMapping("/list-objects-paginated")
-    public ResponseEntity<Map<String, Object>> listPaginatedObjects(@RequestParam String bucketName, @RequestParam String prefix, @RequestParam int maxKeys, @RequestParam String continuationToken){
+    public ResponseEntity<ListPaginatedObjectsResponse> listPaginatedObjects(@RequestParam String bucketName, @RequestParam String prefix, @RequestParam int maxKeys, @RequestParam String continuationToken){
         return cephService.listPaginatedObjects(bucketName,prefix,maxKeys,continuationToken);
     }
 
