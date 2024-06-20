@@ -18,8 +18,8 @@ public class MetadataService {
         this.metadataRepository = metadataRepository;
     }
 
-    public List<String> findObjectKeysByMetadataExists(String key) {
-        return metadataRepository.findObjectKeysByMetadataExists(key);
+    public List<String> findObjectKeysByMetadata(String key,String value) {
+        return metadataRepository.findObjectKeysByMetadata(key,value);
     }
 
     public String findObjectKeyByUUID(String uuid){

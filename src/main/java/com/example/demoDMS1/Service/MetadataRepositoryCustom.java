@@ -4,7 +4,9 @@ import java.util.List;
 import java.util.Map;
 
 public interface MetadataRepositoryCustom {
-    List<String> findObjectKeysByMetadataExists(String key);
+
+    List<String> findObjectKeysByMetadata(String key, String value);
+
     String findObjectKeyByUUID(String uuid);
 
     Map<String,String> findMetadataByUUID(String uuid);

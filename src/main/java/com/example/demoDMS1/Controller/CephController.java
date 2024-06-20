@@ -38,8 +38,8 @@ public class CephController {
     }
 
     @GetMapping("/search-objectKey-by-metadata")
-    public List<String> findObjectKeysByMetadataExists(@RequestParam String key){
-        return metadataService.findObjectKeysByMetadataExists(key);
+    public List<String> findObjectKeysByMetadataExists(@RequestParam String key, @RequestParam String value){
+        return metadataService.findObjectKeysByMetadataExists(key,value);
     }
 
     @PostMapping("/enable-versioning")

@@ -23,9 +23,10 @@ public class MetadataRepositoryCustomImpl implements MetadataRepositoryCustom {
     }
 
     @Override
-    public List<String> findObjectKeysByMetadataExists(String key) {
+    public List<String> findObjectKeysByMetadata(String key, String value) {
         Query query = new Query();
         query.addCriteria(Criteria.where("metadata." + key).exists(true));
+        query.addCriteria(Criteria.where("metadata." + key).is(value));
         List<MetadataEntity> entities = mongoTemplate.find(query, MetadataEntity.class);
 
         return entities.stream()
