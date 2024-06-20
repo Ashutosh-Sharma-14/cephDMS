@@ -46,7 +46,20 @@ const ListObject = () =>{
                     Fetch Objects
             </button>
             </div>
-            <div className="mainUploadPg">
+            <div className="mainUploadPgForObjectCard">
+                <ObjectCard />
+                <ObjectCard />
+                <ObjectCard />
+                <ObjectCard />
+                <ObjectCard />
+                <ObjectCard />
+                <ObjectCard />
+                <ObjectCard />
+                <ObjectCard />
+                <ObjectCard />
+                <ObjectCard />
+                <ObjectCard />
+                <ObjectCard />
                 <ObjectCard />
                 <ObjectCard />
                 <ObjectCard />
@@ -71,13 +84,6 @@ const ListObject = () =>{
                 <ObjectCard />
                 <ObjectCard />
 
-                <ObjectCard />
-                <ObjectCard />
-                <ObjectCard />
-                <ObjectCard />
-                <ObjectCard />
-                <ObjectCard />
-                <ObjectCard />
 
 
 

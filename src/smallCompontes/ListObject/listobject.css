@@ -1,19 +1,20 @@
-.mainUploadPg{
+.mainUploadPgForObjectCard{
 
   display: flex !important;
-  flex-direction: row !important;
-  flex-wrap: wrap !important;
-  justify-content:center !important;
-  align-items: center !important;
-  align-content: space-between !important;
+  flex-direction: column !important;
+  flex-wrap: nowrap !important;
+  justify-content: flex-start !important;
+  align-items: flex-start !important;
+  align-content: normal !important;
   height: 70vh !important;
   overflow-y: auto;
   width: 100%;
-border-radius: 1em;
-margin-top: 2em;
+  border-radius: 1em;
+  margin-top: 2em;
+  /* border: 2px solid red; */
 
 
 }
-.mainUploadPg::-webkit-scrollbar{
+.mainUploadPgForObjectCard::-webkit-scrollbar{
     display: none;
   }
