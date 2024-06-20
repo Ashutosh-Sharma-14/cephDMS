@@ -2,14 +2,15 @@
   display: flex !important;
   flex-direction: row !important;
   flex-wrap: wrap !important;
-  justify-content:center !important;
-  align-items: center !important;
+  justify-content:flex-start !important;
+  align-items: flex-start !important;
   align-content: space-between !important;
   height: 70vh !important;
   overflow-y: auto !important;
   width: 100% !important;
-border-radius: 1em;
-margin-top: 2em;
+  border-radius: 1em;
+  margin-top: 2em;
+  /* border: 2px solid red; */
 }
 
 .mainUploadPg::-webkit-scrollbar{
