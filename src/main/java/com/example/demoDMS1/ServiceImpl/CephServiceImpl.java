@@ -112,7 +112,7 @@ public class CephServiceImpl implements CephService {
     }
 
     @Override
-    public String enableVersioning(String bucketName) {
+    public ResponseEntity<Boolean>  enableVersioning(String bucketName) {
         GetBucketVersioningRequest getBucketVersioningRequest = GetBucketVersioningRequest.builder()
                 .bucket(bucketName)
                 .build();
@@ -127,10 +127,12 @@ public class CephServiceImpl implements CephService {
 
             s3Client.putBucketVersioning(putBucketVersioningRequest);
             System.out.println("Bucket versioning enabled for bucket: " + bucketName);
+            return ResponseEntity.ok().body(true);
         } else {
             System.out.println("Bucket versioning is already enabled for bucket: " + bucketName);
+//             return ResponseEntity.ok().body(false);
         }
-        return "Versioning enabled for " + bucketName;
+        return ResponseEntity.ok().body(false);
     }
 
     @Override
@@ -251,6 +253,7 @@ public class CephServiceImpl implements CephService {
 
                 List<String> subObjects = subObjectsResponse.getBody().stream().toList();
                 objectKeys.addAll(subObjects);
+
             }
         }
 

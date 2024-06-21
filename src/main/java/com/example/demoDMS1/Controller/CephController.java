@@ -12,9 +12,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import software.amazon.awssdk.core.Response;
-//import software.amazon.awssdk.services.s3.model.S3Object;
-//import software.amazon.awssdk.services.s3.model.Tag;
 
 import java.io.IOException;
 import java.util.List;
@@ -43,7 +40,7 @@ public class CephController {
     }
 
     @PostMapping("/enable-versioning")
-    public String enableVersioning(@RequestParam String bucketName) {
+    public ResponseEntity<Boolean>  enableVersioning(@RequestParam String bucketName) {
         return cephService.enableVersioning(bucketName);
     }
 
@@ -116,11 +113,11 @@ public class CephController {
     }
 
     @PostMapping("/upload-multiple-files-to-ceph")
-    public ResponseEntity<CommonResponseDTO<?>> uploadMultipleFilesToCeph(@RequestPart("multipartFiles") MultipartFile[] files,
-                                                                       @RequestPart String bucketName,
-                                                                       @RequestPart String objectKey,
-                                                                       @RequestPart String userRole,
-                                                                       @RequestPart String metadataJson) throws ExecutionException, InterruptedException, IOException {
+    public ResponseEntity<CommonResponseDTO<?>> uploadMultipleFilesToCeph(@RequestParam ("multipartFiles") MultipartFile[] files,
+                                                                       @RequestParam String bucketName,
+                                                                       @RequestParam String objectKey,
+                                                                       @RequestParam String userRole,
+                                                                       @RequestParam String metadataJson) throws ExecutionException, InterruptedException, IOException {
         ObjectMapper objectMapper = new ObjectMapper();
         List<Map<String, String>> metadata = objectMapper.readValue(metadataJson, List.class);
         UploadRequestDTO uploadRequestDTO = new UploadRequestDTO(files,bucketName,objectKey,userRole,metadata);
