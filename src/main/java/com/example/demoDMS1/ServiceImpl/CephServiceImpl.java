@@ -78,11 +78,11 @@ public class CephServiceImpl implements CephService {
                     .credentialsProvider(StaticCredentialsProvider.create(credentials))
 //                the below line uses lambda expression
                     .serviceConfiguration(S3Configuration.Builder::pathStyleAccessEnabled)
-                    .region(Region.US_EAST_2)
+                    .region(Region.US_EAST_1)
                     .build();
 
             presigner = S3Presigner.builder()
-                    .region(Region.US_EAST_2)
+                    .region(Region.US_EAST_1)
                     .credentialsProvider(StaticCredentialsProvider.create(credentials))
                     .build();
 
