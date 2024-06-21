@@ -78,7 +78,7 @@ const Upload = () =>{
                 setObject([])
                 swal({
                     title: response.data.responseMessage,
-                    text: response.data.data.length + 'files are Uploaded',
+                    text: response.data.data.length + ' files are Uploaded',
                     icon: "success",
                   });
 
