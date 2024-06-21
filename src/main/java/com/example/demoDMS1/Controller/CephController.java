@@ -34,6 +34,11 @@ public class CephController {
         return cephService.createBucket(bucketName);
     }
 
+    @DeleteMapping("/delete-bucket")
+    public ResponseEntity<?> deleteBucket(@RequestParam String bucketName){
+        return cephService.deleteBucket(bucketName);
+    }
+
     @GetMapping("/search-objectKey-by-metadata")
     public List<String> findObjectKeysByMetadataExists(@RequestParam String key, @RequestParam String value){
         return metadataService.findObjectKeysByMetadata(key,value);

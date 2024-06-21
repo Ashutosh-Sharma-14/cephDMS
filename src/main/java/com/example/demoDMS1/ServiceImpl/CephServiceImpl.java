@@ -22,6 +22,7 @@ import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 
 import software.amazon.awssdk.core.sync.RequestBody;
+import software.amazon.awssdk.core.exception.SdkClientException;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.S3Configuration;
@@ -109,6 +110,36 @@ public class CephServiceImpl implements CephService {
             return new ResponseEntity<>("Unable to create Bucket",HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return new ResponseEntity<>("Successfully created bucket " + bucketName, HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<?> deleteBucket(String bucketName){
+        try{
+            DeleteBucketRequest deleteBucketRequest = DeleteBucketRequest
+                    .builder()
+                    .bucket(bucketName)
+                    .build();
+
+            DeleteBucketResponse deleteBucketResponse = s3Client.deleteBucket(deleteBucketRequest);
+        }
+        catch (NoSuchBucketException e) {
+            // Handle the case where the bucket does not exist
+            System.err.println("Bucket does not exist: " + e.awsErrorDetails().errorMessage());
+            throw e;
+//        } catch (BucketNotEmptyException e) {
+//            // Handle the case where the bucket is not empty
+//            System.err.println("Bucket is not empty: " + e.awsErrorDetails().errorMessage());
+//            throw e;
+        } catch (S3Exception e) {
+            // Handle other S3 specific exceptions
+            System.err.println("S3 Exception: " + e.awsErrorDetails().errorMessage());
+            throw e;
+        } catch (SdkClientException e) {
+            // Handle client-side errors (e.g., network issues)
+            System.err.println("SDK Client Exception: " + e.getMessage());
+            throw e;
+        }
+        return new ResponseEntity<>("Bucket: " + bucketName + " deleted successfully",HttpStatus.OK);
     }
 
     @Override
