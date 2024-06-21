@@ -6,8 +6,8 @@ const Sidebar = () => {
     
     return (<>
     <nav className="bg-white shadow-lg h-screen fixed top-0 left-0 min-w-[250px] py-6 px-4 font-[sans-serif] overflow-auto">
-      <a href="/"><img src="/perfiosLogo.png" alt="logo" className='w-[160px]' />
-      </a>
+      <Link to="/"><img src="/perfiosLogo.png" alt="logo" className='w-[160px]' />
+      </Link>
 
       <ul className="mt-6 ulElement">
       <h6 className="text-blue-600 text-sm font-bold px-4">Info</h6>
@@ -31,26 +31,26 @@ const Sidebar = () => {
               <span>List Buckets</span>
             </Link>
           </li>
-          <li>
-            <a href="/"
+          {/* <li>
+            <Link to="/"
               className="text-black hover:text-blue-600 text-sm flex items-center hover:bg-blue-50 rounded px-4 py-3 transition-all">
               
               <span>Enable Versioning</span>
-            </a>
-          </li>
+            </Link>
+          </li> */}
           {/* <li>
-            <a href="/"
+            <Link to="/"
               className="text-black hover:text-blue-600 text-sm flex items-center hover:bg-blue-50 rounded px-4 py-3 transition-all">
               
               <span>Schedules</span>
-            </a>
+            </Link>
           </li>
           <li>
-            <a href="/"
+            <Link to="/"
               className="text-black hover:text-blue-600 text-sm flex items-center hover:bg-blue-50 rounded px-4 py-3 transition-all">
               
               <span>Promote</span>
-            </a>
+            </Link>
           </li> */}
         </ul>
       </div>
@@ -84,18 +84,18 @@ const Sidebar = () => {
         <h6 className="text-blue-600 text-sm font-bold px-4">Actions</h6>
         <ul className="mt-3">
           <li>
-            <a href="/"
+            <Link to="/"
               className="text-black hover:text-blue-600 text-sm flex items-center hover:bg-blue-50 rounded px-4 py-3 transition-all">
               
               <span>Profile</span>
-            </a>
+            </Link>
           </li>
           <li>
-            <a href="/"
+            <Link to="/"
               className="text-black hover:text-blue-600 text-sm flex items-center hover:bg-blue-50 rounded px-4 py-3 transition-all">
               
               <span>Logout</span>
-            </a>
+            </Link>
           </li>
         </ul>
       </div>

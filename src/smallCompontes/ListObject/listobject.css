@@ -18,3 +18,25 @@
 .mainUploadPgForObjectCard::-webkit-scrollbar{
     display: none;
   }
+
+  .addBucket{
+    /* border: 2px solid red; */
+    width: 30%;
+    display: flex;
+    justify-content:space-between;
+    align-items: center;
+    height: inherit;
+  }
+
+  .addBucket button{
+    background-color: #9B59B6;
+    color: white;
+    transition: all 1s ;
+    margin-bottom: 25px !important;
+    /* border: 2px solid red; */
+  }
+
+  .addBucket button:hover{
+    background-color: #9c59b6d2;
+    color: white;
+  }

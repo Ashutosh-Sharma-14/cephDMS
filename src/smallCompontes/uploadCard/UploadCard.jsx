@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import './uploadCard.css';
 import Metadata from '../../Jsons/dropDownJson.json';
+import swal from 'sweetalert';
 
 const UploadCard = ({ handleObject, object }) => {
     const [fileName, setFileName] = useState('Please Add File');
@@ -57,7 +58,12 @@ const UploadCard = ({ handleObject, object }) => {
     const handleUploadButton = (e) => {
         e.preventDefault();
         if (domain === 'Domain') {
-            alert('Please select a domain before uploading.');
+            // alert('Please select a domain before uploading.');
+            swal({
+                title: "Please Select Domain first",
+                text: "Domain selection is necessary for furthur",
+                icon: "warning",
+            })
             return;
         }
         handleObject(table);
@@ -95,17 +101,32 @@ const UploadCard = ({ handleObject, object }) => {
                 <div className="relative font-[sans-serif] w-max mx-auto">
                     <button
                         type="button"
-                        className="px-5 py-2.5 rounded text-white text-sm font-semibold border-none outline-none bg-blue-600 hover:bg-blue-700 active:bg-blue-600"
+                        style={{backgroundColor:'rgba(50,128,100,0.9', width:'100%',display:'flex',marginLeft:'8px'}}
+                        className="px-5 py-2.5 rounded text-white text-sm font-semibold border-none outline-none bg-green-600 hover:bg-green-700 active:bg-blue-600"
                         onClick={() => setDropDownOpen(!dropdownOpen)}
                     >
                         {domain}
-                        <svg xmlns="http://www.w3.org/2000/svg" className="w-3 fill-white inline ml-3" viewBox="0 0 24 24">
+                        {/* <svg xmlns="http://www.w3.org/2000/svg" className="w-3 fill-white inline ml-3" viewBox="0 0 24 24">
                             <path
                                 fillRule="evenodd"
                                 d="M11.99997 18.1669a2.38 2.38 0 0 1-1.68266-.69733l-9.52-9.52a2.38 2.38 0 1 1 3.36532-3.36532l7.83734 7.83734 7.83734-7.83734a2.38 2.38 0 1 1 3.36532 3.36532l-9.52 9.52a2.38 2.38 0 0 1-1.68266.69734z"
                                 clipRule="evenodd"
                             />
-                        </svg>
+                        </svg> */}
+                        {
+                            dropdownOpen ?
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-3 fill-current ml-auto shrink-0 rotate-270" viewBox="0 0 24 24">
+                                <path fill-rule="evenodd"
+                                    d="M11.99997 18.1669a2.38 2.38 0 0 1-1.68266-.69733l-9.52-9.52a2.38 2.38 0 1 1 3.36532-3.36532l7.83734 7.83734 7.83734-7.83734a2.38 2.38 0 1 1 3.36532 3.36532l-9.52 9.52a2.38 2.38 0 0 1-1.68266.69734z"
+                                    clip-rule="evenodd" data-original="#000000"></path>
+                            </svg>
+                            :
+                            <svg xmlns="http://www.w3.org/2000/svg" class=" w-3 fill-current ml-auto shrink-0 -rotate-180" viewBox="0 0 24 24">
+                                <path fill-rule="evenodd"
+                                    d="M11.99997 18.1669a2.38 2.38 0 0 1-1.68266-.69733l-9.52-9.52a2.38 2.38 0 1 1 3.36532-3.36532l7.83734 7.83734 7.83734-7.83734a2.38 2.38 0 1 1 3.36532 3.36532l-9.52 9.52a2.38 2.38 0 0 1-1.68266.69734z"
+                                    clip-rule="evenodd" data-original="#000000"></path>
+                            </svg>
+                        }
                     </button>
 
                     <ul className="absolute shadow-lg bg-white py-2 z-[1000] min-w-full w-max rounded max-h-96 overflow-auto" style={{ display: dropdownOpen ? 'block' : 'none' }}>

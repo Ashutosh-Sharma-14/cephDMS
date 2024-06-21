@@ -45,9 +45,9 @@ const Login = () =>{
                   </label>
                 </div> */}
                 {/* <div>
-                  <a href="jajvascript:void(0);" class="text-blue-600 font-semibold text-sm hover:underline">
+                  <Link to="jajvascript:void(0);" class="text-blue-600 font-semibold text-sm hover:underline">
                     Forgot Password?
-                  </a>
+                  </Link>
                 </div> */}
               </div>
               <div class="mt-12">

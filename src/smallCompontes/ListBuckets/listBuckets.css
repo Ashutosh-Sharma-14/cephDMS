@@ -16,3 +16,26 @@
 .mainUploadPg::-webkit-scrollbar{
   display: none;
 }
+
+
+.loadingLogo{
+
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  justify-content: center;
+  align-items: center;
+  align-content: normal;
+    width: 100%;
+    height: 70vh;
+/* border: 2px sol red; */
+
+
+}
+
+.addBucketBtn:disabled{
+  cursor:not-allowed;
+  scale: 0;
+
+  
+}
