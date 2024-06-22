@@ -7,5 +7,5 @@
     "mp4":"/mp4.png",
     "pptx":"/pptx.png",
     "docx":"/docx.png",
-    "otherLogo":"/unknown-file-icon.png"
+    "default":"/unknown-file-icon.png"
 }

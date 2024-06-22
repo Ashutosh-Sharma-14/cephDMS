@@ -82,7 +82,7 @@ const ListBuckets = () =>{
                 </label>
                 
                 <button type="button"
-                disabled={bucket === ''}
+                disabled={bucket.length < 3}
                 className="addBucketBtn px-5 py-2.5 rounded-lg 
                 text-sm tracking-wider font-medium border 
                 border-current outline-none bg-green-700 

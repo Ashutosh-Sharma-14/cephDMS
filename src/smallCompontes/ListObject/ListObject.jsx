@@ -1,4 +1,4 @@
-import React, {  useState } from "react";
+import React, {  useEffect, useState } from "react";
 import axios from "axios";
 import Navbar from "../../navbar/Navbar";
 import Sidebar from "../../sidebar/Sidebar";
@@ -61,7 +61,7 @@ const ListObject = () => {
     
           setResponse(res.data);
           localStorage.setItem('continuationToken', res.data.continuationToken || '');
-          console.log(res.data.metadata);
+        //   console.log(res.data.metadata);
           setLoading(false);
         } catch (e) {
           console.log(e);

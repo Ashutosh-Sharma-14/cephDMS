@@ -29,5 +29,8 @@
   
   .deleteBtn{
     padding-left: 15px;
-    scale: 1.1;
+}
+.deleteBtn:hover{
+      scale: 1.2;
+
   }

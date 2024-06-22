@@ -7,19 +7,28 @@ import MetaDataList from './MetaDataList';
 
 
 
-const ObjectCard = () =>{
+const ObjectCard = ({ objectKey, metadata, lastModifiedTime, fileSize }) =>{
+
+ 
+
+  // console.log(objectKey);
+  console.log(toString(metadata));
+  // console.log(lastModifiedTime);
+  // console.log(fileSize);
+
+
 
     const [open, setOpen] = useState(false);
 
-    return<div className="objectCard">
+    return <div className="objectCard">
         <div className="font-[sans-serif] space-y-4 max-w-6xl mx-auto mt-4">
           <div className="shadow-[0_2px_10px_-3px_rgba(6,81,237,0.3)] rounded-lg border-l-8 border-blue-600" role="accordion">
               <button type="button" className="w-full text-sm font-semibold text-left py-5 px-6 text-blue-600 flex items-center" onClick={()=>setOpen(!open)}>
-                  <img src={fileLogo.otherLogo} alt="" className="fill-current w-8 mr-4 shrink-0"  />
+                  <img src={fileLogo[objectKey.substring(objectKey.lastIndexOf('.') + 1)] || fileLogo['default']} alt="" className="fill-current w-8 mr-4 shrink-0"  />
                   <span className="mr-4">
-                    File Name
+                    {objectKey.substring(objectKey.lastIndexOf('/') + 1)}
                       <span className="text-xs text-gray-600 mt-0.5 block font-medium">
-                        lastModified
+                        {new Date(lastModifiedTime).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}
                     </span>
                   </span>
                   {
@@ -51,7 +60,7 @@ const ObjectCard = () =>{
                             </th>
                           </tr>
                         </thead>
-                            <MetaDataList />
+                            <MetaDataList metadata={metadata}/>
                         </table>
                     </div>
               </div>
