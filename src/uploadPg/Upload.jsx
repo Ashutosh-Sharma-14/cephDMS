@@ -184,6 +184,7 @@ const Upload = () =>{
             </div> */}
             {/* upload button */}
             <button type="button"
+                style={{scale:loading ? '0' : '1',transition:'all 1s'}}
                 className="px-5 py-2.5 rounded-lg text-sm tracking-wider font-medium border border-current outline-none bg-green-700 hover:bg-transparent text-white hover:text-green-700 transition-all duration-300"
                 onClick={handleAllFileUpload}
                 >

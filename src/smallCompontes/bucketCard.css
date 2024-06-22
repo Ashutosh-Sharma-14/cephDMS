@@ -6,6 +6,7 @@
     height: auto;
     width: 100%;
     /* position: absolute; */
+    position: relative;
 
 }
 
@@ -23,4 +24,10 @@
   /* border: 2px sol red; */
   
   
+  }
+
+  
+  .deleteBtn{
+    padding-left: 15px;
+    scale: 1.1;
   }

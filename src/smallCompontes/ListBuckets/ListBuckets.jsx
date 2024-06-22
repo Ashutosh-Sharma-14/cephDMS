@@ -29,21 +29,22 @@ const ListBuckets = () =>{
 
     const addBucket = async (e) =>{
         e.preventDefault();
-            try{
-                const res = await axios.put(`http://localhost:8080/user/create-bucket?bucketName=${encodeURIComponent(bucket)}`);
-                swal(
-                    `Bucket is Created Successfully`,
-                    `${res.data}`,
-                    "success"
-                )
-                console.log(res.data);
-            }catch(err){
-                swal(
-                    `Error while creating Bucket`,
-                    "error"
-                )
-                console.log('message',err);
-            }
+        try {
+            const res = await axios.put(`http://localhost:8080/user/create-bucket?bucketName=${bucket}`);
+            swal(
+                `Bucket is Created Successfully`,
+                `${res.data}`,
+                "success"
+            );
+            console.log(res.data);
+        } catch (err) {
+            swal(
+                `Error while creating Bucket`,
+                `${err}`
+            );
+            console.log('message', err);
+        }
+        
         
     }
 
@@ -100,6 +101,7 @@ const ListBuckets = () =>{
                 border-current outline-none bg-green-700 
                 hover:bg-transparent text-white hover:text-green-700 transition-all duration-300"
                 onClick={handleBtn}
+                style={{scale:disabled?'0':'1', transition:'all 1s'}}
                 >
                     Fetch Buckets
             </button>
@@ -107,7 +109,7 @@ const ListBuckets = () =>{
             {
                 disabled ? 
                 <div className="loadingLogo">
-                <ReactLoading type="spin" color="#007bff" width={'3%'} />
+                <ReactLoading type="cylon" color="#007bff" width={'3%'} />
                 <div>Fetching...</div>
                 </div>
                 :
@@ -117,6 +119,7 @@ const ListBuckets = () =>{
                             <BucketCard key={idx} item={item}  />
                           ))
                     }
+                    {/* <BucketCard /> */}
                 </div>
             }
             
