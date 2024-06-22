@@ -5,6 +5,8 @@ import UploadTable from "../table/UploadTable";
 import '../uploadPg/upload.css'
 import { useState } from "react";
 import axios from "axios";
+import ReactLoading from 'react-loading';
+import swal from "sweetalert";
 
 
 const Upload = () =>{
@@ -12,6 +14,7 @@ const Upload = () =>{
     // send handle upload funct to child and keyObject too and then try to send formdata from there
 
     const [object, setObject] = useState([]);
+    const [loading, setLoading] = useState(false);
     const [keyObject, setKeyObject] = useState({
         bucketName:'',
         year:'',
@@ -44,11 +47,7 @@ const Upload = () =>{
 
             const finalArray = [];
             for(let j=0; j<object.length; j++){
-                // for(let i = 0; i<object[j].fileArray.length; i++)object[j].fileArray[0].name{
                 finalArray.push(object[j].fileArray[0])
-                // formData.append('files',object[j].fileArray[0]);
-                // console.log(object[j].fileArray[0].name);
-                // }
             }
 
             const formData = new FormData()
@@ -59,106 +58,41 @@ const Upload = () =>{
             formData.append('objectKey', tempKey);
             formData.append('userRole', 'branch-manager');
             formData.append('metadataJson', JSON.stringify(listOfMapOfStrings));
-            // formData.append('multipartFiles',finalArray)
-
-            // const formDataExample = {
-            //     'bucketName': keyObject.bucketName,
-            //     'objectKey' : tempKey,
-            //     'userRole' : 'branch-manager',
-            //     'metadataJson' : JSON.stringify(listOfMapOfStrings),
-            //     "multipartFiles" : finalArray
-
-            // };
-            // finalArray.forEach((file,idx) => {
-            //     // formDataExample[`multipartFiles${idx}`] = file;
-            //     formDataExample.append('multiparfile')
-            //     // formDataExample.append('multipartFiles', file);  // Use 'multipartFiles' to match backend
-            //     console.log(formDataExample.bucketName);
-            // });
-            // console.log()
     
             const headers = new Headers();
 
             headers.append('Content-Type', `multipart/form-data; boundary=${boundary}`);
 
-            // const formDataObject = {};
-            // for (const [key, value] of formData.entries()) {
-            //     formDataObject[key] = value;
-            // }
 
 
-            // console.log(formDataObject);
+            // console.log([...formData.entries()]);
 
-            // formData.append(`multipartFiles`, object.fileArray);
-            //     object.fileArray.forEach((file, index) => {
-            //         object[0].fileArray[0].name
-            //   });
-
-            // const finalArray = [];
-            // for(let j=0; j<object.length; j++){
-            //     // for(let i = 0; i<object[j].fileArray.length; i++)object[j].fileArray[0].name{
-            //     finalArray.push(object[j].fileArray[0])
-            //     // formData.append('files',object[j].fileArray[0]);
-            //     // console.log(object[j].fileArray[0].name);
-            //     // }
-            //     }
-                // Clear formData.append('files', finalArray); and replace with a loop
-            // finalArray.forEach(file => {
-            //     formData.append('multipartFiles', file);  // Use 'multipartFiles' to match backend
-            // });
-            // formData.append('multipartFiles', finalArray);  // Use 'multipartFiles' to match backend
-
-
-            // finalArray.forEach((file, index) => {
-            //     formData.append(`multipartFiles`, file);
-            // });
-
-
-
-            console.log([...formData.entries()]);
-
-
-            // formData.append(`files`, finalArray);
-                    // finalArray.push(object[j].fileArray[i]);
-                    // console.log(object[j].fileArray[i]);
-
-            
-
-            // console.log(formData)
-
-            console.log(object.length)
-            // try {
-            //     const response = await fetch('http://localhost:8080/user/upload-multiple-files-to-ceph', {
-            //         method: 'POST',
-            //         body: formData,
-            //         headers: headers
-            //     });
-            
-            //     if (!response.ok) {
-            //         throw new Error('Network response was not ok');
-            //     }
-            
-            //     const responseData = await response.json();
-            //     console.log('Upload successful:', responseData);
-            // } catch (error) {
-            //     console.error('Error uploading files:', error);
-            // }
+            // console.log(object.length)
 
             try {
+                setLoading(true);
                 const response = await axios.post('http://localhost:8080/user/upload-multiple-files-to-ceph', formData, {
                   headers:{'Content-Type' : `multipart/form-data; boundary=${boundary}`}
                 });
+                setLoading(false);
+                setObject([])
+                swal({
+                    title: response.data.responseMessage,
+                    text: response.data.data.length + ' files are Uploaded',
+                    icon: "success",
+                  });
+
                 // Handle response
-                console.log('Response:', response);
+                console.log('Response:', response.data);
               } catch (error) {
-                // Handle error
+                swal({
+                    title: 'File Not Uploaded',
+                    text: 'Try again...',
+                    icon: "error",
+                  });
                 console.error('Error:', error);
               }
               
-
-
-            
-            
 
         }
     const handleObject = (e) =>{
@@ -250,16 +184,24 @@ const Upload = () =>{
             </div> */}
             {/* upload button */}
             <button type="button"
+                style={{scale:loading ? '0' : '1',transition:'all 1s'}}
                 className="px-5 py-2.5 rounded-lg text-sm tracking-wider font-medium border border-current outline-none bg-green-700 hover:bg-transparent text-white hover:text-green-700 transition-all duration-300"
                 onClick={handleAllFileUpload}
                 >
                     Upload Files
             </button>
             </div>
-            <div className="mainUploadPg">
+            {loading ?
+            <div className="loadingLogo">
+                <ReactLoading type="spin" color="#007bff" width={'3%'} /> 
+                <div className="">Uploading...</div>
+            </div>
+             :
+                <div className="mainUploadPg">
                 <UploadCard handleObject={handleObject} object={object}/>
                 <UploadTable object={object} handleObject={handleObject} handleDelete={handleDelete}/>
             </div>
+            }
         </div>
     </div>
     </div>

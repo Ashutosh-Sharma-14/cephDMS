@@ -91,3 +91,19 @@
     /* border: 2px solid red; */
 
 }
+
+
+.loadingLogo{
+
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  justify-content: center;
+  align-items: center;
+  align-content: normal;
+    width: 100%;
+    height: 70vh;
+/* border: 2px sol red; */
+
+
+}

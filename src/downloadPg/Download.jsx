@@ -3,6 +3,8 @@ import Sidebar from "../sidebar/Sidebar";
 import { useState } from "react";
 import '../uploadPg/upload.css'
 import './download.css'
+import ReactLoading from 'react-loading';
+import swal from "sweetalert";
 
 
 const Download = () =>{
@@ -74,13 +76,17 @@ const Download = () =>{
             url.search = new URLSearchParams(formData).toString();
 
             // Making the GET request using fetch
-            setBtn(true)
             try {
                 setBtn(true)
                 const response = await fetch(url.toString(), {
                     method: 'GET',
                 });
                 setBtn(false)
+                swal({
+                    title: "File Download Successful",
+                    text: "The files are downloaded in /Downloads Folder",
+                    icon: "success",
+                })
     
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
@@ -89,6 +95,10 @@ const Download = () =>{
                 const responseData = await response.json(); // Assuming response is JSON
                 console.log('Download successful:', responseData);
             } catch (error) {
+                swal({
+                    title: "File Download Unsuccessful",
+                    icon: "error",
+                })
                 console.error('Error downloading files:', error);
             }
 
@@ -113,6 +123,11 @@ const Download = () =>{
                 method: 'GET',
             });
             setBtn(false)
+            swal({
+                title: "Folder Download Successful",
+                text: "The Folders are downloaded in /Downloads Folder",
+                icon: "success",
+            })
 
             if (!response.ok) {
                 throw new Error('Network response was not ok');
@@ -121,6 +136,10 @@ const Download = () =>{
             const responseData = await response.json(); // Assuming response is JSON
             console.log('Download successful:', responseData);
         } catch (error) {
+            swal({
+                title: "Folder Download Unsuccessful",
+                icon: "warning",
+            })
             console.error('Error downloading files:', error);
         }
 
@@ -195,6 +214,13 @@ const Download = () =>{
             </button> */}
             </div>
             <div className="mainUploadPg">
+                {
+                    btn ?
+                    <div className="loadingLogo">
+                        <ReactLoading type="spin" color="#007bff" width={'3%'} /> 
+                        <div className="">Downloading...</div>
+                    </div> :
+                    <>
                 <div className="downloadFolder">
                     <div className=""> Folder</div>
                     <button type="button"
@@ -253,6 +279,8 @@ const Download = () =>{
                             Download 
                     </button>
                 </div>
+                </>
+                }
             </div>
         </div>
     </div>

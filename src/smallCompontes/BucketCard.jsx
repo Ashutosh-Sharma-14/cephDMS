@@ -1,38 +1,117 @@
 
+import { useState } from 'react';
 import './bucketCard.css'
+import axios from 'axios';
+import ReactLoading from "react-loading";
+import swal from 'sweetalert';
+import Swal from 'sweetalert2';
 
-const BucketCard = () =>{
-    return<div className='bucketCard'>
-        <div
-      class="shadow-[0_5px_14px_-4px_rgba(0,0,0,0.3)] p-6 w-full max-w-sm rounded-lg font-[sans-serif] overflow-hidden mx-auto mt-4">
-      <div class="flex items-center">
-        <h3 class="text-2xl font-semibold  flex-1">Trends</h3>
-        <div class="bg-gray-900 w-12 h-12 p-1 flex items-center justify-center rounded-full cursor-pointer">
-          {/* <svg xmlns="http://www.w3.org/2000/svg" width="32px" viewBox="0 0 24 24">
-            <g class="fill-yellow-400">
-              <circle cx="12" cy="12" r="5" />
-              <path fill="#f2b108"
-                d="M21 13h-1a1 1 0 0 1 0-2h1a1 1 0 0 1 0 2zM4 13H3a1 1 0 0 1 0-2h1a1 1 0 0 1 0 2zm13.66-5.66a1 1 0 0 1-.66-.29 1 1 0 0 1 0-1.41l.71-.71a1 1 0 1 1 1.41 1.41l-.71.71a1 1 0 0 1-.75.29zM5.64 19.36a1 1 0 0 1-.71-.29 1 1 0 0 1 0-1.41l.71-.66a1 1 0 0 1 1.41 1.41l-.71.71a1 1 0 0 1-.7.24zM12 5a1 1 0 0 1-1-1V3a1 1 0 0 1 2 0v1a1 1 0 0 1-1 1zm0 17a1 1 0 0 1-1-1v-1a1 1 0 0 1 2 0v1a1 1 0 0 1-1 1zM6.34 7.34a1 1 0 0 1-.7-.29l-.71-.71a1 1 0 0 1 1.41-1.41l.71.71a1 1 0 0 1 0 1.41 1 1 0 0 1-.71.29zm12.02 12.02a1 1 0 0 1-.7-.29l-.66-.71A1 1 0 0 1 18.36 17l.71.71a1 1 0 0 1 0 1.41 1 1 0 0 1-.71.24z"
-                data-original="#f2b108" />
-            </g>
-          </svg> */}
-          <img src="/bucket.jpg" alt="" />
+const BucketCard = ({item}) =>{
+    const [enable,setEnable] = useState(false);
+    const handleVersionButton =  async (e) =>{
+        e.preventDefault();
+
+        try{
+            const uri = `http://localhost:8080/user/enable-versioning?bucketName=${encodeURIComponent(item)}`
+            const res = await axios.post(uri);
+            setEnable(res.data);
+            swal(
+                 enable ? `Bucket versioning enabled`: `Bucket versioning is already enabled`, 
+                 enable ? `Bucket Name : ${item}`: `Bucket Name : ${item}`, 
+                 enable ? "success" : "info");
+            console.log(res);
+        }catch(err){
+            console.log('message',err);
+        }
+    }
+
+    const handleDeleteBtn = async (e) =>{
+        e.preventDefault();
+        try{
+
+            Swal.fire({
+            title: `Enter Bucket Name "${item}"`,
+            input: 'text',
+            inputAttributes: {
+                autocapitalize: 'off'
+            },
+            showCancelButton: true,
+            confirmButtonText: 'Submit',
+            showLoaderOnConfirm: true,
+            preConfirm: (name) => {
+                return name;
+            },
+            allowOutsideClick: () => !Swal.isLoading()
+            }).then(async (result) => {
+                console.log(result)
+            if (result.value == item && result.isConfirmed) {
+                const uri = `http://localhost:8080/user/delete-bucket?bucketName=${encodeURIComponent(item)}`
+                const res = await axios.delete(uri);
+                Swal.fire({
+                title: `${result.value} Bucket Deleted Successful`,
+                icon: 'success'
+                });
+            }else{
+                Swal.fire({
+                    title: `Cancelled`,
+                    icon: 'info'
+                });
+            }
+            });
+
+
+
+        }catch(err){
+        }
+
+    }
+
+
+    return <div className='bucketCard'>
+            {
+            // enable ? <div className='loadingLogo'>
+            //     <ReactLoading type='bars' color="#007bff"/>
+            //     <div className="div">Enabling...</div>
+            // </div>
+            // :
+                <div className="notification shadow-[0_5px_14px_-4px_rgba(0,0,0,0.3)] p-6 w-full max-w-sm rounded-lg font-[sans-serif] overflow-hidden mx-auto mt-4">
+                    
+                    <div className="flex items-center">
+                        <h3 className="text-2xl font-semibold  flex-1">{item}</h3>
+                        <div className=" w-12 h-12 p-1 flex items-center justify-center rounded-full cursor-pointer">
+                        <img src="/bucket.png" alt=""  />
+                        </div>
+                    </div>
+
+                    <p className="text-sm  my-8 leading-relaxed">
+                        {/* Data About bucket  */}
+                    </p>
+
+                    <div className="flex items-center">
+                        <h3 className="pr-4 text-lg flex-1">Enable Versioning</h3>
+                        <label className="relative cursor-pointer">
+                        <input type="checkbox" className="sr-only peer" onClick={handleVersionButton} checked={enable}  />
+                        <div
+                            className="w-11 h-3 flex items-center bg-gray-300 rounded-full peer peer-checked:after:translate-x-full after:absolute after:left-0 peer-checked:after:-left-1 after:bg-gray-300 peer-checked:after:bg-[#007bff] after:border after:border-gray-300 peer-checked:after:border-[#007bff] after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-[#007bff]">
+                        </div>
+                        
+                        </label>
+                        <div className="deleteBtn">
+                            <button class="mr-4" title="Delete Bucket" 
+                            onClick={handleDeleteBtn}
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 fill-red-500 hover:fill-red-700" viewBox="0 0 24 24">
+                                <path
+                                    d="M19 7a1 1 0 0 0-1 1v11.191A1.92 1.92 0 0 1 15.99 21H8.01A1.92 1.92 0 0 1 6 19.191V8a1 1 0 0 0-2 0v11.191A3.918 3.918 0 0 0 8.01 23h7.98A3.918 3.918 0 0 0 20 19.191V8a1 1 0 0 0-1-1Zm1-3h-4V2a1 1 0 0 0-1-1H9a1 1 0 0 0-1 1v2H4a1 1 0 0 0 0 2h16a1 1 0 0 0 0-2ZM10 4V3h4v1Z"
+                                    data-original="#000000" />
+                                <path d="M11 17v-7a1 1 0 0 0-2 0v7a1 1 0 0 0 2 0Zm4 0v-7a1 1 0 0 0-2 0v7a1 1 0 0 0 2 0Z"
+                                    data-original="#000000" />
+                                </svg>
+                            </button>
+                            </div>
+                    </div>
         </div>
-      </div>
-
-      <p class="text-sm  my-8 leading-relaxed">Lorem ipsum dolor sit amet, consectetur ipsum dolor sit amet, consectetur Lorem
-        ipsum dolor sit amet, consectetur ipsum.</p>
-
-      <div class="flex items-center">
-        <h3 class="text-lg flex-1">Dark theme</h3>
-        <label class="relative cursor-pointer">
-          <input type="checkbox" class="sr-only peer"  />
-          <div
-            class="w-11 h-3 flex items-center bg-gray-300 rounded-full peer peer-checked:after:translate-x-full after:absolute after:left-0 peer-checked:after:-left-1 after:bg-gray-300 peer-checked:after:bg-[#007bff] after:border after:border-gray-300 peer-checked:after:border-[#007bff] after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-[#007bff]">
-          </div>
-        </label>
-      </div>
-    </div>
+        }
     </div>
 }
 

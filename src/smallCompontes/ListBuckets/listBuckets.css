@@ -16,3 +16,65 @@
 .mainUploadPg::-webkit-scrollbar{
   display: none;
 }
+
+
+.loadingLogo{
+
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  justify-content: center;
+  align-items: center;
+  align-content: normal;
+    width: 100%;
+    height: 70vh;
+/* border: 2px sol red; */
+
+
+}
+
+.addBucketBtn:disabled{
+  cursor:not-allowed;
+  scale: 0;
+
+  
+}
+
+/* 
+{
+  "objectKeys": [
+      "2001/yesbank/1/unknown-file-icon.png",
+      "2001/yesbank/1/mp3.png",
+      "2001/yesbank/1/Screenshot from 2024-06-12 14-45-52.png"
+  ],
+  "contentType": null,
+  "metadata": [
+      {
+          "metadata 1": "a file to list for any document and used in html css",
+          "metadata 2": "downloaded from js ",
+          "metadata 3": "free content",
+          "metadata 4": "hello there"
+      },
+      {
+          "metadata 7": "we have handle the mp3 extsion",
+          "metadata 8": "it have song and other types of files",
+          "metadata 9": "hello there"
+      },
+      {
+          "metadata 7": "screenshort file ",
+          "metadata 8": "it handle the software",
+          "metadata 9": "media is totally covered with virsue protection "
+      }
+  ],
+  "continuationToken": null,
+  "lastModifiedTime": [
+      "2024-06-21T11:15:20.681Z",
+      "2024-06-21T11:15:20.931Z",
+      "2024-06-21T11:15:21.486Z"
+  ],
+  "fileSizes": [
+      3470,
+      9315,
+      188223
+  ]
+} */
