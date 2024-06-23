@@ -154,17 +154,27 @@ const ListObject = () => {
     setValues((prevState) => ({ ...prevState, [name]: value }));
   };
 
+ 
+  
+
   const filteredObjects = response.objectKeys.reduce((acc, objectKey, index) => {
-    if (objectKey.toLowerCase().includes(values.search.toLowerCase())) {
-      acc.push({
-        objectKey,
-        metadata: response.metadata[index],
-        lastModifiedTime: response.lastModifiedTime[index],
-        fileSize: response.fileSizes[index]
-      });
+    const metadata = response.metadata[index];
+
+    // Check if objectKey or metadata contains the search value
+    if (
+        objectKey.toLowerCase().includes(values.search.toLowerCase()) ||
+        (metadata && Object.values(metadata).some(value => value.toLowerCase().includes(values.search.toLowerCase())))
+    ) {
+        acc.push({
+            objectKey,
+            metadata: metadata ? metadata : {}, // Ensure metadata exists
+            lastModifiedTime: response.lastModifiedTime[index],
+            fileSize: response.fileSizes[index]
+        });
     }
     return acc;
-  }, []);
+}, []);
+
     
   
 
@@ -207,13 +217,14 @@ const ListObject = () => {
                 <input
                   type="text"
                   id="UserEmail"
+                  title="Search anything MetaData, Prefix, filName etc."
                   placeholder=""
                   name="search"
                   onChange={handleInputValue}
                   className="peer h-8 w-full border-none bg-transparent p-0 placeholder-transparent focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
                 />
                 <span className="absolute start-0 top-2 -translate-y-1/2 text-xs text-gray-700 transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-sm peer-focus:top-2 peer-focus:text-xs">
-                  Search here
+                  Search...
                 </span>
               </label>
 
