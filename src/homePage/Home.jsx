@@ -5,6 +5,7 @@ import '../homePage/home.css'
 import Navbar from '../navbar/Navbar';
 import Sidebar from '../sidebar/Sidebar';
 import HomeScreen from '../HomeScreen/HomeScreen'
+import ObjectCard from '../smallCompontes/ObjectCard';
 
 
 function Home() {

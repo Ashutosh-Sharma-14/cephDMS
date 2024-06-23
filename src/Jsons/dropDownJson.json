@@ -1,7 +1,7 @@
 {
-    "Agriculture": ["metadata 1","metadata 2","metadata 3","metadata 4"],
-    "Aadhaar": ["metadata 5","metadata 6"],
-    "Loan": ["metadata 7","metadata 8","metadata 9"],
-    "MSME":["metadata 10", "metadata 11", "metadata 12", "metadata 13", "metadata 14"]
+    "Agriculture": ["Crop Type","Harvest Date","Yield Quantity"," Market Price"],
+    "Aadhaar": ["Aadhaar Number","Enrollment Date"],
+    "Loan": ["Loan Type","Loan Amount","Interest Rate"],
+    "MSME":["Business Type", "Registration Number", "Annual Turnover", "Number of Employees", "Subsidies/Grants"]
 }
 

@@ -5,7 +5,7 @@ import './sidebar.css'
 const Sidebar = () => {
     
     return (<>
-    <nav className="bg-white shadow-lg h-screen fixed top-0 left-0 min-w-[250px] py-6 px-4 font-[sans-serif] overflow-auto">
+    <nav className=" bg-white shadow-lg h-screen fixed top-0 left-0 min-w-[250px] py-6 px-4 font-[sans-serif] overflow-auto">
       <Link to="/"><img src="/perfiosLogo.png" alt="logo" className='w-[160px]' />
       </Link>
 
@@ -105,3 +105,4 @@ const Sidebar = () => {
 }
 
 export default Sidebar;
+

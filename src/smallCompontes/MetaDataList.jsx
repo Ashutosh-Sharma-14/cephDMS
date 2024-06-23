@@ -1,35 +1,28 @@
-import React, { useState } from "react";
+import React from "react";
 
 const MetaDataList = ({ metadata }) => {
-
-
-    
-
-    // console.log(metadata);
     return (
-        <table className="metadata-table">
-        <tbody>
-            {Object.entries(metadata).map((item, index) => (
-            <tr key={index} className="hover:bg-gray-50">
-                {/* Assuming you want to display each metadata key-value pair */}
-                {Object.entries(item).map(([key, value]) => (
-                    
-                <div key={key}>
-                    {/* works fine the data its self store like these */}
-                    <td className="p-4 text-[15px] text-gray-800">{key}</td> 
-                    <td className="p-4 text-[15px] text-gray-800">{value}</td>
-                </div>
+        <table className="min-w-full bg-white">
+            <thead className="bg-gray-100 whitespace-nowrap">
+                <tr>
+                    <th className="p-4 text-left text-xs font-semibold text-gray-800">
+                        Key
+                    </th>
+                    <th className="p-4 text-left text-xs font-semibold text-gray-800">
+                        Values
+                    </th>
+                </tr>
+            </thead>
+            <tbody className="whitespace-nowrap">
+                {Object.entries(metadata).map(([key, value], index) => (
+                    <tr key={index} className="hover:bg-gray-50">
+                        <td className="p-4 text-[15px] text-gray-800">{key}</td>
+                        <td className="p-4 text-[15px] text-gray-800">{value}</td>
+                    </tr>
                 ))}
-            </tr>
-            ))}
-        </tbody>
+            </tbody>
         </table>
     );
 };
 
 export default MetaDataList;
-
-
-// delete bucket 
-//
-

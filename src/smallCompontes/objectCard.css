@@ -7,3 +7,19 @@
     width: 60%;
 
 }
+
+.keyPath{
+    font-size: 1em;
+}
+
+.titleFileName{
+    width: 100% !important;
+
+}
+
+.subTitle{
+    /* border: 2px solid red; */
+    display: flex !important;
+    justify-content:space-between !important;
+    align-items: center !important;
+}
