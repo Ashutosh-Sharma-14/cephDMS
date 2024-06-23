@@ -20,13 +20,23 @@ const ObjectCard = ({ objectKey, metadata, lastModifiedTime, fileSize }) =>{
 
     const [open, setOpen] = useState(false);
 
+    const segments = objectKey.split('/');
+    const fileInfo = {
+      year: segments[0],
+      bankName: segments[1],
+      accountNo: segments[2],
+      fileName: segments.slice(3).join('/') // Join remaining segments for fileName
+    };
+
+
     return <div className="objectCard">
         <div className="font-[sans-serif] space-y-4 max-w-6xl mx-auto mt-4">
           <div className="shadow-[0_2px_10px_-3px_rgba(6,81,237,0.3)] rounded-lg border-l-8 border-blue-600" role="accordion">
               <button type="button" className="w-full text-sm font-semibold text-left py-5 px-6 text-blue-600 flex items-center" onClick={()=>setOpen(!open)}>
                   <img src={fileLogo[objectKey.substring(objectKey.lastIndexOf('.') + 1)] || fileLogo['default']} alt="" className="fill-current w-8 mr-4 shrink-0"  />
                   <span className="mr-4">
-                    {objectKey.substring(objectKey.lastIndexOf('/') + 1)}
+                    {/* {objectKey.substring(objectKey.lastIndexOf('/') + 1)} */}
+                    {fileInfo.fileName}
                       <span className="text-xs text-gray-600 mt-0.5 block font-medium">
                         {new Date(lastModifiedTime).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}
                     </span>
@@ -49,7 +59,36 @@ const ObjectCard = ({ objectKey, metadata, lastModifiedTime, fileSize }) =>{
 
               <div className="pb-5 px-6" style={{ display:open?'block' : 'none' }}>
                   <div className="font-sans overflow-x-auto">
-                      
+                            <div className="keyPath">
+                                  <div className="flex items-start max-md:flex-col gap-y-6 gap-x-3 max-w-screen-lg mx-auto px-4 font-[sans-serif]">
+
+                                  <div className="w-full">
+                                    {/* <div className="w-full h-1 rounded-xl bg-green-500"></div> */}
+                                    <div className="mt-2 mr-4 flex">
+                                      <div className="ml-2">
+                                        <h6 className="text-base font-bold text-green-400">Year : {fileInfo.year}</h6>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div className="w-full">
+                                    {/* <div className="w-full h-1 rounded-xl bg-green-500"></div> */}
+                                    <div className="mt-2 mr-4 flex">
+                                      
+                                      <div className="ml-2">
+                                        <h6 className="text-base font-bold text-green-400">Bank Name : {fileInfo.bankName} </h6>
+                                      </div>
+
+                                    </div>
+                                  </div>
+
+                                  <div className="w-full">
+                                    {/* <div className="w-full h-1 rounded-xl bg-green-500"></div> */}
+                                    <div className="mt-2">
+                                      <h6 className="text-base font-bold text-green-400">Account Number : {fileInfo.accountNo} </h6>
+                                    </div>
+                                  </div>
+                                </div>
+                            </div>
                             <MetaDataList metadata={metadata}/>
                     </div>
               </div>

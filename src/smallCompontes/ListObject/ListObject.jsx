@@ -6,6 +6,7 @@ import ObjectCard from "../ObjectCard";
 import "./listobject.css";
 import "../../uploadPg/upload.css";
 import ReactLoading from 'react-loading';
+import swal from "sweetalert";
 
 
 const ListObject = () => {
@@ -88,8 +89,14 @@ const ListObject = () => {
               });
             // console.log(res.data);
             localStorage.setItem('continuationToken',res.data.continuationToken);
+            if(res.data.continuationToken === null){
+            swal(
+                "End of Object in " ,
+                `${values.year} ${values.bankName} ${values.accountNo}`,
+                "info"
+            )
+            }
 
-            console.log(localStorage.getItem('continuationToken'))
             setResponse(res.data);
       
             setLoading(false);
@@ -191,6 +198,7 @@ const ListObject = () => {
             <div className="loadingLogo">
                 <ReactLoading type="spin" color="#007bff" width={'3%'} /> 
                 <div className="">Fetching...</div>
+
             </div>
             :  response.objectKeys.map((objectKey, index) => (
               <ObjectCard
