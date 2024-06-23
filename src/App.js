@@ -8,8 +8,14 @@ import Signup from "./SignUp/Signup";
 import Download from "./downloadPg/Download";
 import ListBuckets from "./smallCompontes/ListBuckets/ListBuckets";
 import ListObject from "./smallCompontes/ListObject/ListObject";
+import { initialState, reducer } from '../src/Jsons/reducer';
+import { useReducer } from "react";
+// import { initialState } from "./Jsons/initialState";
+
 
 const App = () =>{
+
+  const [state, dispatch] = useReducer(reducer, initialState);
   return <>
     <div>
       <BrowserRouter>

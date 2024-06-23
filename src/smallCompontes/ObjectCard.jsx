@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import './objectCard.css'
 import fileLogo from '../Jsons/fileLogo.json'
 import MetaDataList from './MetaDataList';
@@ -7,12 +7,11 @@ import MetaDataList from './MetaDataList';
 
 
 
-const ObjectCard = ({ objectKey, metadata, lastModifiedTime, fileSize }) =>{
+const ObjectCard = ({ objectKey, metadata, lastModifiedTime, fileSize, query }) =>{
 
- 
 
   // console.log(objectKey);
-  console.log(toString(metadata));
+  // console.log(toString(metadata));
   // console.log(lastModifiedTime);
   // console.log(fileSize);
 
@@ -38,8 +37,12 @@ const ObjectCard = ({ objectKey, metadata, lastModifiedTime, fileSize }) =>{
       fileName: segments.slice(3).join('/') // Join remaining segments for fileName
     };
 
+   
 
-    return <div className="objectCard">
+
+    
+
+    return <div className="objectCard" style={{display:query?'none':'block'}} >
         <div className="font-[sans-serif] space-y-4 max-w-6xl mx-auto mt-4">
           <div className="shadow-[0_2px_10px_-3px_rgba(6,81,237,0.3)] rounded-lg border-l-8 border-blue-600" role="accordion">
               <button type="button" className="w-full text-sm font-semibold text-left py-5 px-6 text-blue-600 flex items-center" onClick={()=>setOpen(!open)}>

@@ -12,6 +12,10 @@ import swal from "sweetalert";
 const ListObject = () => {
   const [loading, setLoading] = useState(false);
   const [cnt, setCnt] = useState(0);
+
+  const [elements, setElements] = useState([]);
+  const [hide,setHide] = useState(false);
+
   const [values, setValues] = useState({
     bucketName: "",
     year: "",
@@ -63,7 +67,7 @@ const ListObject = () => {
     
           setResponse(res.data);
           localStorage.setItem('continuationToken', res.data.continuationToken || '');
-          console.log('setToken', res.data.continuationToken);
+        //   console.log('setToken', res.data.continuationToken);
         //   console.log(res.data.metadata);
           setLoading(false);
         } catch (e) {
@@ -111,8 +115,39 @@ const ListObject = () => {
       
       },[cnt])
 
-
-
+   
+      const handleInputChange = () => {
+        const updatedElements = elements.map((element) => {
+          const elementText = element.innerText ? element.innerText.trim().toLowerCase() : '';
+          if (elementText.includes(values.search.toLowerCase())) {
+            element.style.display = 'none'; // Hide matching elements
+            return true;
+          } else {
+            element.style.display = 'block'; // Ensure non-matching elements are visible
+            return false;
+          }
+        });
+      
+        setHide(updatedElements.some(isHidden => isHidden)); // Set hide to true if any element is hidden
+      };
+      
+    
+  
+      useEffect(() => {
+        // Function to fetch elements and set state
+        const fetchElements = () => {
+          const allElements = document.body.getElementsByTagName('div');
+          const elementsArray = Array.from(allElements);
+          setElements(elementsArray);
+          console.log(elements)
+        };
+        fetchElements(); // Fetch elements on component mount
+      }, []); // Only run once on mount
+    
+      useEffect(() => {
+        handleInputChange();
+      }, [values.search]); // Run when values.search changes
+    
 
   const handleInputValue = (e) => {
     const { name, value } = e.target;
@@ -150,7 +185,7 @@ const ListObject = () => {
 
                 {/* search Tab */}
 
-              <label
+              {/* <label
                 htmlFor="UserEmail"
                 style={{marginBottom:'12px',scale:!loading?'1':'0', transition:'all 1s'}}
                 className="relative block overflow-hidden border-b border-gray-200 bg-transparent pt-3 focus-within:border-blue-600"
@@ -166,7 +201,7 @@ const ListObject = () => {
                 <span className="absolute start-0 top-2 -translate-y-1/2 text-xs text-gray-700 transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-sm peer-focus:top-2 peer-focus:text-xs">
                   Search here
                 </span>
-              </label>
+              </label> */}
 
               <div>
                 <input
@@ -229,6 +264,7 @@ const ListObject = () => {
                 metadata={response.metadata[index]}
                 lastModifiedTime={response.lastModifiedTime[index]}
                 fileSize={response.fileSizes[index]}
+                query={hide}
               />
             ))
             }
