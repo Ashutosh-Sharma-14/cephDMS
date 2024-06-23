@@ -49,19 +49,8 @@ const ObjectCard = ({ objectKey, metadata, lastModifiedTime, fileSize }) =>{
 
               <div className="pb-5 px-6" style={{ display:open?'block' : 'none' }}>
                   <div className="font-sans overflow-x-auto">
-                      <table className="min-w-full bg-white">
-                        <thead className="bg-gray-100 whitespace-nowrap">
-                          <tr>
-                            <th className="p-4 text-left text-xs font-semibold text-gray-800">
-                              Key
-                            </th>
-                            <th className="p-4 text-left text-xs font-semibold text-gray-800">
-                              Values
-                            </th>
-                          </tr>
-                        </thead>
+                      
                             <MetaDataList metadata={metadata}/>
-                        </table>
                     </div>
               </div>
           </div>

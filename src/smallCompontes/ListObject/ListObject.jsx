@@ -6,11 +6,11 @@ import ObjectCard from "../ObjectCard";
 import "./listobject.css";
 import "../../uploadPg/upload.css";
 import ReactLoading from 'react-loading';
-import { FaListCheck } from "react-icons/fa6";
 
 
 const ListObject = () => {
   const [loading, setLoading] = useState(false);
+  const [cnt, setCnt] = useState(0);
   const [values, setValues] = useState({
     bucketName: "",
     year: "",
@@ -48,25 +48,60 @@ const ListObject = () => {
             values.accountNo
           );
           const maxKeys = values.maxKey === '' ? '100' : values.maxKey;
-          const continuationToken = localStorage.getItem('continuationToken') || '';
+          localStorage.setItem('continuationToken', '');
           setLoading(true);
           const res = await axios.get(`http://localhost:8080/user/list-objects-paginated`, {
             params: {
               bucketName: values.bucketName,
               prefix: prefix,
               maxKeys: maxKeys,
-              continuationToken: continuationToken,
+              continuationToken: '',
             },
           });
     
           setResponse(res.data);
           localStorage.setItem('continuationToken', res.data.continuationToken || '');
+          console.log('setToken', res.data.continuationToken);
         //   console.log(res.data.metadata);
           setLoading(false);
         } catch (e) {
           console.log(e);
         }
       };
+
+      useEffect(()=>{
+
+        const fetchMoreObject = async () =>{
+            const prefix = buildPrefix(
+                values.year,
+                values.bankName,
+                values.accountNo
+              );
+            setLoading(true);
+            const res = await axios.get(`http://localhost:8080/user/list-objects-paginated`, {
+                params: {
+                  bucketName: values.bucketName,
+                  prefix: prefix,
+                  maxKeys: values.maxKey,
+                  continuationToken: localStorage.getItem('continuationToken'),
+                },
+              });
+            // console.log(res.data);
+            localStorage.setItem('continuationToken',res.data.continuationToken);
+
+            console.log(localStorage.getItem('continuationToken'))
+            setResponse(res.data);
+      
+            setLoading(false);
+              
+      
+      
+        }
+        if (cnt > 0) fetchMoreObject();
+          
+      
+      
+      },[cnt])
 
 
 
@@ -168,45 +203,12 @@ const ListObject = () => {
             ))
             }
           </div>
-          <div className="pagination">
-            <ul className="flex space-x-4 justify-center">
-              <li className="flex items-center justify-center shrink-0 bg-gray-300 w-10 h-10 rounded-full">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="w-3 fill-gray-400"
-                  viewBox="0 0 55.753 55.753"
-                >
-                  <path
-                    d="M12.745 23.915c.283-.282.59-.52.913-.727L35.266 1.581a5.4 5.4 0 0 1 7.637 7.638L24.294 27.828l18.705 18.706a5.4 5.4 0 0 1-7.636 7.637L13.658 32.464a5.367 5.367 0 0 1-.913-.727 5.367 5.367 0 0 1-1.572-3.911 5.369 5.369 0 0 1 1.572-3.911z"
-                    data-original="#000000"
-                  />
-                </svg>
-              </li>
-              <li className="flex items-center justify-center shrink-0 bg-blue-500  border-2 border-blue-500 cursor-pointer text-base font-bold text-white w-10 h-10 rounded-full">
-                1
-              </li>
-              <li className="flex items-center justify-center shrink-0 hover:bg-gray-50  border-2 cursor-pointer text-base font-bold text-[#333] w-10 h-10 rounded-full">
-                2
-              </li>
-              <li className="flex items-center justify-center shrink-0 hover:bg-gray-50  border-2 cursor-pointer text-base font-bold text-[#333] w-10 h-10 rounded-full">
-                3
-              </li>
-              <li className="flex items-center justify-center shrink-0 hover:bg-gray-50  border-2 cursor-pointer text-base font-bold text-[#333] w-10 h-10 rounded-full">
-                4
-              </li>
-              <li className="flex items-center justify-center shrink-0 hover:bg-gray-50 border-2 cursor-pointer w-10 h-10 rounded-full">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="w-3 fill-gray-400 rotate-180"
-                  viewBox="0 0 55.753 55.753"
-                >
-                  <path
-                    d="M12.745 23.915c.283-.282.59-.52.913-.727L35.266 1.581a5.4 5.4 0 0 1 7.637 7.638L24.294 27.828l18.705 18.706a5.4 5.4 0 0 1-7.636 7.637L13.658 32.464a5.367 5.367 0 0 1-.913-.727 5.367 5.367 0 0 1-1.572-3.911 5.369 5.369 0 0 1 1.572-3.911z"
-                    data-original="#000000"
-                  />
-                </svg>
-              </li>
-            </ul>
+          <div className="fetchMoreObject" style={{scale:values.maxKey <= 0?'0':'1',transition:'all 1s'}} >
+                <button type="button"
+                    onClick={()=> setCnt(cnt=>cnt+1)}
+                    className="px-5 py-2.5 rounded-lg text-sm tracking-wider font-medium border border-orange-700 outline-none bg-transparent hover:bg-orange-700 text-orange-700 hover:text-white transition-all duration-300">
+                        Fetch next {values.maxKey} Object
+                </button>
           </div>
         </div>
       </div>
