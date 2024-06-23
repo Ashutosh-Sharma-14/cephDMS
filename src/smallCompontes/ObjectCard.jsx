@@ -16,6 +16,16 @@ const ObjectCard = ({ objectKey, metadata, lastModifiedTime, fileSize }) =>{
   // console.log(lastModifiedTime);
   // console.log(fileSize);
 
+  const handleFileSize  = (bytes) => {
+
+    if (bytes === 0) return '0 Byte';
+
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+  
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  }
 
 
     const [open, setOpen] = useState(false);
@@ -34,11 +44,12 @@ const ObjectCard = ({ objectKey, metadata, lastModifiedTime, fileSize }) =>{
           <div className="shadow-[0_2px_10px_-3px_rgba(6,81,237,0.3)] rounded-lg border-l-8 border-blue-600" role="accordion">
               <button type="button" className="w-full text-sm font-semibold text-left py-5 px-6 text-blue-600 flex items-center" onClick={()=>setOpen(!open)}>
                   <img src={fileLogo[objectKey.substring(objectKey.lastIndexOf('.') + 1)] || fileLogo['default']} alt="" className="fill-current w-8 mr-4 shrink-0"  />
-                  <span className="mr-4">
+                  <span className="titleFileName mr-4">
                     {/* {objectKey.substring(objectKey.lastIndexOf('/') + 1)} */}
                     {fileInfo.fileName}
-                      <span className="text-xs text-gray-600 mt-0.5 block font-medium">
+                      <span className="subTitle text-xs text-gray-600 mt-0.5 block font-medium">
                         {new Date(lastModifiedTime).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}
+                        <span>  {handleFileSize(fileSize)}</span>
                     </span>
                   </span>
                   {
