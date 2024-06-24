@@ -2,8 +2,16 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 
 const Login = () =>{
-  const [see, setSee] = useState(false);
+  const [see, setSee] = useState(true);
   const [open, setOpen] = useState(false);
+  const [selectedRole, setSelectedRole] = useState('');
+  const handleSeletion = e =>{
+
+    console.log(e.target.innerText);
+    setSelectedRole(e.target.innerText);
+    setOpen(!open)
+
+  }
 
     return <>
     <div className="font-[sans-serif] text-[#333]">
@@ -19,21 +27,21 @@ const Login = () =>{
               <div style={{width:'50%', marginLeft:'20%',marginBottom:'2vh'}}>
 
               <button type="button"
-                    onClick={()=>setOpen(!open)}
-                    class="dropDownBtn px-5 py-2.5 border border-gray-300 text-gray-800 text-sm outline-none bg-white hover:bg-gray-50">
-                    User Role
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-2 fill-gray-500 inline ml-3" viewBox="0 0 24 24">
-                      <path fill-rule="evenodd"
-                        d="M11.99997 18.1669a2.38 2.38 0 0 1-1.68266-.69733l-9.52-9.52a2.38 2.38 0 1 1 3.36532-3.36532l7.83734 7.83734 7.83734-7.83734a2.38 2.38 0 1 1 3.36532 3.36532l-9.52 9.52a2.38 2.38 0 0 1-1.68266.69734z"
-                        clip-rule="evenodd" data-original="#000000" />
-                    </svg>
-                  </button>
+                onClick={()=>setOpen(!open)}
+                class="dropDownBtn px-5 py-2.5 border border-gray-300 text-gray-800 text-sm outline-none bg-white hover:bg-gray-50">
+                {selectedRole==='' ? 'User Role' : selectedRole}
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-2 fill-gray-500 inline ml-3" viewBox="0 0 24 24">
+                  <path fill-rule="evenodd"
+                    d="M11.99997 18.1669a2.38 2.38 0 0 1-1.68266-.69733l-9.52-9.52a2.38 2.38 0 1 1 3.36532-3.36532l7.83734 7.83734 7.83734-7.83734a2.38 2.38 0 1 1 3.36532 3.36532l-9.52 9.52a2.38 2.38 0 0 1-1.68266.69734z"
+                    clip-rule="evenodd" data-original="#000000" />
+                </svg>
+              </button>
 
-                  <ul style={{display:open ? 'block':'none', width:'50%'}} class='dorpDownList absolute shadow-[0_8px_19px_-7px_rgba(6,81,237,0.2)] bg-white py-2 z-[1000] min-w-full w-max divide-y max-h-96 overflow-auto'>
-                    <li class=' py-3 px-5 hover:bg-gray-50 text-gray-800 text-sm cursor-pointer'>Ubi Zonal Admin</li>
-                    <li class='py-3 px-5 hover:bg-gray-50 text-gray-800 text-sm cursor-pointer'>Boi Zonal Admin</li>
-                    <li class='py-3 px-5 hover:bg-gray-50 text-gray-800 text-sm cursor-pointer'>Ubi Branch Officer</li>
-                </ul>
+              <ul style={{display:open ? 'block':'none',width:'40% !important'}} class='dorpDownList absolute shadow-[0_8px_19px_-7px_rgba(6,81,237,0.2)] bg-white py-2 z-[1000] min-w-full w-max divide-y max-h-96 overflow-auto'>
+                <li  onClick={handleSeletion} name='ubi zonal admin'  class='py-3 px-5 hover:bg-gray-50 text-gray-800 text-sm cursor-pointer'>Ubi Zonal Admin</li>
+                <li onClick={handleSeletion} name='boi zonal admin'  class='py-3 px-5 hover:bg-gray-50 text-gray-800 text-sm cursor-pointer'>Boi Zonal Admin</li>
+                <li onClick={handleSeletion}  name='ubi branch officer' class='py-3 px-5 hover:bg-gray-50 text-gray-800 text-sm cursor-pointer'>Ubi Branch Officer</li>
+              </ul>
 
               </div>
 
@@ -58,7 +66,7 @@ const Login = () =>{
                 <label className="text-xs block mb-2">Password</label>
                 <div className="relative flex items-center">
                   <input  name="password" type={see?'password':'text'} required className="w-full text-sm border-b border-gray-300 focus:border-[#333] px-2 py-3 outline-none" placeholder="Enter password" />
-                  <svg  onClick={()=>setSee(!see)} xmlns="http://www.w3.org/2000/svg" fill="#bbb" stroke="#bbb" className="w-[18px] h-[18px] absolute right-2 cursor-pointer" viewBox="0 0 128 128">
+                  <svg   onClick={()=>setSee(!see)} xmlns="http://www.w3.org/2000/svg" fill="#bbb" stroke={!see?'red':"#bbb"} className="w-[18px] h-[18px] absolute right-2 cursor-pointer" viewBox="0 0 128 128">
                     <path d="M64 104C22.127 104 1.367 67.496.504 65.943a4 4 0 0 1 0-3.887C1.367 60.504 22.127 24 64 24s62.633 36.504 63.496 38.057a4 4 0 0 1 0 3.887C126.633 67.496 105.873 104 64 104zM8.707 63.994C13.465 71.205 32.146 96 64 96c31.955 0 50.553-24.775 55.293-31.994C114.535 56.795 95.854 32 64 32 32.045 32 13.447 56.775 8.707 63.994zM64 88c-13.234 0-24-10.766-24-24s10.766-24 24-24 24 10.766 24 24-10.766 24-24 24zm0-40c-8.822 0-16 7.178-16 16s7.178 16 16 16 16-7.178 16-16-7.178-16-16-16z" data-original="#000000"></path>
                   </svg>
                 </div>
