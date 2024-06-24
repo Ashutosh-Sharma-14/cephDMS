@@ -16,6 +16,5 @@ export const reducer = (state, action) => {
 
   export const initialState = {
     count: 0,
-    user: null,
-    componentIndex:null
+    user: null
   };
