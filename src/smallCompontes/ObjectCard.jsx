@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import './objectCard.css'
 import fileLogo from '../Jsons/fileLogo.json'
 import MetaDataList from './MetaDataList';

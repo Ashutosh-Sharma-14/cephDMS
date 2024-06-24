@@ -8,7 +8,10 @@ import { useState } from "react";
 import ReactLoading from "react-loading";
 import swal from "sweetalert";
 
+// bucket creation date 
+
 const ListBuckets = () =>{
+
     const [bucketName, setBucketName] = useState([]);
     const [disabled, setDisabled] = useState(false);
     const [bucket, setBucket] = useState(''); 
@@ -23,6 +26,12 @@ const ListBuckets = () =>{
             setDisabled(false)
             console.log(res.data);
         }catch(err){
+            swal(
+                `Error while Fetching Bucket`,
+                `${err}`,
+                'error'
+            );
+            setDisabled(false)
             console.log('message',err);
         }
     }
@@ -40,7 +49,8 @@ const ListBuckets = () =>{
         } catch (err) {
             swal(
                 `Error while creating Bucket`,
-                `${err}`
+                `${err}`,
+                'error'
             );
             console.log('message', err);
         }

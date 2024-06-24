@@ -99,6 +99,7 @@ const Download = () =>{
                     title: "File Download Unsuccessful",
                     icon: "error",
                 })
+                setBtn(false)
                 console.error('Error downloading files:', error);
             }
 
@@ -116,6 +117,15 @@ const Download = () =>{
         const url = new URL('http://localhost:8080/user/download-multiple-files-from-ceph');
         url.searchParams.append('prefix', tempKey);
         url.searchParams.append('bucketName',keyObject.bucketName);
+
+        if(keyObject.accountNo <= 0 || keyObject.bankName === '' || keyObject.accountNo<=0){
+            swal(
+                'Enter Prefix',
+                `${keyObject.year <= 0? 'Year,':''} ${keyObject.bankName===''?'Bank Name,':''} ${keyObject.accountNo<= 0 ? 'Account No':''}`,
+                'info'
+            )
+            return;
+        }
 
         try {
             setBtn(true)
@@ -140,6 +150,8 @@ const Download = () =>{
                 title: "Folder Download Unsuccessful",
                 icon: "warning",
             })
+            setBtn(false)
+
             console.error('Error downloading files:', error);
         }
 
@@ -185,7 +197,7 @@ const Download = () =>{
 
                 {/* add key fields */}
                 <div>
-                    <input type='text' placeholder='Year'
+                    <input type='number' placeholder='Year'
                     className="px-4 py-1.5 text-sm rounded-md bg-white border border-gray-400 w-full outline-blue-500" 
                     onChange={handleInputValue}
                     name="year"
@@ -199,7 +211,7 @@ const Download = () =>{
                     />
                 </div>
                 <div>
-                    <input type='text' placeholder='Account Number'
+                    <input type='number' placeholder='Account Number'
                     className="px-4 py-1.5 text-sm rounded-md bg-white border border-gray-400 w-full outline-blue-500" 
                     onChange={handleInputValue}
                     name="accountNo"
@@ -217,7 +229,7 @@ const Download = () =>{
                 {
                     btn ?
                     <div className="loadingLogo">
-                        <ReactLoading type="spin" color="#007bff" width={'3%'} /> 
+                        <ReactLoading type="cylon" color="#007bff" width={'3%'} /> 
                         <div className="">Downloading...</div>
                     </div> :
                     <>
@@ -226,7 +238,7 @@ const Download = () =>{
                     <button type="button"
                         className="btn px-5 py-2.5 rounded-lg text-sm tracking-wider font-medium border border-current outline-none bg-green-700 hover:bg-transparent text-white hover:text-green-700 transition-all duration-300"
                         onClick={handleFolderBtn}
-                        disabled={btn}
+                        title="Enter perfix"
                         >
                             Download 
                     </button>
@@ -275,6 +287,7 @@ const Download = () =>{
                     </label>
                     <button type="button"
                         onClick={handleFileBtn}
+                        title="Enter prefix"
                         className="px-5 py-2.5 rounded-lg text-sm tracking-wider font-medium border border-current outline-none bg-green-700 hover:bg-transparent text-white hover:text-green-700 transition-all duration-300">
                             Download 
                     </button>

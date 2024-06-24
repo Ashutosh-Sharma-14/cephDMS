@@ -116,43 +116,67 @@ const ListObject = () => {
       },[cnt])
 
    
-      const handleInputChange = () => {
-        const updatedElements = elements.map((element) => {
-          const elementText = element.innerText ? element.innerText.trim().toLowerCase() : '';
-          if (elementText.includes(values.search.toLowerCase())) {
-            element.style.display = 'none'; // Hide matching elements
-            return true;
-          } else {
-            element.style.display = 'block'; // Ensure non-matching elements are visible
-            return false;
-          }
-        });
+      // const handleInputChange = () => {
+      //   const updatedElements = elements.map((element) => {
+      //     const elementText = element.innerText ? element.innerText.trim().toLowerCase() : '';
+      //     if (elementText.includes(values.search.toLowerCase())) {
+      //       element.style.display = 'none'; // Hide matching elements
+      //       return true;
+      //     } else {
+      //       element.style.display = 'block'; // Ensure non-matching elements are visible
+      //       return false;
+      //     }
+      //   });
       
-        setHide(updatedElements.some(isHidden => isHidden)); // Set hide to true if any element is hidden
-      };
+      //   setHide(updatedElements.some(isHidden => isHidden)); // Set hide to true if any element is hidden
+      // };
       
     
   
-      useEffect(() => {
-        // Function to fetch elements and set state
-        const fetchElements = () => {
-          const allElements = document.body.getElementsByTagName('div');
-          const elementsArray = Array.from(allElements);
-          setElements(elementsArray);
-          console.log(elements)
-        };
-        fetchElements(); // Fetch elements on component mount
-      }, []); // Only run once on mount
+  //     useEffect(() => {
+  //       // Function to fetch elements and set state
+  //       const fetchElements = () => {
+  //         const allElements = document.body.getElementsByTagName('div');
+  //         const elementsArray = Array.from(allElements);
+  //         setElements(elementsArray);
+  //         console.log(elements)
+  //       };
+  //       fetchElements(); // Fetch elements on component mount
+  //     }, []); // Only run once on mount
     
-      useEffect(() => {
-        handleInputChange();
-      }, [values.search]); // Run when values.search changes
+  //     useEffect(() => {
+  //       handleInputChange();
+  //     }, [values.search]); // Run when values.search changes
     
 
   const handleInputValue = (e) => {
     const { name, value } = e.target;
     setValues((prevState) => ({ ...prevState, [name]: value }));
   };
+
+ 
+  
+
+  const filteredObjects = response.objectKeys.reduce((acc, objectKey, index) => {
+    const metadata = response.metadata[index];
+
+    // Check if objectKey or metadata contains the search value
+    if (
+        objectKey.toLowerCase().includes(values.search.toLowerCase()) ||
+        (metadata && Object.values(metadata).some(value => value.toLowerCase().includes(values.search.toLowerCase())))
+    ) {
+        acc.push({
+            objectKey,
+            metadata: metadata ? metadata : {}, // Ensure metadata exists
+            lastModifiedTime: response.lastModifiedTime[index],
+            fileSize: response.fileSizes[index]
+        });
+    }
+    return acc;
+}, []);
+
+    
+  
 
   return (
     <div className="upload">
@@ -185,7 +209,7 @@ const ListObject = () => {
 
                 {/* search Tab */}
 
-              {/* <label
+              <label
                 htmlFor="UserEmail"
                 style={{marginBottom:'12px',scale:!loading?'1':'0', transition:'all 1s'}}
                 className="relative block overflow-hidden border-b border-gray-200 bg-transparent pt-3 focus-within:border-blue-600"
@@ -193,15 +217,16 @@ const ListObject = () => {
                 <input
                   type="text"
                   id="UserEmail"
+                  title="Search anything MetaData, Prefix, filName etc."
                   placeholder=""
                   name="search"
                   onChange={handleInputValue}
                   className="peer h-8 w-full border-none bg-transparent p-0 placeholder-transparent focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
                 />
                 <span className="absolute start-0 top-2 -translate-y-1/2 text-xs text-gray-700 transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-sm peer-focus:top-2 peer-focus:text-xs">
-                  Search here
+                  Search...
                 </span>
-              </label> */}
+              </label>
 
               <div>
                 <input
@@ -253,20 +278,21 @@ const ListObject = () => {
             {
             loading ?
             <div className="loadingLogo">
-                <ReactLoading type="spin" color="#007bff" width={'3%'} /> 
+                <ReactLoading type="cylon" color="#007bff" width={'3%'} /> 
                 <div className="">Fetching...</div>
 
             </div>
-            :  response.objectKeys.map((objectKey, index) => (
+            :  filteredObjects.map((object, index) => (
               <ObjectCard
                 key={index}
-                objectKey={objectKey}
-                metadata={response.metadata[index]}
-                lastModifiedTime={response.lastModifiedTime[index]}
-                fileSize={response.fileSizes[index]}
+                objectKey={object.objectKey}
+                metadata={object.metadata}
+                lastModifiedTime={object.lastModifiedTime}
+                fileSize={object.fileSize}
                 query={hide}
               />
             ))
+            
             }
           </div>
           <div className="fetchMoreObject" style={{scale:values.maxKey <= 0?'0':'1',transition:'all 1s'}} >

@@ -8,22 +8,55 @@ import Swal from 'sweetalert2';
 
 const BucketCard = ({item}) =>{
     const [enable,setEnable] = useState(false);
-    const handleVersionButton =  async (e) =>{
-        e.preventDefault();
 
-        try{
-            const uri = `http://localhost:8080/user/enable-versioning?bucketName=${encodeURIComponent(item)}`
+    // const handleVersionButton =  async (e) =>{
+    //     e.preventDefault();
+
+    //     try{
+    //         const uri = `http://localhost:8080/user/enable-versioning?bucketName=${encodeURIComponent(item)}`
+    //         const res = await axios.post(uri);
+    //         setEnable(res.data);
+    //         swal(
+    //              enable ? `Bucket versioning enabled`: `Bucket versioning is already enabled`, 
+    //              enable ? `Bucket Name : ${item}`: `Bucket Name : ${item}`, 
+    //              enable ? "success" : "info");
+    //         console.log(res);
+    //     }catch(err){
+    //         console.log('message',err);
+    //     }
+    // }
+
+    const handleVersionButton = async (e) => {
+        e.preventDefault();
+    
+        try {
+            setEnable(false);
+            const uri = `http://localhost:8080/user/enable-versioning?bucketName=${encodeURIComponent(item)}`;
             const res = await axios.post(uri);
+            
+            // Assuming res.data is a boolean indicating whether versioning was enabled
+            // const enable = res.data;
             setEnable(res.data);
+    
+            // Using enable to conditionally set SweetAlert messages
             swal(
-                 enable ? `Bucket versioning enabled`: `Bucket versioning is already enabled`, 
-                 enable ? `Bucket Name : ${item}`: `Bucket Name : ${item}`, 
-                 enable ? "success" : "info");
+                !enable ? `Bucket versioning enabled` : `Bucket versioning is already enabled`,
+                `Bucket Name: ${item}`,
+                !enable ? "success" : "info"
+            );
+    
             console.log(res);
-        }catch(err){
-            console.log('message',err);
+        } catch (err) {
+            setEnable(false)
+            swal(
+               `Bucket versioning is Unsuccessful`,
+                `${err} while enable versioning for ${item}`,
+                "error"
+            );
+            console.log('Error:', err);
         }
     }
+    
 
     const handleDeleteBtn = async (e) =>{
         e.preventDefault();
