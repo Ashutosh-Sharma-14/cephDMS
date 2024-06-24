@@ -21,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 
+import software.amazon.awssdk.awscore.exception.AwsServiceException;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.core.exception.SdkClientException;
 import software.amazon.awssdk.regions.Region;
@@ -43,6 +44,7 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Component
 @ConfigurationProperties(prefix = "ceph")
@@ -62,8 +64,10 @@ public class CephServiceImpl implements CephService {
 //    this is private final to make it immutable and thread safe
     private final S3Client s3Client;
     private final S3Presigner s3Presigner;
+    private static final long PART_SIZE = 5 * 1024 * 1024; // 5 MB
 //    root folder, should not be modified
     private final String bucketName = "test";
+    static int counter = 0;
 
     public CephServiceImpl(){
 
@@ -96,6 +100,89 @@ public class CephServiceImpl implements CephService {
     }
 
     @Override
+    public void uploadFileTesting(String bucketName, String keyName, String filePath) throws IOException{
+        keyName = keyName + "-" + counter++;
+        File file = new File(filePath);
+        try {
+            PutObjectRequest putObjectRequest = PutObjectRequest.builder()
+                    .bucket(bucketName)
+                    .key(keyName)
+                    .build();
+
+            s3Client.putObject(putObjectRequest, RequestBody.fromFile(file));
+            System.out.println("Uploaded file: " + keyName);
+        } catch (S3Exception e) {
+            System.err.println(e.awsErrorDetails().errorMessage());
+        }
+    }
+
+    @Override
+    public void uploadFileInParts(String bucketName, String keyName, String filePath) throws IOException {
+        File file = new File(filePath);
+
+        // Initiate the multipart upload
+        CreateMultipartUploadRequest createMultipartUploadRequest = CreateMultipartUploadRequest.builder()
+                .bucket(bucketName)
+                .key(keyName)
+                .build();
+
+        CreateMultipartUploadResponse createMultipartUploadResponse = s3Client.createMultipartUpload(createMultipartUploadRequest);
+        String uploadId = createMultipartUploadResponse.uploadId();
+
+        try {
+            // Upload parts
+            List<CompletedPart> completedParts = new ArrayList<>();
+            long fileLength = file.length();
+            long partSize = Math.min(PART_SIZE, fileLength);
+            FileInputStream fis = new FileInputStream(file);
+
+            for (int i = 0; i < fileLength; i += partSize) {
+                partSize = Math.min(PART_SIZE, fileLength - i);
+                byte[] partData = new byte[(int) partSize];
+                fis.read(partData);
+
+                UploadPartRequest uploadPartRequest = UploadPartRequest.builder()
+                        .bucket(bucketName)
+                        .key(keyName)
+                        .uploadId(uploadId)
+                        .partNumber(completedParts.size() + 1)
+                        .build();
+
+                UploadPartResponse uploadPartResponse = s3Client.uploadPart(uploadPartRequest, RequestBody.fromBytes(partData));
+                // Debug statement to see which part is uploaded
+                System.out.println("Uploaded part " + (completedParts.size() + 1) + ", ETag: " + uploadPartResponse.eTag());
+
+                completedParts.add(CompletedPart.builder()
+                        .partNumber(completedParts.size() + 1)
+                        .eTag(uploadPartResponse.eTag())
+                        .build());
+            }
+            fis.close();
+
+            // Complete the multipart upload
+            CompleteMultipartUploadRequest completeMultipartUploadRequest = CompleteMultipartUploadRequest.builder()
+                    .bucket(bucketName)
+                    .key(keyName)
+                    .uploadId(uploadId)
+                    .multipartUpload(CompletedMultipartUpload.builder()
+                            .parts(completedParts)
+                            .build())
+                    .build();
+
+            s3Client.completeMultipartUpload(completeMultipartUploadRequest);
+            System.out.println("Multipart upload completed.");
+        } catch (Exception e) {
+            s3Client.abortMultipartUpload(AbortMultipartUploadRequest.builder()
+                    .bucket(bucketName)
+                    .key(keyName)
+                    .uploadId(uploadId)
+                    .build());
+            System.out.println("Multipart upload aborted.");
+            e.printStackTrace();
+        }
+    }
+
+    @Override
     public ResponseEntity<?> createBucket(String bucketName){
         try{
             CreateBucketRequest createBucketRequest = CreateBucketRequest
@@ -112,24 +199,59 @@ public class CephServiceImpl implements CephService {
         return new ResponseEntity<>("Successfully created bucket " + bucketName, HttpStatus.OK);
     }
 
+    public void deleteAllVersions(String bucketName) {
+        ListObjectVersionsRequest listObjectVersionsRequest = ListObjectVersionsRequest.builder()
+                .bucket(bucketName)
+                .build();
+
+        ListObjectVersionsResponse listObjectVersionsResponse;
+        do {
+            try {
+                listObjectVersionsResponse = s3Client.listObjectVersions(listObjectVersionsRequest);
+                List<ObjectVersion> objectVersions = listObjectVersionsResponse.versions();
+
+                if (!objectVersions.isEmpty()) {
+                    List<ObjectIdentifier> objectsToDelete = objectVersions.stream()
+                            .flatMap(version -> Stream.of(ObjectIdentifier.builder()
+                                    .key(version.key())
+                                    .versionId(version.versionId())
+                                    .build()))
+                            .collect(Collectors.toList());
+
+                    DeleteObjectsRequest deleteObjectsRequest = DeleteObjectsRequest.builder()
+                            .bucket(bucketName)
+                            .delete(Delete.builder().objects(objectsToDelete).build())
+                            .build();
+
+                    s3Client.deleteObjects(deleteObjectsRequest);
+                }
+
+                listObjectVersionsRequest = listObjectVersionsRequest.toBuilder()
+                        .keyMarker(listObjectVersionsResponse.nextKeyMarker())
+                        .versionIdMarker(listObjectVersionsResponse.nextVersionIdMarker())
+                        .build();
+            } catch (AwsServiceException | SdkClientException e) {
+                throw new RuntimeException(e);
+            }
+        } while (listObjectVersionsResponse.isTruncated());
+    }
+
+
     @Override
     public ResponseEntity<?> deleteBucket(String bucketName){
+        deleteAllVersions(bucketName);
         try{
             DeleteBucketRequest deleteBucketRequest = DeleteBucketRequest
                     .builder()
                     .bucket(bucketName)
                     .build();
 
-            DeleteBucketResponse deleteBucketResponse = s3Client.deleteBucket(deleteBucketRequest);
+           s3Client.deleteBucket(deleteBucketRequest);
         }
         catch (NoSuchBucketException e) {
             // Handle the case where the bucket does not exist
             System.err.println("Bucket does not exist: " + e.awsErrorDetails().errorMessage());
             throw e;
-//        } catch (BucketNotEmptyException e) {
-//            // Handle the case where the bucket is not empty
-//            System.err.println("Bucket is not empty: " + e.awsErrorDetails().errorMessage());
-//            throw e;
         } catch (S3Exception e) {
             // Handle other S3 specific exceptions
             System.err.println("S3 Exception: " + e.awsErrorDetails().errorMessage());
@@ -143,7 +265,7 @@ public class CephServiceImpl implements CephService {
     }
 
     @Override
-    public ResponseEntity<Boolean>  enableVersioning(String bucketName) {
+    public ResponseEntity<Boolean>  changeVersioningStatus(String bucketName) {
         GetBucketVersioningRequest getBucketVersioningRequest = GetBucketVersioningRequest.builder()
                 .bucket(bucketName)
                 .build();
@@ -160,8 +282,10 @@ public class CephServiceImpl implements CephService {
             System.out.println("Bucket versioning enabled for bucket: " + bucketName);
             return ResponseEntity.ok().body(true);
         } else {
-            System.out.println("Bucket versioning is already enabled for bucket: " + bucketName);
-//             return ResponseEntity.ok().body(false);
+            PutBucketVersioningRequest putBucketVersioningRequest = PutBucketVersioningRequest.builder()
+                    .bucket(bucketName)
+                    .versioningConfiguration(conf -> conf.status(BucketVersioningStatus.SUSPENDED))
+                    .build();
         }
         return ResponseEntity.ok().body(false);
     }

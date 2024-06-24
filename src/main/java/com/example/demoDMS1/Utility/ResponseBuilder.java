@@ -1,8 +1,8 @@
 package com.example.demoDMS1.Utility;
 
 import com.example.demoDMS1.Model.CommonResponseDTO;
-import com.example.demoDMS1.Model.LoginResponseDTO;
-import com.example.demoDMS1.Model.RegistrationResponseDTO;
+//import com.example.demoDMS1.Model.LoginResponseDTO;
+//import com.example.demoDMS1.Model.RegistrationResponseDTO;
 import org.springframework.http.ResponseEntity;
 
 import java.time.LocalDateTime;
@@ -22,21 +22,21 @@ public class ResponseBuilder {
         return new CommonResponseDTO<>(statusCode,message);
     }
 
-    public static RegistrationResponseDTO successFullRegistrationResponse(boolean isRegistered, String message){
-        return new RegistrationResponseDTO(isRegistered,message);
-    }
-
-    public static RegistrationResponseDTO failedRegistrationResponse(String message){
-        return new RegistrationResponseDTO(message);
-    }
-
-    public static LoginResponseDTO successfulLoginResponse(boolean isLoggedIn,String userEmail, String userRole,String message){
-        return new LoginResponseDTO(isLoggedIn,userEmail,userRole,message);
-    }
-
-    public static LoginResponseDTO failedLoginResponse(boolean isLoggedIn, String message){
-        return new LoginResponseDTO(isLoggedIn,message);
-    }
+//    public static RegistrationResponseDTO successFullRegistrationResponse(boolean isRegistered, String message){
+//        return new RegistrationResponseDTO(isRegistered,message);
+//    }
+//
+//    public static RegistrationResponseDTO failedRegistrationResponse(String message){
+//        return new RegistrationResponseDTO(message);
+//    }
+//
+//    public static LoginResponseDTO successfulLoginResponse(boolean isLoggedIn,String userEmail, String userRole,String message){
+//        return new LoginResponseDTO(isLoggedIn,userEmail,userRole,message);
+//    }
+//
+//    public static LoginResponseDTO failedLoginResponse(boolean isLoggedIn, String message){
+//        return new LoginResponseDTO(isLoggedIn,message);
+//    }
 
 //    public static ResponseEntity<Object> listBucketResponse(String objectName, Map<String,String>, )
 }

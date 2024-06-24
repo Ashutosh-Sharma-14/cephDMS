@@ -15,11 +15,17 @@ import java.util.concurrent.ExecutionException;
 
 @Service
 public interface CephService {
+    void uploadFileTesting(String bucketName, String keyName, String filePath) throws IOException;
+
+    void uploadFileInParts(String bucketName, String keyName, String filePath) throws IOException;
+
     ResponseEntity<?> createBucket(String bucketName);
 
     ResponseEntity<?> deleteBucket(String bucketName);
 
-    public ResponseEntity<Boolean>  enableVersioning(String bucketName);
+//    public ResponseEntity<Boolean>  enableVersioning(String bucketName);
+
+    ResponseEntity<Boolean>  changeVersioningStatus(String bucketName);
 
     ResponseEntity<List<String>> listVersionOfObject(String bucketName, String objectKey);
 

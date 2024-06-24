@@ -9,6 +9,7 @@ import com.example.demoDMS1.Service.CephService;
 import com.example.demoDMS1.Service.MetadataService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.persistence.Entity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -29,6 +30,16 @@ public class CephController {
         this.metadataService = metadataService;
     }
 
+    @GetMapping("/test-file-upload")
+    public void uploadFileTesting() throws IOException{
+        cephService.uploadFileTesting("test1","testing-file","/home/ashutosh.sharma/Documents/ceph-dms");
+    }
+
+    @PostMapping("/upload-file-in-parts")
+    public void uploadFileInParts(@RequestParam String bucketName, @RequestParam String keyName, @RequestParam String filePath) throws IOException {
+        cephService.uploadFileInParts(bucketName,keyName,filePath);
+    }
+
     @PutMapping("/create-bucket")
     public ResponseEntity<?> createBucket(@RequestParam String bucketName){
         return cephService.createBucket(bucketName);
@@ -45,8 +56,8 @@ public class CephController {
     }
 
     @PostMapping("/enable-versioning")
-    public ResponseEntity<Boolean>  enableVersioning(@RequestParam String bucketName) {
-        return cephService.enableVersioning(bucketName);
+    public ResponseEntity<Boolean>  changeVersioningStatus(@RequestParam String bucketName) {
+        return cephService.changeVersioningStatus(bucketName);
     }
 
     @GetMapping("/list-object-versions")
