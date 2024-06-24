@@ -8,5 +8,6 @@
     "pptx":"/pptx.png",
     "docx":"/docx.png",
     "zip":"/zip.png",
-    "default":"/unknown-file-icon.png"
+    "default":"/unknown-file-icon.png",
+    "svg":"/downloadSVG.svg"
 }

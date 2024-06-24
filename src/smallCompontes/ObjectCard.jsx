@@ -52,7 +52,10 @@ const ObjectCard = ({ objectKey, metadata, lastModifiedTime, fileSize, query }) 
                     {fileInfo.fileName}
                       <span className="subTitle text-xs text-gray-600 mt-0.5 block font-medium">
                         {new Date(lastModifiedTime).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}
-                        <span>  {handleFileSize(fileSize)}</span>
+                        <div className="deleteCont">
+                          <img src={fileLogo.svg} alt=""  />
+                          <span>  {handleFileSize(fileSize)}</span>
+                        </div>
                     </span>
                   </span>
                   {
