@@ -265,7 +265,20 @@ public class CephServiceImpl implements CephService {
     }
 
     @Override
-    public ResponseEntity<Boolean>  changeVersioningStatus(String bucketName) {
+    public ResponseEntity<?> isVersioningEnabled(String bucketName){
+        GetBucketVersioningRequest getBucketVersioningRequest = GetBucketVersioningRequest.builder()
+                .bucket(bucketName)
+                .build();
+
+        BucketVersioningStatus currentStatus = s3Client.getBucketVersioning(getBucketVersioningRequest).status();
+        System.out.println(currentStatus);
+        return new ResponseEntity<>(currentStatus,HttpStatus.OK);
+//        if(currentStatus == BucketVersioningStatus.ENABLED) return new ResponseEntity<>(true,HttpStatus.OK);
+//        else return new ResponseEntity<>(false,HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<?> changeVersioningStatus(String bucketName) {
         GetBucketVersioningRequest getBucketVersioningRequest = GetBucketVersioningRequest.builder()
                 .bucket(bucketName)
                 .build();
@@ -799,8 +812,8 @@ public class CephServiceImpl implements CephService {
             s3Client.getObject(
 //                    lambda expression. Curly brackets can be removed in case of single statement
                     req -> req.bucket(downloadRequestDTO.getBucketName())
-                            .key(downloadRequestDTO.getObjectKey())
-                            .versionId(downloadRequestDTO.getVersionId()),
+                            .key(downloadRequestDTO.getObjectKey()),
+//                            .versionId(downloadRequestDTO.getVersionId()),
                     Paths.get(downloadDestination+downloadRequestDTO.getObjectKey())
             );
         }

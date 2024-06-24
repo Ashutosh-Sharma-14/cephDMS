@@ -55,8 +55,13 @@ public class CephController {
         return metadataService.findObjectKeysByMetadata(key,value);
     }
 
-    @PostMapping("/enable-versioning")
-    public ResponseEntity<Boolean>  changeVersioningStatus(@RequestParam String bucketName) {
+    @GetMapping("/is-versioning-enabled")
+    public ResponseEntity<?> isVersioningEnabled(@RequestParam String bucketName){
+        return cephService.isVersioningEnabled(bucketName);
+    }
+
+    @PostMapping("/change-versioning")
+    public ResponseEntity<?>  changeVersioningStatus(@RequestParam String bucketName) {
         return cephService.changeVersioningStatus(bucketName);
     }
 

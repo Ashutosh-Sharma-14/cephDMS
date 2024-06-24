@@ -25,7 +25,9 @@ public interface CephService {
 
 //    public ResponseEntity<Boolean>  enableVersioning(String bucketName);
 
-    ResponseEntity<Boolean>  changeVersioningStatus(String bucketName);
+    ResponseEntity<?> isVersioningEnabled(String bucketName);
+
+    ResponseEntity<?> changeVersioningStatus(String bucketName);
 
     ResponseEntity<List<String>> listVersionOfObject(String bucketName, String objectKey);
 
