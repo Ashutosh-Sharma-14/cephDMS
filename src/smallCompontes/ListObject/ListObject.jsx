@@ -46,6 +46,7 @@ const ListObject = () => {
     return prefixBuilder;
   }
 
+
     const fetchObject = async () => {
         try {
           const prefix = buildPrefix(
@@ -70,6 +71,7 @@ const ListObject = () => {
         //   console.log('setToken', res.data.continuationToken);
         //   console.log(res.data.metadata);
           setLoading(false);
+          // console.log(response.objectKeys.length)
         } catch (e) {
           console.log(e);
         }
@@ -285,7 +287,7 @@ const ListObject = () => {
             :  filteredObjects.map((object, index) => (
               <ObjectCard
                 key={index}
-                bucketName={values.bankName}
+                bucketName={values.bucketName}
                 objectKey={object.objectKey}
                 metadata={object.metadata}
                 lastModifiedTime={object.lastModifiedTime}

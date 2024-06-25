@@ -8,7 +8,7 @@ import swal from 'sweetalert';
 
 
 
-const ObjectCard = ({ objectKey, metadata, lastModifiedTime, fileSize, query,bucketName }) =>{
+const ObjectCard = ({ objectKey, metadata, lastModifiedTime, fileSize, query, bucketName }) =>{
 
   const [btn, setBtn] = useState(false);
 
@@ -17,6 +17,7 @@ const ObjectCard = ({ objectKey, metadata, lastModifiedTime, fileSize, query,buc
   // console.log(toString(metadata));
   // console.log(lastModifiedTime);
   // console.log(fileSize);
+  // console.log(bucketName)
 
   const handleFileSize  = (bytes) => {
 
@@ -66,6 +67,7 @@ const ObjectCard = ({ objectKey, metadata, lastModifiedTime, fileSize, query,buc
 
               // Append properties to FormData object
               formData.append('bucketName', downloadRequest.bucketName);
+              
               formData.append('objectKey', downloadRequest.objectKey);
               formData.append('versionId', downloadRequest.versionId);
 
@@ -74,7 +76,7 @@ const ObjectCard = ({ objectKey, metadata, lastModifiedTime, fileSize, query,buc
 
           // Example usage:
           const formData = createFormData(downloadRequest);
-
+          // console.log( 'oekokef', bucketName)
           // Constructing the URL with query parameters
           const url = new URL('http://localhost:8080/user/download-file-from-ceph'); 
           url.search = new URLSearchParams(formData).toString();
