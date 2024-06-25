@@ -1,0 +1,25 @@
+.subBucket{
+    /* border:  2px solid red !important; */
+    display: flex;
+    justify-content: space-between;
+
+}
+
+.versioning{
+    /* border:  2px solid red !important; */
+    width: 30%;
+}
+
+
+
+.delete{
+
+    height: 40px;
+    width: 20%;
+    /* border:  2px solid red !important; */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
