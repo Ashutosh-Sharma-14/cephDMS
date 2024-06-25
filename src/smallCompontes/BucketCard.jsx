@@ -40,13 +40,13 @@ const BucketCard = ({item, setCnt}) =>{
             
             // Assuming res.data is a boolean indicating whether versioning was enabled
             // const enable = res.data;
-            // setEnable(res.data);
+            setEnable(res.data);
     
             // Using enable to conditionally set SweetAlert messages
             swal(
-                !enable ? `Bucket versioning enabled` : `Bucket versioning is already enabled`,
+                !enable ? `Bucket versioning enabled` : `Bucket versioning is Suspended`,
                 `Bucket Name: ${item}`,
-                !enable ? "success" : "info"
+                !enable ? "success" : "success"
             );
     
             console.log(res.data);

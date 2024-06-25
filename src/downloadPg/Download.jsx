@@ -232,7 +232,7 @@ const Download = () =>{
                         <ReactLoading type="cylon" color="#007bff" width={'3%'} /> 
                         <div className="">Downloading...</div>
                     </div> :
-                    <>
+                    <div className="downloadBox">
                 <div className="downloadFolder">
                     <div className=""> Folder</div>
                     <button type="button"
@@ -243,7 +243,7 @@ const Download = () =>{
                             Download 
                     </button>
                 </div>
-                <div className="downloadObject">
+                <div className="downloadObject" style={{display:'none'}}>
                     <div className=""> File</div>
                     <label
                         htmlFor="fileName"
@@ -292,7 +292,7 @@ const Download = () =>{
                             Download 
                     </button>
                 </div>
-                </>
+                </div>
                 }
             </div>
         </div>
