@@ -22,6 +22,19 @@ const Upload = () =>{
         accountNo:''
     });
 
+    function buildPrefix(fileYear, bankName, accountNo) {
+        let prefixBuilder = '';
+        if (fileYear && fileYear !== '') {
+          prefixBuilder += fileYear;
+          if (bankName && bankName !== '') {
+            prefixBuilder += `/${bankName}`;
+            if (accountNo && accountNo !== '') {
+              prefixBuilder += `/${accountNo}/`;
+            }
+          }
+        }
+        return prefixBuilder;
+      }
 
      const handleAllFileUpload = async (e) =>{
         e.preventDefault(); 
@@ -43,6 +56,7 @@ const Upload = () =>{
         
 
         let tempKey = `${keyObject.year}/${keyObject.bankName}/${keyObject.accountNo}/`;
+        // let tempKey = buildPrefix(keyObject.year,keyObject.bankName,keyObject.accountNo);
 
 
             const finalArray = [];
@@ -91,7 +105,7 @@ const Upload = () =>{
                     icon: "error",
                   });
                 console.error('Error:', error);
-              }
+            }
               
 
         }

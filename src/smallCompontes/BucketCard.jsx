@@ -5,9 +5,12 @@ import axios from 'axios';
 import ReactLoading from "react-loading";
 import swal from 'sweetalert';
 import Swal from 'sweetalert2';
+import SubBucket from './SubBucket';
+
 
 const BucketCard = ({item, setCnt}) =>{
     const [enable,setEnable] = useState(false);
+    const [open, setOpen] = useState(false);
 
     // const handleVersionButton =  async (e) =>{
     //     e.preventDefault();
@@ -37,7 +40,7 @@ const BucketCard = ({item, setCnt}) =>{
             
             // Assuming res.data is a boolean indicating whether versioning was enabled
             // const enable = res.data;
-            setEnable(res.data);
+            // setEnable(res.data);
     
             // Using enable to conditionally set SweetAlert messages
             swal(
@@ -46,9 +49,9 @@ const BucketCard = ({item, setCnt}) =>{
                 !enable ? "success" : "info"
             );
     
-            console.log(res);
+            console.log(res.data);
         } catch (err) {
-            setEnable(false)
+            // setEnable(false)
             swal(
                `Bucket versioning is Unsuccessful`,
                 `${err} while enable versioning for ${item}`,
@@ -61,21 +64,14 @@ const BucketCard = ({item, setCnt}) =>{
 
     const handleDeleteBtn = async (e) =>{
         e.preventDefault();
-        try{
-
+        try {
             Swal.fire({
-            title: `Enter Bucket Name "${item}"`,
-            input: 'text',
-            inputAttributes: {
-                autocapitalize: 'off'
-            },
-            showCancelButton: true,
-            confirmButtonText: 'Submit',
-            showLoaderOnConfirm: true,
-            preConfirm: (name) => {
-                return name;
-            },
-            allowOutsideClick: () => !Swal.isLoading()
+                title: `Are you sure you want to delete "${item}" ?`,
+                showCancelButton: true,
+                confirmButtonText: 'Yes',
+                cancelButtonText: 'No',
+                showLoaderOnConfirm: true,
+                allowOutsideClick: () => !Swal.isLoading()
             }).then(async (result) => {
                 console.log(result)
             if (result.value === item && result.isConfirmed) {
@@ -93,12 +89,29 @@ const BucketCard = ({item, setCnt}) =>{
                 });
             }
             });
-
-
-
-        }catch(err){
+        } catch (error) {
+            console.error('Error deleting bucket:', error);
         }
+        
 
+    }
+
+
+    const handleOpenAccordian = async (e) =>{
+        e.preventDefault();
+        if(!open){
+        try{
+
+            const uri = `http://localhost:8080/user/is-versioning-enabled?bucketName=${encodeURIComponent(item)}`
+            const res = await axios.get(uri);
+            if(res.data === 'ENABLED') setEnable(true);
+            else  setEnable(false);
+            console.log(res)
+            setOpen(!open);
+        }catch(err){
+
+        }
+        }else setOpen(!open)
     }
 
 
@@ -109,44 +122,87 @@ const BucketCard = ({item, setCnt}) =>{
             //     <div className="div">Enabling...</div>
             // </div>
             // :
-                <div className="notification shadow-[0_5px_14px_-4px_rgba(0,0,0,0.3)] p-6 w-full max-w-sm rounded-lg font-[sans-serif] overflow-hidden mx-auto mt-4">
+        //         <div className="notification shadow-[0_5px_14px_-4px_rgba(0,0,0,0.3)] p-6 w-full max-w-sm rounded-lg font-[sans-serif] overflow-hidden mx-auto mt-4">
                     
-                    <div className="flex items-center">
-                        <h3 className="text-2xl font-semibold  flex-1">{item}</h3>
-                        <div className=" w-12 h-12 p-1 flex items-center justify-center rounded-full cursor-pointer">
-                        <img src="/bucket.png" alt=""  />
-                        </div>
-                    </div>
+        //             <div className="flex items-center">
+        //                 <h3 className="text-2xl font-semibold  flex-1">{item}</h3>
+        //                 <div className=" w-12 h-12 p-1 flex items-center justify-center rounded-full cursor-pointer">
+        //                 <img src="/bucket.png" alt=""  />
+        //                 </div>
+        //             </div>
 
-                    <p className="text-sm  my-8 leading-relaxed">
-                        {/* Data About bucket  */}
-                    </p>
+        //             <p className="text-sm  my-8 leading-relaxed">
+        //                 {/* Data About bucket  */}
+        //             </p>
 
-                    <div className="flex items-center">
-                        <h3 className="pr-4 text-lg flex-1">Enable Versioning</h3>
-                        <label className="relative cursor-pointer">
-                        <input type="checkbox" className="sr-only peer" onClick={handleVersionButton} checked={enable}  />
-                        <div
-                            className="w-11 h-3 flex items-center bg-gray-300 rounded-full peer peer-checked:after:translate-x-full after:absolute after:left-0 peer-checked:after:-left-1 after:bg-gray-300 peer-checked:after:bg-[#007bff] after:border after:border-gray-300 peer-checked:after:border-[#007bff] after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-[#007bff]">
-                        </div>
+        //             <div className="flex items-center">
+        //                 <h3 className="pr-4 text-lg flex-1">Enable Versioning</h3>
+        //                 <label className="relative cursor-pointer">
+        //                 <input type="checkbox" className="sr-only peer" onClick={handleVersionButton} checked={enable}  />
+        //                 <div
+        //                     className="w-11 h-3 flex items-center bg-gray-300 rounded-full peer peer-checked:after:translate-x-full after:absolute after:left-0 peer-checked:after:-left-1 after:bg-gray-300 peer-checked:after:bg-[#007bff] after:border after:border-gray-300 peer-checked:after:border-[#007bff] after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-[#007bff]">
+        //                 </div>
                         
-                        </label>
-                        <div className="deleteBtn">
-                            <button className="mr-4" title="Delete Bucket" 
-                            onClick={handleDeleteBtn}
-                            >
-                                <svg xmlns="http://www.w3.org/2000/svg" className="w-5 fill-red-500 hover:fill-red-700" viewBox="0 0 24 24">
-                                <path
-                                    d="M19 7a1 1 0 0 0-1 1v11.191A1.92 1.92 0 0 1 15.99 21H8.01A1.92 1.92 0 0 1 6 19.191V8a1 1 0 0 0-2 0v11.191A3.918 3.918 0 0 0 8.01 23h7.98A3.918 3.918 0 0 0 20 19.191V8a1 1 0 0 0-1-1Zm1-3h-4V2a1 1 0 0 0-1-1H9a1 1 0 0 0-1 1v2H4a1 1 0 0 0 0 2h16a1 1 0 0 0 0-2ZM10 4V3h4v1Z"
-                                    data-original="#000000" />
-                                <path d="M11 17v-7a1 1 0 0 0-2 0v7a1 1 0 0 0 2 0Zm4 0v-7a1 1 0 0 0-2 0v7a1 1 0 0 0 2 0Z"
-                                    data-original="#000000" />
-                                </svg>
-                            </button>
-                            </div>
-                    </div>
-        </div>
+        //                 </label>
+        //                 <div className="deleteBtn">
+        //                     <button className="mr-4" title="Delete Bucket" 
+        //                     onClick={handleDeleteBtn}
+        //                     >
+        //                         <svg xmlns="http://www.w3.org/2000/svg" className="w-5 fill-red-500 hover:fill-red-700" viewBox="0 0 24 24">
+        //                         <path
+        //                             d="M19 7a1 1 0 0 0-1 1v11.191A1.92 1.92 0 0 1 15.99 21H8.01A1.92 1.92 0 0 1 6 19.191V8a1 1 0 0 0-2 0v11.191A3.918 3.918 0 0 0 8.01 23h7.98A3.918 3.918 0 0 0 20 19.191V8a1 1 0 0 0-1-1Zm1-3h-4V2a1 1 0 0 0-1-1H9a1 1 0 0 0-1 1v2H4a1 1 0 0 0 0 2h16a1 1 0 0 0 0-2ZM10 4V3h4v1Z"
+        //                             data-original="#000000" />
+        //                         <path d="M11 17v-7a1 1 0 0 0-2 0v7a1 1 0 0 0 2 0Zm4 0v-7a1 1 0 0 0-2 0v7a1 1 0 0 0 2 0Z"
+        //                             data-original="#000000" />
+        //                         </svg>
+        //                     </button>
+        //                     </div>
+        //             </div>
+        // </div>
         }
+        <div className="objectCard"  >
+        <div className="font-[sans-serif] space-y-4 max-w-6xl mx-auto mt-4">
+          <div className="shadow-[0_2px_10px_-3px_rgba(6,81,237,0.3)] rounded-lg border-l-8 border-blue-600" role="accordion">
+              <button type="button" className="w-full text-sm font-semibold text-left py-5 px-6 text-blue-600 flex items-center"  onClick={handleOpenAccordian} >
+                  <img src={'/BucketSmbole.svg'} alt="" className="fill-current w-8 mr-4 shrink-0"  />
+                  <span className="titleFileName mr-4" style={{fontSize:'1.4em'}}>
+                    {/* {objectKey.substring(objectKey.lastIndexOf('/') + 1)} */}
+                    {item}
+
+
+                      <span className="subTitle text-xs text-gray-600 mt-0.5 block font-medium">
+                        {/* {new Date(lastModifiedTime).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })} */}
+                        <div className="deleteCont">
+                             {/* <img src={fileLogo.svg} alt="" onClick={handleFileBtn} style={{display: !btn?'block':'none'}}  /> */}
+                          {/* <span>  {handleFileSize(fileSize)}</span> */}
+                          {open ? <ReactLoading />:< span>Bucket Cretion Date</span>}
+                        </div>
+                    </span>
+
+
+                  </span>
+                  {
+                  open ?
+                  <svg xmlns="http://www.w3.org/2000/svg" className="w-4 fill-current ml-auto shrink-0 rotate-180" viewBox="0 0 24 24">
+                      <path fillRule="evenodd"
+                          d="M11.99997 18.1669a2.38 2.38 0 0 1-1.68266-.69733l-9.52-9.52a2.38 2.38 0 1 1 3.36532-3.36532l7.83734 7.83734 7.83734-7.83734a2.38 2.38 0 1 1 3.36532 3.36532l-9.52 9.52a2.38 2.38 0 0 1-1.68266.69734z"
+                          clipRule="evenodd" data-original="#000000"></path>
+                  </svg>
+                  :
+                  <svg xmlns="http://www.w3.org/2000/svg" className="w-4 fill-current ml-auto shrink-0 -rotate-90" viewBox="0 0 24 24">
+                      <path fillRule="evenodd"
+                          d="M11.99997 18.1669a2.38 2.38 0 0 1-1.68266-.69733l-9.52-9.52a2.38 2.38 0 1 1 3.36532-3.36532l7.83734 7.83734 7.83734-7.83734a2.38 2.38 0 1 1 3.36532 3.36532l-9.52 9.52a2.38 2.38 0 0 1-1.68266.69734z"
+                          clipRule="evenodd" data-original="#000000"></path>
+                  </svg>
+                }
+              </button>
+
+              <span className="pb-5 px-6" style={{ display:open?'block' : 'none' }} >
+                    <SubBucket  enable={enable} handleDeleteBtn={handleDeleteBtn} handleVersionButton={handleVersionButton} />
+              </span>
+          </div>
+          </div>
+    </div>
     </div>
 }
 

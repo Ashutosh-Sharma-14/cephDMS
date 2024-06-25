@@ -72,7 +72,7 @@
     background-color: #6f42c1;
     color: #fff;
     border: none;
-    border-radius: 20px;
+    /* border-radius: 20px; */
     cursor: pointer;
     transition: background-color 0.3s ease;
   }
@@ -122,6 +122,7 @@
 }
 
 .key {
+  /* border:  2px solid red; */
     margin-bottom: 20px;
     width: 100%;
 }
@@ -201,6 +202,10 @@
     background-color: green !important;
     color: white !important;
     font-weight: 700 !important;
+    /* border: 2px solid red !important; */
+    margin-bottom: 30px !important;
+    height: 4.6vh;
+
 }
 
 .uploadBtnForTable:hover{
@@ -213,5 +218,12 @@
     background-color: #ccc; 
     color: #999;
     border-color: #999; 
+}
+
+.btnBox{
+  /* border: 2px solid yellow; */
+  display: flex;
+  align-items: center;
+  height: 10vh;
 }
 

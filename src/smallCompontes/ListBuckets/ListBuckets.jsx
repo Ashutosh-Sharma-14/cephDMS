@@ -140,7 +140,7 @@ const ListBuckets = () =>{
                             <BucketCard key={idx} item={item} setCnt={setCnt}  />
                           ))
                     }
-                    {/* <BucketCard /> */}
+                    {/* <BucketCard  item={'bucket Name'} /> */}
                 </div>
             }
             
