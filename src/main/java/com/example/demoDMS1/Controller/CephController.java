@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.net.SocketTimeoutException;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -68,6 +69,11 @@ public class CephController {
     @GetMapping("/list-object-versions")
     public ResponseEntity<List<String>> listObjectVersionInfo(@RequestParam String bucketName, @RequestParam String objectKey) {
         return cephService.listVersionOfObject(bucketName,objectKey);
+    }
+
+    @PostMapping("/add-tags-to-bucket")
+    public ResponseEntity<?> addBucketTags(@RequestParam String bucketName, @RequestParam Map<String,String> tags) throws SocketTimeoutException {
+        return cephService.addBucketTags(bucketName,tags);
     }
 
     @GetMapping("/list-buckets")

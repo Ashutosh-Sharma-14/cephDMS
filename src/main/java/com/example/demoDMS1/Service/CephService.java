@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.net.SocketTimeoutException;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -30,6 +31,8 @@ public interface CephService {
     ResponseEntity<?> changeVersioningStatus(String bucketName);
 
     ResponseEntity<List<String>> listVersionOfObject(String bucketName, String objectKey);
+
+    ResponseEntity<?> addBucketTags(String bucketName, Map<String, String> tags) throws SocketTimeoutException;
 
     ResponseEntity<?> listBuckets();
 

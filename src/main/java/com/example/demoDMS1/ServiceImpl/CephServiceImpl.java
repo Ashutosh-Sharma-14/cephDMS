@@ -32,6 +32,7 @@ import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest;
 
 import java.io.*;
+import java.net.SocketTimeoutException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -51,9 +52,6 @@ import java.util.stream.Stream;
 @EnableAsync
 public class CephServiceImpl implements CephService {
 
-//    @Autowired
-//    private CephConfig cephConfig;
-
     @Autowired
     MetadataService metadataService;
     @Autowired
@@ -64,7 +62,7 @@ public class CephServiceImpl implements CephService {
 //    this is private final to make it immutable and thread safe
     private final S3Client s3Client;
     private final S3Presigner s3Presigner;
-    private static final long PART_SIZE = 5 * 1024 * 1024; // 5 MB
+    private static final long PART_SIZE = 5*1024 * 1024; // 5 MB
 //    root folder, should not be modified
     private final String bucketName = "test";
     static int counter = 0;
@@ -266,13 +264,18 @@ public class CephServiceImpl implements CephService {
 
     @Override
     public ResponseEntity<?> isVersioningEnabled(String bucketName){
-        GetBucketVersioningRequest getBucketVersioningRequest = GetBucketVersioningRequest.builder()
-                .bucket(bucketName)
-                .build();
+        try{
+            GetBucketVersioningRequest getBucketVersioningRequest = GetBucketVersioningRequest.builder()
+                    .bucket(bucketName)
+                    .build();
 
-        BucketVersioningStatus currentStatus = s3Client.getBucketVersioning(getBucketVersioningRequest).status();
-        System.out.println(currentStatus);
-        return new ResponseEntity<>(currentStatus,HttpStatus.OK);
+            BucketVersioningStatus currentStatus = s3Client.getBucketVersioning(getBucketVersioningRequest).status();
+            System.out.println(currentStatus);
+            return new ResponseEntity<>(currentStatus,HttpStatus.OK);
+        }
+        catch (NoSuchBucketException e){
+            return new ResponseEntity<>("No bucketname: " + bucketName,HttpStatus.BAD_REQUEST);
+        }
 //        if(currentStatus == BucketVersioningStatus.ENABLED) return new ResponseEntity<>(true,HttpStatus.OK);
 //        else return new ResponseEntity<>(false,HttpStatus.OK);
     }
@@ -292,15 +295,15 @@ public class CephServiceImpl implements CephService {
                     .build();
 
             s3Client.putBucketVersioning(putBucketVersioningRequest);
-            System.out.println("Bucket versioning enabled for bucket: " + bucketName);
-            return ResponseEntity.ok().body(true);
+//            System.out.println("Bucket versioning enabled for bucket: " + bucketName);
+            return new ResponseEntity<>(true,HttpStatus.OK);
         } else {
             PutBucketVersioningRequest putBucketVersioningRequest = PutBucketVersioningRequest.builder()
                     .bucket(bucketName)
                     .versioningConfiguration(conf -> conf.status(BucketVersioningStatus.SUSPENDED))
                     .build();
+            return new ResponseEntity<>(false,HttpStatus.OK);
         }
-        return ResponseEntity.ok().body(false);
     }
 
     @Override
@@ -342,8 +345,36 @@ public class CephServiceImpl implements CephService {
     }
 
     @Override
+    public ResponseEntity<?> addBucketTags(String bucketName, Map<String, String> tags) throws SocketTimeoutException {
+        List<Tag> tagSet = new ArrayList<>();
+        for (Map.Entry<String, String> entry : tags.entrySet()) {
+            tagSet.add(Tag.builder().key(entry.getKey()).value(entry.getValue()).build());
+        }
+
+        try{
+            PutBucketTaggingRequest putBucketTaggingRequest = PutBucketTaggingRequest.builder()
+                    .bucket(bucketName)
+                    .tagging(Tagging.builder().tagSet(tagSet).build())
+                    .build();
+            s3Client.putBucketTagging(putBucketTaggingRequest);
+        }
+        catch (S3Exception e){
+            System.out.println("Error details: " + e.awsErrorDetails().errorMessage());
+        }
+        return new ResponseEntity<>("Added tags to bucket: " + bucketName,HttpStatus.OK);
+    }
+
+    @Override
     public ResponseEntity<?> listBuckets() {
-        ListBucketsResponse response = s3Client.listBuckets(ListBucketsRequest.builder().build());
+        ListBucketsResponse response = null;
+        try {
+            response = s3Client.listBuckets(ListBucketsRequest.builder().build());
+        } catch (S3Exception e) {
+            System.out.println(e.awsErrorDetails().errorMessage());
+        } catch (SdkClientException e) {
+            System.out.println(e.getMessage());
+        }
+        assert response != null;
         List<Bucket> buckets = response.buckets();
         List<String> bucketNames = new ArrayList<>();
 
@@ -714,6 +745,10 @@ public class CephServiceImpl implements CephService {
         return s3Presigner.presignGetObject(presignRequest).url();
     }
 
+    public String getObjectUUID(String key) {
+        return metadataRepository.findUUIDByObjectKey(key);
+    }
+
     @Async
     public CompletableFuture<String> uploadFileAsync(MultipartFile file,String bucketName,String key, Map<String,String> metadata,String userRole){
         LocalDateTime startTime = LocalDateTime.now();
@@ -755,21 +790,24 @@ public class CephServiceImpl implements CephService {
         String bucketName = uploadRequestDTO.getBucketName();
         String userRole = uploadRequestDTO.getUserRole();
         List<Map<String, String>> metadataList = uploadRequestDTO.getMetadata();
-//        System.out.println(files.length);
-//        System.out.println(bucketName);
-//        System.out.println(userRole);
-//        System.out.println(metadataList.get(0));
 
         for (int i = 0; i < files.length; i++) {
             Map<String,String> metadata = metadataList.get(i);
             String objectKey = uploadRequestDTO.getObjectKey() + files[i].getOriginalFilename();
-            UUID uuid = UUID.randomUUID();
-            String key = uploadRequestDTO.getObjectKey() + uuid;
-
+            String uuid = null;
+            String key = null;
+            if(metadataRepository.doesKeyExist(objectKey)){
+                uuid = getObjectUUID(objectKey);
+                key = objectKey + uuid;
+            }
+            else{
+                uuid = UUID.randomUUID().toString();
+                key = uploadRequestDTO.getObjectKey() + uuid;
+            }
 
 //            saving the required data in mongodb collection to implement search
             MetadataEntity metadataEntity = new MetadataEntity();
-            metadataEntity.setUuid(uuid.toString());
+            metadataEntity.setUuid(uuid);
             metadataEntity.setObjectKey(objectKey);
             metadataEntity.setMetadata(metadata);
             metadataRepository.save(metadataEntity);
@@ -795,16 +833,28 @@ public class CephServiceImpl implements CephService {
         return ResponseEntity.ok().body(commonResponseDTO);
     }
 
+    public static String extractPrefix(String objectKey) {
+        int lastSlashIndex = objectKey.lastIndexOf('/');
+        if (lastSlashIndex == -1) {
+            return ""; // No slash found, return empty string
+        }
+        return objectKey.substring(0, lastSlashIndex + 1); // Include the last slash in the prefix
+    }
+
     @Override
     public ResponseEntity<CommonResponseDTO<?>> downloadFile(DownloadRequestDTO downloadRequestDTO) {
         String downloadDestination = System.getProperty("user.home") + "/Downloads/";
         System.out.println(downloadRequestDTO.getVersionId());
-        System.out.println(downloadRequestDTO.getObjectKey());
+        String objectKey = downloadRequestDTO.getObjectKey();
 
         File downloadDir = new File(downloadDestination);
         if (!downloadDir.exists()) {
             downloadDir.mkdirs();
         }
+
+        String uuid = metadataRepository.findUUIDByObjectKey(objectKey);
+        String prefix = extractPrefix(objectKey);
+        String key = prefix + uuid;
 
         try{
 //            check if buffering option is available for downloading large files
@@ -812,7 +862,7 @@ public class CephServiceImpl implements CephService {
             s3Client.getObject(
 //                    lambda expression. Curly brackets can be removed in case of single statement
                     req -> req.bucket(downloadRequestDTO.getBucketName())
-                            .key(downloadRequestDTO.getObjectKey()),
+                            .key(key),
 //                            .versionId(downloadRequestDTO.getVersionId()),
                     Paths.get(downloadDestination+downloadRequestDTO.getObjectKey())
             );

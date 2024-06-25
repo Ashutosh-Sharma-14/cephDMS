@@ -7,7 +7,11 @@ public interface MetadataRepositoryCustom {
 
     List<String> findObjectKeysByMetadata(String key, String value);
 
+    boolean doesKeyExist(String objectKey);
+
     String findObjectKeyByUUID(String uuid);
+
+    String findUUIDByObjectKey(String objectKey);
 
     Map<String,String> findMetadataByUUID(String uuid);
 }

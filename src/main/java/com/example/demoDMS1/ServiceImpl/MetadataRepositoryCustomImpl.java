@@ -33,6 +33,12 @@ public class MetadataRepositoryCustomImpl implements MetadataRepositoryCustom {
                 .map(MetadataEntity::getObjectKey)
                 .collect(Collectors.toList());
     }
+    @Override
+    public boolean doesKeyExist(String objectKey) {
+        Query query = new Query();
+        query.addCriteria(Criteria.where("objectKey").is(objectKey));
+        return mongoTemplate.exists(query, MetadataEntity.class);
+    }
 
 //    @Override
 //    public List<String> findObjectKeysByMetadataValueExists(String value){
@@ -52,6 +58,19 @@ public class MetadataRepositoryCustomImpl implements MetadataRepositoryCustom {
         }
         return result.get(0).getObjectKey();
     }
+
+    @Override
+    public String findUUIDByObjectKey(String objectKey) {
+        Query query = new Query(Criteria.where("objectKey").is(objectKey));
+        query.fields().include("uuid");
+
+        MetadataEntity result = mongoTemplate.findOne(query, MetadataEntity.class);
+        if (result == null) {
+            return String.format("Unable to find object key: %s in the database", objectKey);
+        }
+        return result.getUuid();
+    }
+
 
     @Override
     public Map<String,String> findMetadataByUUID(String uuid){
