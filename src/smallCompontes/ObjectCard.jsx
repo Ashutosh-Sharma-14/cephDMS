@@ -39,11 +39,9 @@ const ObjectCard = ({ objectKey, metadata, lastModifiedTime, fileSize, query,buc
       accountNo: segments[2],
       fileName: segments.slice(3).join('/') // Join remaining segments for fileName
     };
+    
     function buildPrefix(fileYear, bankName, accountNo) {
       let prefixBuilder = `${fileYear}/${bankName}/${accountNo}/`;
-  
-      
-  
       return prefixBuilder;
   }
    
