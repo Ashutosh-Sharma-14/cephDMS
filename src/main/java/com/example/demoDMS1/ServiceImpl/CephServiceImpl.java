@@ -378,11 +378,11 @@ public class CephServiceImpl implements CephService {
         }
         assert response != null;
         List<Bucket> buckets = response.buckets();
-        List<String> bucketNames = new ArrayList<>();
+        Map<String, String> bucketNamesWithCreationDate = new HashMap<>();
 
         System.out.println("Listing buckets:");
         for( Bucket bucket: buckets){
-            bucketNames.add(bucket.name());
+            bucketNamesWithCreationDate.put(bucket.name(),bucket.creationDate().toString());
             System.out.println(bucket);
         }
 
@@ -390,7 +390,7 @@ public class CephServiceImpl implements CephService {
             return ResponseEntity.ok().body("No buckets present");
         }
         else{
-            return ResponseEntity.ok().body(bucketNames);
+            return ResponseEntity.ok().body(bucketNamesWithCreationDate);
         }
     }
 
