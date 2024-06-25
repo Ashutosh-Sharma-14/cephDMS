@@ -33,7 +33,7 @@ const BucketCard = ({item, setCnt}) =>{
         e.preventDefault();
     
         try {
-            setEnable(false);
+            // setEnable(false);
             const uri = `http://localhost:8080/user/change-versioning?bucketName=${encodeURIComponent(item)}`;
             console.log(uri)
             const res = await axios.post(uri);
@@ -74,7 +74,7 @@ const BucketCard = ({item, setCnt}) =>{
                 allowOutsideClick: () => !Swal.isLoading()
             }).then(async (result) => {
                 console.log(result)
-            if (result.value === item && result.isConfirmed) {
+            if (result.isConfirmed) {
                 const uri = `http://localhost:8080/user/delete-bucket?bucketName=${encodeURIComponent(item)}`
                 const res = await axios.delete(uri);
                 // Swal.fire({
@@ -111,7 +111,7 @@ const BucketCard = ({item, setCnt}) =>{
         }catch(err){
 
         }
-        }else setOpen(!open)
+        }else {setOpen(!open); }
     }
 
 

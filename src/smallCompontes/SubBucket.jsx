@@ -8,7 +8,7 @@ const SubBucket = ({ enable,handleDeleteBtn, handleVersionButton}) =>{
             <label className="relative cursor-pointer">
             <input type="checkbox" className="sr-only peer"  title='Enable Versioning on Bucket'
             onClick={handleVersionButton} 
-            checked={enable}  
+            checked={enable}
             />
             <div
                 className="w-11 h-3 flex items-center bg-gray-300 rounded-full peer peer-checked:after:translate-x-full after:absolute after:left-0 peer-checked:after:-left-1 after:bg-gray-300 peer-checked:after:bg-[#007bff] after:border after:border-gray-300 peer-checked:after:border-[#007bff] after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-[#007bff]">
