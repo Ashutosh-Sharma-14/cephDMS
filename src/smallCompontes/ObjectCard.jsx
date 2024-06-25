@@ -3,11 +3,14 @@ import { useState } from 'react';
 import './objectCard.css'
 import fileLogo from '../Jsons/fileLogo.json'
 import MetaDataList from './MetaDataList';
+import swal from 'sweetalert';
 
 
 
 
-const ObjectCard = ({ objectKey, metadata, lastModifiedTime, fileSize, query }) =>{
+const ObjectCard = ({ objectKey, metadata, lastModifiedTime, fileSize, query,bucketName }) =>{
+
+  const [btn, setBtn] = useState(false);
 
 
   // console.log(objectKey);
@@ -36,9 +39,85 @@ const ObjectCard = ({ objectKey, metadata, lastModifiedTime, fileSize, query }) 
       accountNo: segments[2],
       fileName: segments.slice(3).join('/') // Join remaining segments for fileName
     };
-
+    function buildPrefix(fileYear, bankName, accountNo) {
+      let prefixBuilder = '';
+          if (fileYear && fileYear !== '') {
+              prefixBuilder += fileYear;
+              if (bankName && bankName !== '') {
+                  prefixBuilder += `/${bankName}`;
+                  if (accountNo && accountNo !== '') {
+                      prefixBuilder += `/${accountNo}/`;
+                  }
+              }
+          }
+      
+  
+      return prefixBuilder;
+  }
    
 
+    const handleFileBtn = async () =>{
+      let tempKey = buildPrefix(fileInfo.year,fileInfo.bankName,fileInfo.accountNo);
+      // console.log('file', tempKey);
+
+
+      // Assuming you have an instance of DownloadRequestDTO or its equivalent in JavaScript
+          const downloadRequest = {
+              bucketName: bucketName,
+              objectKey: tempKey === '' ? `/${fileInfo.fileName}` : tempKey  + `/${fileInfo.fileName}`,
+              versionId: ''
+          };
+
+          // console.log(tempKey)
+
+          // Function to construct FormData object
+          function createFormData(downloadRequest) {
+              const formData = new FormData();
+
+              // Append properties to FormData object
+              formData.append('bucketName', downloadRequest.bucketName);
+              formData.append('objectKey', downloadRequest.objectKey);
+              formData.append('versionId', downloadRequest.versionId);
+
+              return formData;
+          }
+
+          // Example usage:
+          const formData = createFormData(downloadRequest);
+
+          // Constructing the URL with query parameters
+          const url = new URL('http://localhost:8080/user/download-file-from-ceph'); 
+          url.search = new URLSearchParams(formData).toString();
+
+          // Making the GET request using fetch
+          try {
+              setBtn(true)
+              const response = await fetch(url.toString(), {
+                  method: 'GET',
+              });
+              setBtn(false)
+              swal({
+                  title: "File Download Successful",
+                  text: "The files are downloaded in /Downloads Folder",
+                  icon: "success",
+              })
+  
+              if (!response.ok) {
+                  throw new Error('Network response was not ok');
+              }
+  
+              const responseData = await response.json(); // Assuming response is JSON
+              console.log('Download successful:', responseData);
+          } catch (error) {
+              swal({
+                  title: "File Download Unsuccessful",
+                  icon: "error",
+              })
+              setBtn(false)
+              console.error('Error downloading files:', error);
+          }
+
+  }
 
     
 
@@ -53,7 +132,7 @@ const ObjectCard = ({ objectKey, metadata, lastModifiedTime, fileSize, query }) 
                       <span className="subTitle text-xs text-gray-600 mt-0.5 block font-medium">
                         {new Date(lastModifiedTime).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}
                         <div className="deleteCont">
-                          <img src={fileLogo.svg} alt=""  />
+                             <img src={fileLogo.svg} alt="" onClick={handleFileBtn} style={{display: !btn?'block':'none'}}  />
                           <span>  {handleFileSize(fileSize)}</span>
                         </div>
                     </span>
