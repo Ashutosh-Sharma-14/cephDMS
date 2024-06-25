@@ -4,7 +4,7 @@ import Sidebar from "../../sidebar/Sidebar";
 import '../../uploadPg/upload.css'
 import BucketCard from "../BucketCard";
 import './listBuckets.css'
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ReactLoading from "react-loading";
 import swal from "sweetalert";
 
@@ -16,10 +16,13 @@ const ListBuckets = () =>{
     const [disabled, setDisabled] = useState(false);
     const [bucket, setBucket] = useState(''); 
     const [handleState, setHandleState] = useState(false);
+    const [cnt, setCnt] = useState(0);
+
+    useEffect(()=>{
 
 
     const handleBtn = async (e) =>{
-        e.preventDefault();
+        // e.preventDefault();
         try{
             setDisabled(true)
             const res = await axios.get('http://localhost:8080/user/list-buckets');
@@ -37,6 +40,11 @@ const ListBuckets = () =>{
         }
     }
 
+    if(cnt>0) handleBtn();
+
+    },[cnt])
+
+    
     const addBucket = async (e) =>{
         e.preventDefault();
         try {
@@ -111,7 +119,8 @@ const ListBuckets = () =>{
                 text-sm tracking-wider font-medium border 
                 border-current outline-none bg-green-700 
                 hover:bg-transparent text-white hover:text-green-700 transition-all duration-300"
-                onClick={handleBtn}
+                // onClick={handleBtn}
+                onClick={()=>setCnt(cnt => cnt+1)}
                 style={{scale:disabled?'0':'1', transition:'all 1s'}}
                 >
                     Fetch Buckets
@@ -125,9 +134,10 @@ const ListBuckets = () =>{
                 </div>
                 :
                 <div className="mainUploadPg">
+                    {/* setHandleState={setHandleState} handleBtn={handleBtn}  */}
                     {
                         bucketName.map((item, idx) => (
-                            <BucketCard key={idx} item={item} setHandleState={setHandleState} handleBtn={handleBtn} />
+                            <BucketCard key={idx} item={item} setCnt={setCnt}  />
                           ))
                     }
                     {/* <BucketCard /> */}

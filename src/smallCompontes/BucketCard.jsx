@@ -6,7 +6,7 @@ import ReactLoading from "react-loading";
 import swal from 'sweetalert';
 import Swal from 'sweetalert2';
 
-const BucketCard = ({item, setHandleState,handleBtn}) =>{
+const BucketCard = ({item, setCnt}) =>{
     const [enable,setEnable] = useState(false);
 
     // const handleVersionButton =  async (e) =>{
@@ -81,10 +81,11 @@ const BucketCard = ({item, setHandleState,handleBtn}) =>{
             if (result.value === item && result.isConfirmed) {
                 const uri = `http://localhost:8080/user/delete-bucket?bucketName=${encodeURIComponent(item)}`
                 const res = await axios.delete(uri);
-                Swal.fire({
-                title: `${result.value} Bucket Deleted Successful`,
-                icon: 'success'
-                });
+                // Swal.fire({
+                // title: `${result.value} Bucket Deleted Successful`,
+                // icon: 'success'
+                // });
+                setCnt(prev => prev+1);
             }else{
                 Swal.fire({
                     title: `Cancelled`,

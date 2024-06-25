@@ -44,7 +44,7 @@ const Download = () =>{
 
     const handleFileBtn = async () =>{
         let tempKey = buildPrefix(keyObject.year,keyObject.bankName,keyObject.accountNo);
-        // console.log('file', tempKey);
+        console.log('file', tempKey);
 
 
         // Assuming you have an instance of DownloadRequestDTO or its equivalent in JavaScript

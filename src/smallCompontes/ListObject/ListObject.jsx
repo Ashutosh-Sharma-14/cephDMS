@@ -285,6 +285,7 @@ const ListObject = () => {
             :  filteredObjects.map((object, index) => (
               <ObjectCard
                 key={index}
+                bucketName={values.bankName}
                 objectKey={object.objectKey}
                 metadata={object.metadata}
                 lastModifiedTime={object.lastModifiedTime}
