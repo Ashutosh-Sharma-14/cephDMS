@@ -48,7 +48,7 @@ const BucketCard = ({item, setCnt}) =>{
                 !enable ? "success" : "info"
             );
     
-            console.log(res);
+            console.log(res.data);
         } catch (err) {
             // setEnable(false)
             swal(
@@ -97,6 +97,7 @@ const BucketCard = ({item, setCnt}) =>{
 
     const handleOpenAccordian = async (e) =>{
         e.preventDefault();
+        if(!open){
         try{
 
             const uri = `http://localhost:8080/user/is-versioning-enabled?bucketName=${encodeURIComponent(item)}`
@@ -108,6 +109,7 @@ const BucketCard = ({item, setCnt}) =>{
         }catch(err){
 
         }
+        }else setOpen(!open)
     }
 
 
@@ -159,7 +161,7 @@ const BucketCard = ({item, setCnt}) =>{
         <div className="objectCard"  >
         <div className="font-[sans-serif] space-y-4 max-w-6xl mx-auto mt-4">
           <div className="shadow-[0_2px_10px_-3px_rgba(6,81,237,0.3)] rounded-lg border-l-8 border-blue-600" role="accordion">
-              <button type="button" className="w-full text-sm font-semibold text-left py-5 px-6 text-blue-600 flex items-center" onClick={handleOpenAccordian} >
+              <button type="button" className="w-full text-sm font-semibold text-left py-5 px-6 text-blue-600 flex items-center"  onClick={handleOpenAccordian} >
                   <img src={'/BucketSmbole.svg'} alt="" className="fill-current w-8 mr-4 shrink-0"  />
                   <span className="titleFileName mr-4" style={{fontSize:'1.4em'}}>
                     {/* {objectKey.substring(objectKey.lastIndexOf('/') + 1)} */}
@@ -171,7 +173,7 @@ const BucketCard = ({item, setCnt}) =>{
                         <div className="deleteCont">
                              {/* <img src={fileLogo.svg} alt="" onClick={handleFileBtn} style={{display: !btn?'block':'none'}}  /> */}
                           {/* <span>  {handleFileSize(fileSize)}</span> */}
-                          <span>Bucket Cretion Date</span>
+                          {open ? <ReactLoading />:< span>Bucket Cretion Date</span>}
                         </div>
                     </span>
 
