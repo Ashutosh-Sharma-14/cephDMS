@@ -302,6 +302,7 @@ public class CephServiceImpl implements CephService {
                     .bucket(bucketName)
                     .versioningConfiguration(conf -> conf.status(BucketVersioningStatus.SUSPENDED))
                     .build();
+            s3Client.putBucketVersioning(putBucketVersioningRequest);
             return new ResponseEntity<>(false,HttpStatus.OK);
         }
     }
@@ -606,9 +607,16 @@ public class CephServiceImpl implements CephService {
     @Override
     public void listTags(String objectKey){
 
+        String uuid = metadataRepository.findUUIDByObjectKey(objectKey);
+        System.out.println("uuid: " + uuid);
+        String prefix = extractPrefix(objectKey);
+        System.out.println("prefix:" + prefix);
+        String key = prefix + uuid;
+        System.out.println("key: " + key);
+
         GetObjectTaggingRequest getObjectTaggingRequest = GetObjectTaggingRequest.builder()
                 .bucket(bucketName)
-                .key(objectKey)
+                .key(key)
                 .build();
 
         try {
@@ -843,7 +851,7 @@ public class CephServiceImpl implements CephService {
 
     @Override
     public ResponseEntity<CommonResponseDTO<?>> downloadFile(DownloadRequestDTO downloadRequestDTO) {
-        String downloadDestination = System.getProperty("user.home") + "/Downloads/";
+        String downloadDestination = System.getProperty("user.home") + "/Desktop/";
         System.out.println(downloadRequestDTO.getVersionId());
         String objectKey = downloadRequestDTO.getObjectKey();
 
@@ -853,24 +861,27 @@ public class CephServiceImpl implements CephService {
         }
 
         String uuid = metadataRepository.findUUIDByObjectKey(objectKey);
+        System.out.println("uuid: " + uuid);
         String prefix = extractPrefix(objectKey);
+        System.out.println("prefix:" + prefix);
         String key = prefix + uuid;
+        System.out.println("key: " + key);
 
         try{
+            System.out.println("going in try block");
 //            check if buffering option is available for downloading large files
 //            Answer: The buffering is internally managed by S3Client, but if customization is required we need to use get the inputStream and buffer manually
             s3Client.getObject(
 //                    lambda expression. Curly brackets can be removed in case of single statement
                     req -> req.bucket(downloadRequestDTO.getBucketName())
                             .key(key),
-//                            .versionId(downloadRequestDTO.getVersionId()),
-                    Paths.get(downloadDestination+downloadRequestDTO.getObjectKey())
+                    Paths.get(downloadDestination+key)
             );
         }
         catch (Exception e){
             e.getStackTrace();
         }
-        File downloadedFile = new File(downloadDestination+downloadRequestDTO.getObjectKey());
+        File downloadedFile = new File(downloadDestination+key);
         if(downloadedFile.length() == 0){
             System.out.println("Checking if download is successful");
             CommonResponseDTO<?> commonResponseDTO = ResponseBuilder.unsuccessfulDownloadResponse(501,"No file with ObjectKey: " + downloadRequestDTO.getObjectKey() + " exists");
