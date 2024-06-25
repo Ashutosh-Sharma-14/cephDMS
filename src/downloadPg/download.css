@@ -12,8 +12,8 @@
 
 
 .downloadFolder{
-    height: 24vh;
-    width: 40%;
+    height: 18vh;
+    width: 30%;
     border-radius: 1em;
     padding: 1em;
     box-shadow: 2px 5px 20px 3px rgba(0,0,0,0.1);
@@ -168,6 +168,12 @@ button {
 }
 
 
-
-
 /* .filter((asd) => asd.objectKey.toLowerCase().includes(values.search)) */
+
+
+.downloadBox{
+    /* border: 2px solid red; */
+    width: 100%;
+    height: calc(55vh);
+    display: flex;
+}

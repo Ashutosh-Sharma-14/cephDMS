@@ -34,18 +34,18 @@ const BucketCard = ({item, setCnt}) =>{
     
         try {
             // setEnable(false);
-            const uri = `http://localhost:8080/user/enable-versioning?bucketName=${encodeURIComponent(item)}`;
+            const uri = `http://localhost:8080/user/change-versioning?bucketName=${encodeURIComponent(item)}`;
             const res = await axios.post(uri);
             
             // Assuming res.data is a boolean indicating whether versioning was enabled
             // const enable = res.data;
-            // setEnable(res.data);
+            setEnable(res.data);
     
             // Using enable to conditionally set SweetAlert messages
             swal(
-                !enable ? `Bucket versioning enabled` : `Bucket versioning is already enabled`,
+                !enable ? `Bucket versioning enabled` : `Bucket versioning is Suspended`,
                 `Bucket Name: ${item}`,
-                !enable ? "success" : "info"
+                !enable ? "success" : "success"
             );
     
             console.log(res.data);
