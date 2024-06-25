@@ -40,16 +40,8 @@ const ObjectCard = ({ objectKey, metadata, lastModifiedTime, fileSize, query,buc
       fileName: segments.slice(3).join('/') // Join remaining segments for fileName
     };
     function buildPrefix(fileYear, bankName, accountNo) {
-      let prefixBuilder = '';
-          if (fileYear && fileYear !== '') {
-              prefixBuilder += fileYear;
-              if (bankName && bankName !== '') {
-                  prefixBuilder += `/${bankName}`;
-                  if (accountNo && accountNo !== '') {
-                      prefixBuilder += `/${accountNo}/`;
-                  }
-              }
-          }
+      let prefixBuilder = `${fileYear}/${bankName}/${accountNo}/`;
+  
       
   
       return prefixBuilder;
@@ -64,7 +56,7 @@ const ObjectCard = ({ objectKey, metadata, lastModifiedTime, fileSize, query,buc
       // Assuming you have an instance of DownloadRequestDTO or its equivalent in JavaScript
           const downloadRequest = {
               bucketName: bucketName,
-              objectKey: tempKey === '' ? `/${fileInfo.fileName}` : tempKey  + `/${fileInfo.fileName}`,
+              objectKey: tempKey === '' ? `${fileInfo.fileName}` : tempKey  + `${fileInfo.fileName}`,
               versionId: ''
           };
 
