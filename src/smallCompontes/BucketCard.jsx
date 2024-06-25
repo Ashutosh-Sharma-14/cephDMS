@@ -6,7 +6,7 @@ import ReactLoading from "react-loading";
 import swal from 'sweetalert';
 import Swal from 'sweetalert2';
 
-const BucketCard = ({item}) =>{
+const BucketCard = ({item, setHandleState,handleBtn}) =>{
     const [enable,setEnable] = useState(false);
 
     // const handleVersionButton =  async (e) =>{
@@ -31,7 +31,8 @@ const BucketCard = ({item}) =>{
     
         try {
             setEnable(false);
-            const uri = `http://localhost:8080/user/enable-versioning?bucketName=${encodeURIComponent(item)}`;
+            const uri = `http://localhost:8080/user/change-versioning?bucketName=${encodeURIComponent(item)}`;
+            console.log(uri)
             const res = await axios.post(uri);
             
             // Assuming res.data is a boolean indicating whether versioning was enabled
@@ -77,7 +78,7 @@ const BucketCard = ({item}) =>{
             allowOutsideClick: () => !Swal.isLoading()
             }).then(async (result) => {
                 console.log(result)
-            if (result.value == item && result.isConfirmed) {
+            if (result.value === item && result.isConfirmed) {
                 const uri = `http://localhost:8080/user/delete-bucket?bucketName=${encodeURIComponent(item)}`
                 const res = await axios.delete(uri);
                 Swal.fire({

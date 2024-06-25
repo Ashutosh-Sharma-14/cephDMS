@@ -15,6 +15,7 @@ const ListBuckets = () =>{
     const [bucketName, setBucketName] = useState([]);
     const [disabled, setDisabled] = useState(false);
     const [bucket, setBucket] = useState(''); 
+    const [handleState, setHandleState] = useState(false);
 
 
     const handleBtn = async (e) =>{
@@ -126,7 +127,7 @@ const ListBuckets = () =>{
                 <div className="mainUploadPg">
                     {
                         bucketName.map((item, idx) => (
-                            <BucketCard key={idx} item={item}  />
+                            <BucketCard key={idx} item={item} setHandleState={setHandleState} handleBtn={handleBtn} />
                           ))
                     }
                     {/* <BucketCard /> */}
