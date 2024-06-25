@@ -302,6 +302,7 @@ public class CephServiceImpl implements CephService {
                     .bucket(bucketName)
                     .versioningConfiguration(conf -> conf.status(BucketVersioningStatus.SUSPENDED))
                     .build();
+
             s3Client.putBucketVersioning(putBucketVersioningRequest);
             return new ResponseEntity<>(false,HttpStatus.OK);
         }
@@ -852,8 +853,10 @@ public class CephServiceImpl implements CephService {
     @Override
     public ResponseEntity<CommonResponseDTO<?>> downloadFile(DownloadRequestDTO downloadRequestDTO) {
         String downloadDestination = System.getProperty("user.home") + "/Desktop/";
-        System.out.println(downloadRequestDTO.getVersionId());
+        System.out.println("bucketName:" + downloadRequestDTO.getBucketName());
         String objectKey = downloadRequestDTO.getObjectKey();
+        System.out.println("Received objectkey :" + downloadRequestDTO.getObjectKey());
+        System.out.println("Object key: "+ objectKey);
 
         File downloadDir = new File(downloadDestination);
         if (!downloadDir.exists()) {
@@ -867,21 +870,43 @@ public class CephServiceImpl implements CephService {
         String key = prefix + uuid;
         System.out.println("key: " + key);
 
+        String filename = Paths.get(key).getFileName().toString();
+
         try{
             System.out.println("going in try block");
 //            check if buffering option is available for downloading large files
-//            Answer: The buffering is internally managed by S3Client, but if customization is required we need to use get the inputStream and buffer manually
-            s3Client.getObject(
-//                    lambda expression. Curly brackets can be removed in case of single statement
-                    req -> req.bucket(downloadRequestDTO.getBucketName())
-                            .key(key),
-                    Paths.get(downloadDestination+key)
-            );
+//            Answer: The buffering is internally managed by S3Client, but if customization is required we need to use get the inputStream and buffe
+
+            File file = new File(downloadDir, filename);
+
+            GetObjectRequest getObjectRequest = GetObjectRequest.builder()
+                    .bucket("perfios1")
+                    .key(key)
+                    .build();
+
+            // Get the input stream from the response
+            try (InputStream objectInputStream = s3Client.getObject(getObjectRequest);
+                 OutputStream outputStream = new FileOutputStream(file)) {
+
+                // Stream the content from the input stream to the output stream
+                byte[] buffer = new byte[1024];
+                int bytesRead;
+                while ((bytesRead = objectInputStream.read(buffer)) != -1) {
+                    outputStream.write(buffer, 0, bytesRead);
+                }
+            }
+
+//            s3Client.getObject(
+////                    lambda expression. Curly brackets can be removed in case of single statement
+//                    req -> req.bucket("perfios1")
+//                            .key(key),
+//                    Paths.get(downloadDestination+key)
+//            );
         }
         catch (Exception e){
             e.getStackTrace();
         }
-        File downloadedFile = new File(downloadDestination+key);
+        File downloadedFile = new File(downloadDestination+filename);
         if(downloadedFile.length() == 0){
             System.out.println("Checking if download is successful");
             CommonResponseDTO<?> commonResponseDTO = ResponseBuilder.unsuccessfulDownloadResponse(501,"No file with ObjectKey: " + downloadRequestDTO.getObjectKey() + " exists");
@@ -907,6 +932,9 @@ public class CephServiceImpl implements CephService {
                     .bucket(bucketName)
                     .key(key)
                     .build();
+
+            System.out.println("key: " + key);
+            System.out.println("bucketName: " + bucketName);
 
             // Get the input stream from the response
             try (InputStream objectInputStream = s3Client.getObject(getObjectRequest);
