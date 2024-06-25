@@ -378,11 +378,14 @@ public class CephServiceImpl implements CephService {
         }
         assert response != null;
         List<Bucket> buckets = response.buckets();
-        Map<String, String> bucketNamesWithCreationDate = new HashMap<>();
+        List<Map<String, String>> bucketResponse = new ArrayList<>();
 
         System.out.println("Listing buckets:");
         for( Bucket bucket: buckets){
-            bucketNamesWithCreationDate.put(bucket.name(),bucket.creationDate().toString());
+            Map<String, String> bucketData = new HashMap<>();
+            bucketData.put("bucketName",bucket.name());
+            bucketData.put("creationDate",bucket.creationDate().toString());
+            bucketResponse.add(bucketData);
             System.out.println(bucket);
         }
 
@@ -390,7 +393,7 @@ public class CephServiceImpl implements CephService {
             return ResponseEntity.ok().body("No buckets present");
         }
         else{
-            return ResponseEntity.ok().body(bucketNamesWithCreationDate);
+            return ResponseEntity.ok().body(bucketResponse);
         }
     }
 
@@ -854,6 +857,7 @@ public class CephServiceImpl implements CephService {
     public ResponseEntity<CommonResponseDTO<?>> downloadFile(DownloadRequestDTO downloadRequestDTO) {
         String downloadDestination = System.getProperty("user.home") + "/Desktop/";
         System.out.println("bucketName:" + downloadRequestDTO.getBucketName());
+        String bucketName = downloadRequestDTO.getBucketName();
         String objectKey = downloadRequestDTO.getObjectKey();
         System.out.println("Received objectkey :" + downloadRequestDTO.getObjectKey());
         System.out.println("Object key: "+ objectKey);
@@ -880,7 +884,7 @@ public class CephServiceImpl implements CephService {
             File file = new File(downloadDir, filename);
 
             GetObjectRequest getObjectRequest = GetObjectRequest.builder()
-                    .bucket("perfios1")
+                    .bucket(bucketName)
                     .key(key)
                     .build();
 
