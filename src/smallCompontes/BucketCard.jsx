@@ -33,7 +33,7 @@ const BucketCard = ({item, setCnt}) =>{
         e.preventDefault();
     
         try {
-            setEnable(false);
+            // setEnable(false);
             const uri = `http://localhost:8080/user/change-versioning?bucketName=${encodeURIComponent(item.bucketName)}`;
             console.log(uri)
             const res = await axios.post(uri);
