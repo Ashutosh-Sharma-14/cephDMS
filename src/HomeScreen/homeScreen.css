@@ -1,3 +1,9 @@
 .mainContent{
     margin-bottom:30vh;
 }
+
+.bgImg{
+    /* background-image: url("https://docs.ceph.com/en/reef/_static/logo.png"); */
+    height:100vh;
+    width: 100%;
+}

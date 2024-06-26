@@ -80,7 +80,7 @@ const Sidebar = () => {
         </ul>
       </div>
 
-      <div className="mt-6 ulElement">
+      {/* <div className="mt-6 ulElement">
         <h6 className="text-blue-600 text-sm font-bold px-4">Actions</h6>
         <ul className="mt-3">
           <li>
@@ -98,7 +98,7 @@ const Sidebar = () => {
             </Link>
           </li>
         </ul>
-      </div>
+      </div> */}
     </nav>
     </>);
 
