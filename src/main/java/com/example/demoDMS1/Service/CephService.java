@@ -22,7 +22,7 @@ public interface CephService {
 
     ResponseEntity<?> createBucket(String bucketName);
 
-    void deleteAllVersions(String bucketName, String objectKey);
+    void deleteAllVersionsAndDeleteMarkers(String bucketName, String objectKey);
 
     ResponseEntity<?> deleteBucket(String bucketName);
 
@@ -31,7 +31,7 @@ public interface CephService {
 
     ResponseEntity<?> changeVersioningStatus(String bucketName);
 
-    ResponseEntity<List<String>> listVersionOfObject(String bucketName, String objectKey);
+    ResponseEntity<List<List<String>>> listVersionOfObject(String bucketName, String objectKey);
 
     ResponseEntity<?> addBucketTags(String bucketName, Map<String, String> tags) throws SocketTimeoutException;
 
@@ -63,7 +63,7 @@ public interface CephService {
 
     ResponseEntity<String> addTagToObject(String bucketName, String objectKey, String tagKey, String tagValue);
 
-    void deleteObject(String bucketName,String objectKey);
+    ResponseEntity<?> deleteObject(String bucketName, String objectKey);
 
     String uploadFile(MultipartFile file,
                       String bucketName,

@@ -9,6 +9,8 @@ public interface MetadataRepositoryCustom {
 
     boolean doesKeyExist(String objectKey);
 
+    void deleteByObjectKey(String objectKey);
+
     String findObjectKeyByUUID(String uuid);
 
     String findUUIDByObjectKey(String objectKey);

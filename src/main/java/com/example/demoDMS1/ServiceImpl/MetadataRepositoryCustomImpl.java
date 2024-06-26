@@ -40,6 +40,13 @@ public class MetadataRepositoryCustomImpl implements MetadataRepositoryCustom {
         return mongoTemplate.exists(query, MetadataEntity.class);
     }
 
+    @Override
+    public void deleteByObjectKey(String objectKey){
+        Query query = new Query();
+        query.addCriteria(Criteria.where("objectKey").is(objectKey));
+        mongoTemplate.remove(query,MetadataEntity.class);
+    }
+
 //    @Override
 //    public List<String> findObjectKeysByMetadataValueExists(String value){
 //        Query query = new Query();

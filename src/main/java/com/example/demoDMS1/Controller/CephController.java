@@ -68,13 +68,13 @@ public class CephController {
     }
 
     @GetMapping("/list-object-versions")
-    public ResponseEntity<List<String>> listObjectVersionInfo(@RequestParam String bucketName, @RequestParam String objectKey) {
+    public ResponseEntity<List<List<String>>> listObjectVersionInfo(@RequestParam String bucketName, @RequestParam String objectKey) {
         return cephService.listVersionOfObject(bucketName,objectKey);
     }
 
-    @GetMapping("/delete-object-versions")
+    @DeleteMapping("/delete-object-versions-and-delete-markers")
     public void deleteAllVersions(@RequestParam String bucketName, @RequestParam String objectKey){
-        cephService.deleteAllVersions(bucketName,objectKey);
+        cephService.deleteAllVersionsAndDeleteMarkers(bucketName,objectKey);
     }
 
     @PostMapping("/add-tags-to-bucket")
@@ -129,8 +129,8 @@ public class CephController {
     }
 
     @DeleteMapping("/delete-object")
-    public void deleteObject(@RequestParam String bucketName,@RequestParam String objectKey){
-        cephService.deleteObject(bucketName,objectKey);
+    public ResponseEntity<?> deleteObject(@RequestParam String bucketName,@RequestParam String objectKey){
+        return cephService.deleteObject(bucketName,objectKey);
     }
 
     @PostMapping("/upload-file-to-ceph")

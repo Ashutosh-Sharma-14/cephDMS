@@ -196,7 +196,8 @@ public class CephServiceImpl implements CephService {
     }
 
     @Override
-    public void deleteAllVersions(String bucketName, String objectKey) {
+    public void deleteAllVersionsAndDeleteMarkers(String bucketName, String objectKey) {
+        metadataRepository.deleteByObjectKey(objectKey);
 
         try {
             // List all versions of objects with the specified prefix
@@ -252,6 +253,7 @@ public class CephServiceImpl implements CephService {
 
     @Override
     public ResponseEntity<?> deleteBucket(String bucketName){
+        deleteAllVersionsAndDeleteMarkers(bucketName,"");
         try{
             DeleteBucketRequest deleteBucketRequest = DeleteBucketRequest
                     .builder()
@@ -321,41 +323,51 @@ public class CephServiceImpl implements CephService {
     }
 
     @Override
-    public ResponseEntity<List<String>> listVersionOfObject(String bucketName, String objectKey) {
+    public ResponseEntity<List<List<String>>> listVersionOfObject(String bucketName, String objectKey) {
         ListObjectVersionsRequest request = ListObjectVersionsRequest.builder()
                 .bucket(bucketName)
                 .prefix(objectKey)
                 .delimiter("/")
                 .build();
 
+        List<List<String>> result = new ArrayList<>();
         ListObjectVersionsResponse response = s3Client.listObjectVersions(request);
         List<ObjectVersion> res = response.versions();
         List<DeleteMarkerEntry> deleteMarkers = response.deleteMarkers();
         for(ObjectVersion object : res) {
-            System.out.println("versionID " + object.versionId());
-            System.out.println("eTag " + object.eTag());
-            System.out.println("Key/Name " + object.key());
-            System.out.println("is latest " + object.isLatest());
-            System.out.println("lastModified " + object.lastModified());
-            System.out.println("owner " + object.owner());
-            System.out.println("restoreStatus " + object.restoreStatus());
-            System.out.println("size " + object.size());
-            System.out.println("hashCode " + object.hashCode());
-            System.out.println();
+            List<String> objectVersionInfo = new ArrayList<>();
+            objectVersionInfo.add("versionID: " + object.versionId());
+            objectVersionInfo.add("Key/Name: " + object.key());
+            objectVersionInfo.add("is latest: " + object.isLatest());
+            objectVersionInfo.add("lastModified: " + object.lastModified());
+            objectVersionInfo.add("size: " + object.size());
+            result.add(objectVersionInfo);
+//            System.out.println("versionID " + object.versionId());
+//            System.out.println("eTag " + object.eTag());
+//            System.out.println("Key/Name " + object.key());
+//            System.out.println("is latest " + object.isLatest());
+//            System.out.println("lastModified " + object.lastModified());
+//            System.out.println("owner " + object.owner());
+//            System.out.println("restoreStatus " + object.restoreStatus());
+//            System.out.println("size " + object.size());
+//            System.out.println("hashCode " + object.hashCode());
+//            System.out.println();
         }
 
-        System.out.println("Delete Markers:");
+//        System.out.println("Delete Markers:");
         for (DeleteMarkerEntry deleteMarker : deleteMarkers) {
+            List<String> deleteMarkerInfo = new ArrayList<>();
             if (deleteMarker.key().equals(objectKey)) {
-                System.out.println("Delete Marker found for object: " + objectKey);
-                System.out.println("Version ID: " + deleteMarker.versionId());
-                System.out.println("Is Latest: " + deleteMarker.isLatest());
-                System.out.println("Last Modified: " + deleteMarker.lastModified());
-                System.out.println("Owner: " + deleteMarker.owner());
-                System.out.println();
+                deleteMarkerInfo.add("Delete Marker Version ID: " + deleteMarker.versionId());
+//                System.out.println("Delete Marker found for object: " + objectKey);
+//                System.out.println("Version ID: " + deleteMarker.versionId());
+//                System.out.println("Is Latest: " + deleteMarker.isLatest());
+//                System.out.println("Last Modified: " + deleteMarker.lastModified());
+//                System.out.println("Owner: " + deleteMarker.owner());
+//                System.out.println();
             }
         }
-        return ResponseEntity.ok().body(List.of());
+        return ResponseEntity.ok().body(result);
     }
 
     @Override
@@ -711,18 +723,57 @@ public class CephServiceImpl implements CephService {
 
 
     @Override
-    public void deleteObject(String bucketName, String objectKey) {
+    public ResponseEntity<?> deleteObject(String bucketName, String objectKey) {
+        List<ObjectIdentifier> objectsToDelete = new ArrayList<>();
         try {
+            // List all versions of objects with the specified prefix
+            ListObjectVersionsRequest listObjectVersionsRequest = ListObjectVersionsRequest.builder()
+                    .bucket(bucketName)
+                    .prefix(objectKey)
+                    .build();
+
+            ListObjectVersionsResponse listObjectVersionsResponse;
+            do {
+                listObjectVersionsResponse = s3Client.listObjectVersions(listObjectVersionsRequest);
+                List<ObjectVersion> objectVersions = listObjectVersionsResponse.versions();
+
+                // Prepare a batch delete request for all object versions
+                for (ObjectVersion objectVersion : objectVersions) {
+                    objectsToDelete.add(ObjectIdentifier.builder()
+                            .key(objectVersion.key())
+                            .versionId(objectVersion.versionId())
+                            .build());
+                }
+
+                if (!objectsToDelete.isEmpty()) {
+                    DeleteObjectsRequest deleteObjectsRequest = DeleteObjectsRequest.builder()
+                            .bucket(bucketName)
+                            .delete(Delete.builder()
+                                    .objects(objectsToDelete)
+                                    .build())
+                            .build();
+                    s3Client.deleteObjects(deleteObjectsRequest);
+                    System.out.println("Deleted versions: " + objectsToDelete.size());
+                }
+
+                listObjectVersionsRequest = listObjectVersionsRequest.toBuilder()
+                        .keyMarker(listObjectVersionsResponse.nextKeyMarker())
+                        .versionIdMarker(listObjectVersionsResponse.nextVersionIdMarker())
+                        .build();
+
+            } while (listObjectVersionsResponse.isTruncated());
+
             DeleteObjectRequest deleteRequest = DeleteObjectRequest.builder()
                     .bucket(bucketName)
                     .key(objectKey)
                     .build();
 
             s3Client.deleteObject(deleteRequest);
-            System.out.println("Current version of object '" + objectKey + "' deleted successfully.");
+
         } catch (S3Exception e) {
-            System.err.println("Error deleting object '" + objectKey + "': " + e.getMessage());
+            e.printStackTrace();
         }
+        return new ResponseEntity<>("Object: " + objectKey + " deleted successfully.",HttpStatus.OK);
     }
 
     @Override
