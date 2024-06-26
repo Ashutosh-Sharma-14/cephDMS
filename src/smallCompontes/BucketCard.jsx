@@ -131,7 +131,7 @@ const BucketCard = ({item, setCnt}) =>{
                         <div className="deleteCont">
                              {/* <img src={fileLogo.svg} alt="" onClick={handleFileBtn} style={{display: !btn?'block':'none'}}  /> */}
                           {/* <span>  {handleFileSize(fileSize)}</span> */}
-                          <span style={{position:'absolute',width:'30%', marginTop:'15px', fontSize:'9px'}} >
+                          <span style={{position:'absolute',width:'30%', marginTop:'15px', fontSize:'10px', color:'lightslategray'}} >
                             {new Date(item.creationDate).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}
                           </span>
                         </div>
