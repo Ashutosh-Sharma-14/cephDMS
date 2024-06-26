@@ -130,12 +130,21 @@ const ObjectCard = ({ objectKey, metadata, lastModifiedTime, fileSize, query, bu
             }).then(async (result) => {
                 console.log(result)
             if (result.isConfirmed) {
-                const uri = `http://localhost:8080/user/delete-object-versions-and-delete-markers?bucketName=${encodeURIComponent(bucketName)}?objectKey=${encodeURIComponent(objectKey)}`
-                const res = await axios.delete(uri);
-                // Swal.fire({
-                // title: `${result.value} Bucket Deleted Successful`,
-                // icon: 'success'
-                // });
+                const formData = new FormData();
+                formData.append('bucketName', bucketName);
+                formData.append('objectKey', objectKey);
+
+                const uri = `http://localhost:8080/user/delete-object-versions-and-delete-markers?bucketName=${encodeURIComponent(bucketName)}&objectKey=${encodeURIComponent(objectKey)}`
+                const res = await axios.delete(uri, {
+                  data: formData,
+                  headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded' // Set appropriate content type
+                  }
+                });
+                Swal.fire({
+                title: `${fileInfo.fileName} File Deleted Successful`,
+                icon: 'success'
+                });
                 console.log(res);
                 cnt(prev => prev+1);
             }else{
@@ -146,7 +155,11 @@ const ObjectCard = ({ objectKey, metadata, lastModifiedTime, fileSize, query, bu
             }
             });
         } catch (error) {
-            console.error('Error deleting bucket:', error);
+              Swal.fire({
+                title: `Unsuccessful Object Deletion`,
+                icon: 'info'
+            });
+            console.error('Error deleting Object:', error);
         }
         
 
