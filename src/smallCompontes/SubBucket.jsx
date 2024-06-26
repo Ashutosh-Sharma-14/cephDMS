@@ -4,7 +4,7 @@ const SubBucket = ({ enable,handleDeleteBtn, handleVersionButton}) =>{
     return <div className="subBucket">
         <div className="versioning">
         <div className="flex items-center">
-            <span className="pr-4 text-lg flex-1">{enable ? 'Versioning Enabled' : 'Suspended'}</span>
+            <span className="pr-4 text-lg flex-1">{enable ? 'Versioning Enabled' : 'Versioning Suspended'}</span>
             <label className="relative cursor-pointer">
             <input type="checkbox" className="sr-only peer"  title='Enable Versioning on Bucket'
             onClick={handleVersionButton} 
