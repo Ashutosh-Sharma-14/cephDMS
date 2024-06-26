@@ -286,6 +286,7 @@ const ListObject = () => {
             </div>
             :  filteredObjects.map((object, index) => (
               <ObjectCard
+                cnt={setCnt}
                 key={index}
                 bucketName={values.bucketName}
                 objectKey={object.objectKey}

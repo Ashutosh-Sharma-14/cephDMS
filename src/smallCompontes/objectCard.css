@@ -38,7 +38,9 @@
 }
 
 .deleteCont img:hover{
-    width: 30px;
+    /* width: 30px; */
     color: blue !important;
-    transition: all 0.1s;
+    background-color: rgba(0, 0, 255, 0.12);
+    border-radius: 50%;
+    transition: all 0.5s;
 }

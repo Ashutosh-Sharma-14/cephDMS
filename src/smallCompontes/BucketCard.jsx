@@ -34,7 +34,7 @@ const BucketCard = ({item, setCnt}) =>{
     
         try {
             // setEnable(false);
-            const uri = `http://localhost:8080/user/change-versioning?bucketName=${encodeURIComponent(item)}`;
+            const uri = `http://localhost:8080/user/change-versioning?bucketName=${encodeURIComponent(item.bucketName)}`;
             console.log(uri)
             const res = await axios.post(uri);
             
@@ -45,7 +45,7 @@ const BucketCard = ({item, setCnt}) =>{
             // Using enable to conditionally set SweetAlert messages
             swal(
                 !enable ? `Bucket versioning enabled` : `Bucket versioning is Suspended`,
-                `Bucket Name: ${item}`,
+                `Bucket Name: ${item.bucketName}`,
                 !enable ? "success" : "success"
             );
     
@@ -54,7 +54,7 @@ const BucketCard = ({item, setCnt}) =>{
             // setEnable(false)
             swal(
                `Bucket versioning is Unsuccessful`,
-                `${err} while enable versioning for ${item}`,
+                `${err} while enable versioning for ${item.bucketName}`,
                 "error"
             );
             console.log('Error:', err);
@@ -66,7 +66,7 @@ const BucketCard = ({item, setCnt}) =>{
         e.preventDefault();
         try {
             Swal.fire({
-                title: `Are you sure you want to delete "${item}" ?`,
+                title: `Are you sure you want to delete "${item.bucketName}" ?`,
                 showCancelButton: true,
                 confirmButtonText: 'Yes',
                 cancelButtonText: 'No',
@@ -75,7 +75,7 @@ const BucketCard = ({item, setCnt}) =>{
             }).then(async (result) => {
                 console.log(result)
             if (result.isConfirmed) {
-                const uri = `http://localhost:8080/user/delete-bucket?bucketName=${encodeURIComponent(item)}`
+                const uri = `http://localhost:8080/user/delete-bucket?bucketName=${encodeURIComponent(item.bucketName)}`
                 const res = await axios.delete(uri);
                 // Swal.fire({
                 // title: `${result.value} Bucket Deleted Successful`,
@@ -102,7 +102,7 @@ const BucketCard = ({item, setCnt}) =>{
         if(!open){
         try{
 
-            const uri = `http://localhost:8080/user/is-versioning-enabled?bucketName=${encodeURIComponent(item)}`
+            const uri = `http://localhost:8080/user/is-versioning-enabled?bucketName=${encodeURIComponent(item.bucketName)}`
             const res = await axios.get(uri);
             if(res.data === 'ENABLED') setEnable(true);
             else  setEnable(false);
@@ -115,6 +115,8 @@ const BucketCard = ({item, setCnt}) =>{
     }
 
 
+    // console.log(item)
+
     return <div className='bucketCard'>
         <div className="objectCard"  >
         <div className="font-[sans-serif] space-y-4 max-w-6xl mx-auto mt-4">
@@ -123,7 +125,7 @@ const BucketCard = ({item, setCnt}) =>{
                   <img src={'/BucketSmbole.svg'} alt="" className="fill-current w-8 mr-4 shrink-0"  />
                   <span className="titleFileName mr-4" style={{fontSize:'1.4em'}}>
                     {/* {objectKey.substring(objectKey.lastIndexOf('/') + 1)} */}
-                    {item}
+                    {item.bucketName}
 
 
                       <span className="subTitle text-xs text-gray-600 mt-0.5 block font-medium">
@@ -131,7 +133,9 @@ const BucketCard = ({item, setCnt}) =>{
                         <div className="deleteCont">
                              {/* <img src={fileLogo.svg} alt="" onClick={handleFileBtn} style={{display: !btn?'block':'none'}}  /> */}
                           {/* <span>  {handleFileSize(fileSize)}</span> */}
-                          {open ? <ReactLoading />:< span>Bucket Cretion Date</span>}
+                          {open ? <ReactLoading />:< span>
+                          {new Date(item.creationDate).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}
+                          </span>}
                         </div>
                     </span>
 
