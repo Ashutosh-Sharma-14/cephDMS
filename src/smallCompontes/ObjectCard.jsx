@@ -4,6 +4,8 @@ import './objectCard.css'
 import fileLogo from '../Jsons/fileLogo.json'
 import MetaDataList from './MetaDataList';
 import swal from 'sweetalert';
+import Swal from 'sweetalert2';
+import axios from 'axios';
 
 
 
@@ -110,9 +112,44 @@ const ObjectCard = ({ objectKey, metadata, lastModifiedTime, fileSize, query, bu
           }
 
   }
+  console.log(objectKey)
 
-  const handleDeleteBtn = async ()=>{
+  const handleDeleteBtn = async (e)=>{
+    e.preventDefault();
     // cnt(prev => prev+1);
+    let tempKey = buildPrefix(fileInfo.year,fileInfo.bankName,fileInfo.accountNo);
+
+        try {
+            Swal.fire({
+                title: `Are you sure you want to delete "${fileInfo.fileName}" ?`,
+                showCancelButton: true,
+                confirmButtonText: 'Yes',
+                cancelButtonText: 'No',
+                showLoaderOnConfirm: true,
+                allowOutsideClick: () => !Swal.isLoading()
+            }).then(async (result) => {
+                console.log(result)
+            if (result.isConfirmed) {
+                const uri = `http://localhost:8080/user/delete-object-versions-and-delete-markers?bucketName=${encodeURIComponent(bucketName)}?objectKey=${encodeURIComponent(objectKey)}`
+                const res = await axios.delete(uri);
+                // Swal.fire({
+                // title: `${result.value} Bucket Deleted Successful`,
+                // icon: 'success'
+                // });
+                console.log(res);
+                cnt(prev => prev+1);
+            }else{
+                Swal.fire({
+                    title: `Cancelled`,
+                    icon: 'info'
+                });
+            }
+            });
+        } catch (error) {
+            console.error('Error deleting bucket:', error);
+        }
+        
+
   }
 
     

@@ -33,7 +33,7 @@ const BucketCard = ({item, setCnt}) =>{
         e.preventDefault();
     
         try {
-            // setEnable(false);
+            setEnable(false);
             const uri = `http://localhost:8080/user/change-versioning?bucketName=${encodeURIComponent(item.bucketName)}`;
             console.log(uri)
             const res = await axios.post(uri);
@@ -111,11 +111,9 @@ const BucketCard = ({item, setCnt}) =>{
         }catch(err){
 
         }
-        }else {setOpen(!open); }
+        }else setOpen(!open)
     }
 
-
-    // console.log(item)
 
     return <div className='bucketCard'>
         <div className="objectCard"  >
@@ -133,9 +131,9 @@ const BucketCard = ({item, setCnt}) =>{
                         <div className="deleteCont">
                              {/* <img src={fileLogo.svg} alt="" onClick={handleFileBtn} style={{display: !btn?'block':'none'}}  /> */}
                           {/* <span>  {handleFileSize(fileSize)}</span> */}
-                          {open ? <ReactLoading />:< span style={{width:'10%',position:'absolute', marginTop:'20px',fontSize:'0.9em',color:'lightslategray'}}>
+                          <span style={{position:'absolute',width:'30%', marginTop:'15px', fontSize:'9px'}} >
                             {new Date(item.creationDate).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}
-                          </span>}
+                          </span>
                         </div>
                     </span>
 
