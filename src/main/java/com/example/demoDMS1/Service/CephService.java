@@ -22,9 +22,10 @@ public interface CephService {
 
     ResponseEntity<?> createBucket(String bucketName);
 
+    void deleteAllVersions(String bucketName, String objectKey);
+
     ResponseEntity<?> deleteBucket(String bucketName);
 
-//    public ResponseEntity<Boolean>  enableVersioning(String bucketName);
 
     ResponseEntity<?> isVersioningEnabled(String bucketName);
 

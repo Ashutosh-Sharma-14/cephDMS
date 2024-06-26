@@ -21,7 +21,6 @@ import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 
-import software.amazon.awssdk.awscore.exception.AwsServiceException;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.core.exception.SdkClientException;
 import software.amazon.awssdk.regions.Region;
@@ -45,7 +44,6 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Component
 @ConfigurationProperties(prefix = "ceph")
@@ -197,47 +195,93 @@ public class CephServiceImpl implements CephService {
         return new ResponseEntity<>("Successfully created bucket " + bucketName, HttpStatus.OK);
     }
 
-    public void deleteAllVersions(String bucketName) {
-        ListObjectVersionsRequest listObjectVersionsRequest = ListObjectVersionsRequest.builder()
-                .bucket(bucketName)
-                .build();
+//    public void deleteAllVersions(String bucketName) {
+//        ListObjectVersionsRequest listObjectVersionsRequest = ListObjectVersionsRequest.builder()
+//                .bucket(bucketName)
+//                .build();
+//
+//        ListObjectVersionsResponse listObjectVersionsResponse;
+//        do {
+//            try {
+//                listObjectVersionsResponse = s3Client.listObjectVersions(listObjectVersionsRequest);
+//                List<ObjectVersion> objectVersions = listObjectVersionsResponse.versions();
+//
+//                if (!objectVersions.isEmpty()) {
+//                    List<ObjectIdentifier> objectsToDelete = objectVersions.stream()
+//                            .flatMap(version -> Stream.of(ObjectIdentifier.builder()
+//                                    .key(version.key())
+//                                    .versionId(version.versionId())
+//                                    .build()))
+//                            .collect(Collectors.toList());
+//
+//                    DeleteObjectsRequest deleteObjectsRequest = DeleteObjectsRequest.builder()
+//                            .bucket(bucketName)
+//                            .delete(Delete.builder().objects(objectsToDelete).build())
+//                            .build();
+//
+//                    s3Client.deleteObjects(deleteObjectsRequest);
+//                }
+//
+//                listObjectVersionsRequest = listObjectVersionsRequest.toBuilder()
+//                        .keyMarker(listObjectVersionsResponse.nextKeyMarker())
+//                        .versionIdMarker(listObjectVersionsResponse.nextVersionIdMarker())
+//                        .build();
+//            } catch (AwsServiceException | SdkClientException e) {
+//                throw new RuntimeException(e);
+//            }
+//        } while (listObjectVersionsResponse.isTruncated());
+//    }
 
-        ListObjectVersionsResponse listObjectVersionsResponse;
-        do {
-            try {
+    @Override
+    public void deleteAllVersions(String bucketName, String objectKey) {
+
+        try {
+            // List all versions of objects with the specified prefix
+            ListObjectVersionsRequest listObjectVersionsRequest = ListObjectVersionsRequest.builder()
+                    .bucket(bucketName)
+                    .prefix(objectKey)
+                    .build();
+
+            ListObjectVersionsResponse listObjectVersionsResponse;
+            do {
                 listObjectVersionsResponse = s3Client.listObjectVersions(listObjectVersionsRequest);
                 List<ObjectVersion> objectVersions = listObjectVersionsResponse.versions();
 
-                if (!objectVersions.isEmpty()) {
-                    List<ObjectIdentifier> objectsToDelete = objectVersions.stream()
-                            .flatMap(version -> Stream.of(ObjectIdentifier.builder()
-                                    .key(version.key())
-                                    .versionId(version.versionId())
-                                    .build()))
-                            .collect(Collectors.toList());
+                // Prepare a batch delete request for all object versions
+                List<ObjectIdentifier> objectsToDelete = new ArrayList<>();
+                for (ObjectVersion objectVersion : objectVersions) {
+                    objectsToDelete.add(ObjectIdentifier.builder()
+                            .key(objectVersion.key())
+                            .versionId(objectVersion.versionId())
+                            .build());
+                }
 
+                if (!objectsToDelete.isEmpty()) {
                     DeleteObjectsRequest deleteObjectsRequest = DeleteObjectsRequest.builder()
                             .bucket(bucketName)
-                            .delete(Delete.builder().objects(objectsToDelete).build())
+                            .delete(Delete.builder()
+                                    .objects(objectsToDelete)
+                                    .build())
                             .build();
-
                     s3Client.deleteObjects(deleteObjectsRequest);
+                    System.out.println("Deleted versions: " + objectsToDelete.size());
                 }
 
                 listObjectVersionsRequest = listObjectVersionsRequest.toBuilder()
                         .keyMarker(listObjectVersionsResponse.nextKeyMarker())
                         .versionIdMarker(listObjectVersionsResponse.nextVersionIdMarker())
                         .build();
-            } catch (AwsServiceException | SdkClientException e) {
-                throw new RuntimeException(e);
-            }
-        } while (listObjectVersionsResponse.isTruncated());
+
+            } while (listObjectVersionsResponse.isTruncated());
+
+        } catch (S3Exception e) {
+            e.printStackTrace();
+        }
     }
 
 
     @Override
     public ResponseEntity<?> deleteBucket(String bucketName){
-        deleteAllVersions(bucketName);
         try{
             DeleteBucketRequest deleteBucketRequest = DeleteBucketRequest
                     .builder()
@@ -805,18 +849,21 @@ public class CephServiceImpl implements CephService {
 
         for (int i = 0; i < files.length; i++) {
             Map<String,String> metadata = metadataList.get(i);
+            String prefix = uploadRequestDTO.getObjectKey();
             String objectKey = uploadRequestDTO.getObjectKey() + files[i].getOriginalFilename();
+            System.out.println("Object key to be checked in mongo: " + objectKey);
+            System.out.println("prefix in the upload method: " + prefix);
             String uuid = null;
             String key = null;
             if(metadataRepository.doesKeyExist(objectKey)){
                 uuid = getObjectUUID(objectKey);
-                key = objectKey + uuid;
+                key = prefix + uuid;
             }
             else{
                 uuid = UUID.randomUUID().toString();
                 key = uploadRequestDTO.getObjectKey() + uuid;
             }
-
+            System.out.println("key that is sent to upload file method: " + key);
 //            saving the required data in mongodb collection to implement search
             MetadataEntity metadataEntity = new MetadataEntity();
             metadataEntity.setUuid(uuid);
@@ -886,6 +933,7 @@ public class CephServiceImpl implements CephService {
             GetObjectRequest getObjectRequest = GetObjectRequest.builder()
                     .bucket(bucketName)
                     .key(key)
+                    .versionId(downloadRequestDTO.getVersionId())
                     .build();
 
             // Get the input stream from the response

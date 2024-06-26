@@ -10,6 +10,7 @@ import com.example.demoDMS1.Service.MetadataService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Enumerated;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -69,6 +70,11 @@ public class CephController {
     @GetMapping("/list-object-versions")
     public ResponseEntity<List<String>> listObjectVersionInfo(@RequestParam String bucketName, @RequestParam String objectKey) {
         return cephService.listVersionOfObject(bucketName,objectKey);
+    }
+
+    @GetMapping("/delete-object-versions")
+    public void deleteAllVersions(@RequestParam String bucketName, @RequestParam String objectKey){
+        cephService.deleteAllVersions(bucketName,objectKey);
     }
 
     @PostMapping("/add-tags-to-bucket")
@@ -148,6 +154,7 @@ public class CephController {
         ObjectMapper objectMapper = new ObjectMapper();
         List<Map<String, String>> metadata = objectMapper.readValue(metadataJson, List.class);
         UploadRequestDTO uploadRequestDTO = new UploadRequestDTO(files,bucketName,objectKey,userRole,metadata);
+        System.out.println("Object key as received by controller: " + objectKey);
         return cephService.uploadMultipleFiles(uploadRequestDTO);
     }
 
