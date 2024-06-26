@@ -195,43 +195,6 @@ public class CephServiceImpl implements CephService {
         return new ResponseEntity<>("Successfully created bucket " + bucketName, HttpStatus.OK);
     }
 
-//    public void deleteAllVersions(String bucketName) {
-//        ListObjectVersionsRequest listObjectVersionsRequest = ListObjectVersionsRequest.builder()
-//                .bucket(bucketName)
-//                .build();
-//
-//        ListObjectVersionsResponse listObjectVersionsResponse;
-//        do {
-//            try {
-//                listObjectVersionsResponse = s3Client.listObjectVersions(listObjectVersionsRequest);
-//                List<ObjectVersion> objectVersions = listObjectVersionsResponse.versions();
-//
-//                if (!objectVersions.isEmpty()) {
-//                    List<ObjectIdentifier> objectsToDelete = objectVersions.stream()
-//                            .flatMap(version -> Stream.of(ObjectIdentifier.builder()
-//                                    .key(version.key())
-//                                    .versionId(version.versionId())
-//                                    .build()))
-//                            .collect(Collectors.toList());
-//
-//                    DeleteObjectsRequest deleteObjectsRequest = DeleteObjectsRequest.builder()
-//                            .bucket(bucketName)
-//                            .delete(Delete.builder().objects(objectsToDelete).build())
-//                            .build();
-//
-//                    s3Client.deleteObjects(deleteObjectsRequest);
-//                }
-//
-//                listObjectVersionsRequest = listObjectVersionsRequest.toBuilder()
-//                        .keyMarker(listObjectVersionsResponse.nextKeyMarker())
-//                        .versionIdMarker(listObjectVersionsResponse.nextVersionIdMarker())
-//                        .build();
-//            } catch (AwsServiceException | SdkClientException e) {
-//                throw new RuntimeException(e);
-//            }
-//        } while (listObjectVersionsResponse.isTruncated());
-//    }
-
     @Override
     public void deleteAllVersions(String bucketName, String objectKey) {
 
@@ -246,6 +209,7 @@ public class CephServiceImpl implements CephService {
             do {
                 listObjectVersionsResponse = s3Client.listObjectVersions(listObjectVersionsRequest);
                 List<ObjectVersion> objectVersions = listObjectVersionsResponse.versions();
+                List<DeleteMarkerEntry> deleteMarkers = listObjectVersionsResponse.deleteMarkers();
 
                 // Prepare a batch delete request for all object versions
                 List<ObjectIdentifier> objectsToDelete = new ArrayList<>();
@@ -253,6 +217,12 @@ public class CephServiceImpl implements CephService {
                     objectsToDelete.add(ObjectIdentifier.builder()
                             .key(objectVersion.key())
                             .versionId(objectVersion.versionId())
+                            .build());
+                }
+                for(DeleteMarkerEntry deleteMarker: deleteMarkers){
+                    objectsToDelete.add(ObjectIdentifier.builder()
+                            .key(deleteMarker.key())
+                            .versionId(deleteMarker.versionId())
                             .build());
                 }
 
@@ -297,7 +267,7 @@ public class CephServiceImpl implements CephService {
         } catch (S3Exception e) {
             // Handle other S3 specific exceptions
             System.err.println("S3 Exception: " + e.awsErrorDetails().errorMessage());
-            throw e;
+//            throw e;
         } catch (SdkClientException e) {
             // Handle client-side errors (e.g., network issues)
             System.err.println("SDK Client Exception: " + e.getMessage());
@@ -318,10 +288,8 @@ public class CephServiceImpl implements CephService {
             return new ResponseEntity<>(currentStatus,HttpStatus.OK);
         }
         catch (NoSuchBucketException e){
-            return new ResponseEntity<>("No bucketname: " + bucketName,HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("No bucket: " + bucketName,HttpStatus.BAD_REQUEST);
         }
-//        if(currentStatus == BucketVersioningStatus.ENABLED) return new ResponseEntity<>(true,HttpStatus.OK);
-//        else return new ResponseEntity<>(false,HttpStatus.OK);
     }
 
     @Override
