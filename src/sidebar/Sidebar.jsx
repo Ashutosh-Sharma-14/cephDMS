@@ -6,10 +6,10 @@ const Sidebar = () => {
     
     return (<>
     <nav className=" bg-white shadow-lg h-screen fixed top-0 left-0 min-w-[250px] py-6 px-4 font-[sans-serif] overflow-auto">
-      <Link to="/"><img src="/perfiosLogo.png" alt="logo" className='w-[160px]' />
-      </Link>
+      {/* <Link to="/"><img src="/perfiosLogo.png" alt="logo" className='w-[160px]' />
+      </Link> */}
 
-      <ul className="mt-6 ulElement">
+      <ul className="mt-6 ulElement" style={{paddingTop:'9vh'}}>
       <h6 className="text-blue-600 text-sm font-bold px-4">Info</h6>
 
         <li>
